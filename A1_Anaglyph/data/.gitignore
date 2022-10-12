@@ -1,0 +1,6 @@
+# ignore all subfolders:
+*/*
+
+# ignore all json and csv files in sub/sub-folders:
+*/*/*.json
+*/*/*.csv
