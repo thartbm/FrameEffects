@@ -1079,11 +1079,11 @@ def getTasks(cfg):
                  {'period':1/3, 'amplitude':0.8, 'stimtype':'classicframe', 'fixdot':False},
 
 
-                 {'period':1/3, 'amplitude':3, 'stimtype':'dotcounterframe', 'fixdot':False},
-                 {'period':1/3, 'amplitude':3, 'stimtype':'dotcounterframe', 'fixdot':False},
+                 {'period':1/3, 'amplitude':4, 'stimtype':'dotcounterframe', 'fixdot':False},
+                 {'period':1/3, 'amplitude':4, 'stimtype':'dotcounterframe', 'fixdot':False},
 
-                 {'period':1/3, 'amplitude':3, 'stimtype':'dotdoublerframe', 'fixdot':False},
-                 {'period':1/3, 'amplitude':3, 'stimtype':'dotdoublerframe', 'fixdot':False},
+                 {'period':1/3, 'amplitude':4, 'stimtype':'dotdoublerframe', 'fixdot':False},
+                 {'period':1/3, 'amplitude':4, 'stimtype':'dotdoublerframe', 'fixdot':False},
 
                  ]
 
