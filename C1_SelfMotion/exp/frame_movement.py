@@ -641,15 +641,14 @@ def getStimuli(cfg):
                                         units='deg'
                                         )
 
-    # The PYO way:
-    # this sets up a short duration tick sound to use as a metronome
-    tick = sound.load('short_tick.wav')
-    cfg['hw']['metronome'] = sound.Sound(tick)
+    # this sets up a short duration tick sound (~50 ms) for the metronome
+
+    # # The PYO way:
+    # tick = sound.load('short_tick.wav')
+    # cfg['hw']['metronome'] = sound.Sound(tick)
 
     # The PTB way:
-    # this sets up a short duration tick sound to use as a metronome
-    # tick = sound.load('short_tick.wav')
-    cfg['hw']['metronome'] = sound.Sound('short_tick.wav')
+    cfg['hw']['metronome'] = sound.Sound('short_tick.wav', sampleRate=44100)
 
     return(cfg)
 
