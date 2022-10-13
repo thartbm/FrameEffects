@@ -641,7 +641,6 @@ def getStimuli(cfg):
                                         units='deg'
                                         )
 
-
     # this sets up a short duration tick sound (~50 ms) for the metronome
 
     # # The PYO way:
