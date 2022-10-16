@@ -534,10 +534,10 @@ def getTasks(cfg):
 
         condictionary = [
 
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.0, 'bottom': 0.0, 'frame': 0.0}, 'condition':'same plane'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom':-0.5, 'frame': 0.0}, 'condition':'stradled'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom': 0.5, 'frame':-0.5}, 'condition':'back frame'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top':-0.5, 'bottom':-0.5, 'frame': 0.5}, 'condition':'front frame'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.0, 'bottom': 0.0, 'frame': 0.0}, 'condition':'same plane'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom':-0.5, 'frame': 0.0}, 'condition':'stradled'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom': 0.5, 'frame':-0.5}, 'condition':'back frame'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top':-0.5, 'bottom':-0.5, 'frame': 0.5}, 'condition':'front frame'},
 
                          ]
 
@@ -548,10 +548,10 @@ def getTasks(cfg):
 
         condictionary = [
 
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.0, 'bottom': 0.0, 'frame': 0.0}, 'condition':'same plane'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom':-0.5, 'frame': 0.0}, 'condition':'stradled'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom': 0.5, 'frame':-0.5}, 'condition':'back frame'},
-                         {'period':1/2, 'amplitude':3, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top':-0.5, 'bottom':-0.5, 'frame': 0.5}, 'condition':'front frame'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.0, 'bottom': 0.0, 'frame': 0.0}, 'condition':'same plane'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom':-0.5, 'frame': 0.0}, 'condition':'stradled'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top': 0.5, 'bottom': 0.5, 'frame':-0.5}, 'condition':'back frame'},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'flashed', 'framesize':[7,6], 'disparities':{'top':-0.5, 'bottom':-0.5, 'frame': 0.5}, 'condition':'front frame'},
 
                          ]
 
