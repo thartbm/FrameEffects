@@ -138,6 +138,7 @@ def doTrial(cfg):
         mapping = trialdict['mapping']
     else:
         mapping = [-1,1][random.randint(0,1)]
+        # maybe mapping should just be 1 if unspecified?
         trialdict['mapping'] = mapping
 
     # change frequency and distance for static periods at the extremes:
@@ -345,6 +346,11 @@ def doTrial(cfg):
         if cfg['hw']['keyboard'][key.RIGHT]:
             percept = percept + 0.05
 
+
+        cfg['hw']['text'].text = '%0.2f'%(percept)
+        cfg['hw']['text'].pos = [-8,8]
+        cfg['hw']['text'].draw()
+
         # blue is on top:
         cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]]
         cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]]
@@ -398,6 +404,8 @@ def doTrial(cfg):
     response['percept']     = percept
     response['trial_start'] = trial_start_time
     response['blank']       = blank
+
+    # WHERE DOES PERCEPT COME FROM ???
 
     cfg['responses'] += [response]
 
@@ -713,6 +721,18 @@ def getTasks(cfg):
                          ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+
+
+    if cfg['expno']==3:
+
+        condictionary = [
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'mapping': 1},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'moveframe',    'framesize':[7,6], 'mapping': 1},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'moveframe',    'framesize':[7,6], 'mapping':-1},
+                         ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=3) )
+
 
 
 def dictToBlockTrials(cfg, condictionary, nblocks, nrepetitions):
