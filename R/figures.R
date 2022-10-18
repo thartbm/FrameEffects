@@ -296,7 +296,7 @@ basicPlot <- function(target='none') {
        main='Experiment Time',xlab='frame movement [dva]',ylab='illusion strength [dva]',
        bty='n', ax=F, asp=1)
   
-  lines( x=c(0, 5), y=c(0, 5), lty=1, col='#999999')
+  lines( x=c(0, 5), y=c(0, 5), lty=2, col='#999999')
   
   for (interval in c(1,2,3,4,5)) {
     
@@ -411,7 +411,8 @@ basicPlot <- function(target='none') {
        main='LDL Motion Perception',xlab='',ylab='perceived motion [dva]',
        bty='n', ax=F)
   
-  lines( x=c(0.5, 11.5), y=c(4, 4), lty=2, col='#999999')
+  lines( x=c(7.5, 11.5), y=c(4, 4), lty=2, col='#999999')
+  lines( x=c(0.5, 6.5), y=c(0.5, 6.5), lty=2, col='#999999')
   
   df <- df[which(round(df$period, digits=6) == 0.333333),]
   

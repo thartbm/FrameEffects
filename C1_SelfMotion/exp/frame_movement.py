@@ -476,8 +476,6 @@ def runTasks(cfg):
 
         cfg['currentblock'] += 1
 
-
-
     return(cfg)
 
 def setWindow(cfg, setup='tablet'):
