@@ -249,7 +249,7 @@ getExperimentTimeData <- function(participants, FUN=median) {
   intervalData <- NA
   
   intervalduration <- 20 * 60
-  intervalnumber <- 4
+  intervalnumber <- 5
   
   
   participant <- c()
@@ -361,7 +361,7 @@ getSelfMotionData <- function(participants, timedata=FALSE, FUN=median) {
     # df <- stimData[which(stimData$participant == ppno),]
     # df <- df[,c('period','amplitude','stimtype','mapping','xfactor')]
     
-    df$percept <- getParticipantSelfMotionPercepts(ppno=ppno) * 2 * df$xfactor * df$mapping
+    df$percept <- abs( getParticipantSelfMotionPercepts(ppno=ppno) * 2 ) # * df$xfactor #* df$mapping
     
     if (timedata) {
       
@@ -429,6 +429,7 @@ getTextureMotionData <- function(participants, timedata=FALSE, FUN=median) {
       
       df <- df[which(df$amplitude == 4),]
       df <- aggregate(percept ~ period + amplitude + stimtype + fixdot, data=df, FUN=FUN, na.rm=FALSE)
+      df$fixdot <- c('False'=FALSE, 'True'=TRUE)[df$fixdot]
       
     }
     
