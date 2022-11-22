@@ -92,27 +92,31 @@ def runall(demo=False):
     # because we set the seed with participant ID * 99999
     random.shuffle(experiments)
 
-    for expcode in experiments:
+    for exp_no in range(len(experiments)):
+
+        expcode = experiments[exp_no]
 
         if expcode == 'A1':
-            print('running A1: Anaglyph')
+            print('\nrunning A1: Anaglyph\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
 
             os.chdir('A1_Anaglyph/exp/')
 
-            # run it!
+            # run it, first calibration:
+            os.system('ipython3 red_cyan_calibration.py %d'%(all_cfg['ID']))
+            # then the actual task:
             os.system('ipython3 frame_depth.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp A1 done]')
+            print('\n[exp A1 done]\n')
         if expcode == 'A2':
-            print('running A2: Probe Distance')
+            print('\nrunning A2: Probe Distance\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('A2_ProbeDistance/exp/')
 
             # run it!
             os.system('ipython3 frame_space.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp A2 done]')
+            print('\n[exp A2 done]\n')
         #if expcode == 'A3':
         #    os.chdir('A3_FullFrame/exp/')
         #    import something as curr_exp
@@ -122,51 +126,51 @@ def runall(demo=False):
         #    print('[exp A3 done]')
 
         if expcode == 'B1':
-            print('running B1: Apparent Lag')
+            print('\nrunning B1: Apparent Lag\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('B1_ApparentLag/exp/')
 
             # run it!
             os.system('ipython3 frame_apparent.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp B1 done]')
+            print('\n[exp B1 done]\n')
         if expcode == 'B2':
-            print('running B2: Pre/Post Diction')
+            print('\nrunning B2: Pre/Post Diction\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('B2_PreDiction/exp/')
 
             # run it!
             os.system('ipython3 frame_time.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp B2 done]')
+            print('\n[exp B2 done]\n')
 
         if expcode == 'C1':
-            print('running C1: Self Motion')
+            print('\nrunning C1: Self Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('C1_SelfMotion/exp/')
 
             # run it!
             os.system('ipython3 frame_movement.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp C1 done]')
+            print('\n[exp C1 done]\n')
         if expcode == 'C2':
-            print('running C2: Dot-Texture Motion')
+            print('\nrunning C2: Dot-Texture Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('C2_TextureMotion/exp/')
 
             # run it!
             os.system('ipython3 frame_background2.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp C2 done]')
+            print('\n[exp C2 done]\n')
         if expcode == 'C3':
-            print('running C3: Dot-Texture Perceived Frame Motion')
+            print('\nrunning C3: Dot-Texture Perceived Frame Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
             os.chdir('C3_PerceivedMotion/exp/')
 
             # run it!
             os.system('ipython3 frame_motion.py %d %d'%(expno, all_cfg['ID']))
 
             os.chdir('../..')
-            print('[exp C3 done]')
+            print('\n[exp C3 done]\n')
 
 
 runall()

@@ -18,11 +18,32 @@ from pyglet.window import key
 #@psychopy   -  rtprio     50
 #@psychopy   -  memlock    unlimited
 
-def calibrate(setup='tablet'):
+def calibrate(setup='tablet', ID=np.nan):
 
     cfg = {}
+
+    # set up calibration folder for participant:
+    cfg = getParticipant(cfg, ID=ID)
+
+    # set up psychopy window and stimuli objects:
     cfg = getStimuli(cfg, setup=setup)
+
+    # run the calibration:
     cfg = showStimuli(cfg)
+
+    # store the calibration:
+    # scfg = copy.copy(cfg)
+    # del scfg['hw']
+    #
+    # with open('%scfg.json'%(cfg['datadir']), 'w') as fp:
+    #     json.dump(scfg, fp,  indent=4)
+    calibration = {}
+    calibration['RED']  = copy.copy(cfg['RED'])
+    calibration['CYAN'] = copy.copy(cfg['CYAN'])
+    with open('%sred_cyan_calibration.json'%(cfg['datadir']), 'w') as fp:
+        json.dump(calibration, fp,  indent=4)
+
+
 
     cfg['hw']['win'].close()
 
@@ -68,7 +89,7 @@ def getStimuli(cfg, setup='tablet'):
     # cfg['waitBlanking'] = waitBlanking
     # #cfg['resolution']   = resolution
     #
-    # cfg['hw'] = {}
+    cfg['hw'] = {}
     #
     # # to be able to convert degrees back into pixels/cm
     # cfg['hw']['mon'] = mymonitor
@@ -223,13 +244,15 @@ def showStimuli(cfg):
             R = max(R-step, -1)
         if cfg['hw']['keyboard'][key.NUM_2]:
             G = max(G-step, -1)
-        if cfg['hw']['keyboard'][key.NUM_3]:
+        #if cfg['hw']['keyboard'][key.NUM_3]:
             B = max(B-step, -1)
+
+
         if cfg['hw']['keyboard'][key.NUM_7]:
             R = min(R+step,  1)
         if cfg['hw']['keyboard'][key.NUM_8]:
             G = min(G+step,  1)
-        if cfg['hw']['keyboard'][key.NUM_9]:
+        #if cfg['hw']['keyboard'][key.NUM_9]:
             B = min(B+step,  1)
 
         RED_int   = int(round((R + 1) * 127.5))
@@ -278,5 +301,71 @@ def showStimuli(cfg):
 
         cfg['hw']['win'].flip()
 
+    cfg['RED']  = RED
+    cfg['CYAN'] = CYAN
 
     return(cfg)
+
+
+def getParticipant(cfg, ID=np.nan, check_path=True):
+
+    print(cfg)
+
+    if np.isnan(ID):
+        # we need to get an integer number as participant ID:
+        IDnotANumber = True
+    else:
+        IDnotANumber = False
+        cfg['ID'] = ID
+        IDno = int(ID)
+
+    # and we will only be happy when this is the case:
+    while (IDnotANumber):
+        # we ask for input:
+        ID = input('Enter participant number: ')
+        # and try to see if we can convert it to an integer
+        try:
+            IDno = int(ID)
+            if isinstance(ID, int):
+                pass # everything is already good
+            # and if that integer really reflects the input
+            if isinstance(ID, str):
+                if not(ID == '%d'%(IDno)):
+                    continue
+            # only then are we satisfied:
+            IDnotANumber = False
+            # and store this in the cfg
+            cfg['ID'] = IDno
+        except Exception as err:
+            print(err)
+            # if it all doesn't work, we ask for input again...
+            pass
+
+    # set up folder's for groups and participants to store the data
+    if check_path:
+        for thisPath in ['../data', '../data/calibration', '../data/calibration/p%03d'%(cfg['ID'])]:
+            if os.path.exists(thisPath):
+                if not(os.path.isdir(thisPath)):
+                    os.makedirs
+                    sys.exit('"%s" should be a folder'%(thisPath))
+                else:
+                    # if participant folder exists, don't overwrite existing data?
+                    if (thisPath == '../data/calibration/p%03d'%(cfg['ID'])):
+                        sys.exit('participant already exists (crash recovery not implemented)')
+            else:
+                os.mkdir(thisPath)
+
+        cfg['datadir'] = '../data/calibration/p%03d/'%(cfg['ID'])
+
+    # we need to seed the random number generator:
+    random.seed(99999 * IDno)
+
+    return cfg
+
+
+
+
+
+
+
+calibrate(setup='tablet', ID=int(sys.argv[1]))

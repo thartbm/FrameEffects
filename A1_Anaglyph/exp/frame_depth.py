@@ -719,8 +719,21 @@ def getParticipant(cfg, ID=np.nan, check_path=True):
             # if it all doesn't work, we ask for input again...
             pass
 
+
+    if os.path.exists('../data/calibration/p%03d/red_cyan_calibration.json'%(cfg['ID'])):
+        with open('../data/calibration/p%03d/red_cyan_calibration.json'%(cfg['ID']), 'r') as fp:
+            RC_calib = json.load(fp)
+            cfg['RED']  = RC_calib['RED']
+            cfg['CYAN'] = RC_calib['CYAN']
+            print(cfg['RED'])
+            print(cfg['CYAN'])
+    else:
+        print('red/cyan calibration not found for participant: '%(cfg['ID']))
+        print('expected: "../data/calibration/p%03d/red_cyan_calibration.json"'%(cfg['ID'])) 
+
     # set up folder's for groups and participants to store the data
     if check_path:
+
         for thisPath in ['../data', '../data/exp_%d'%(cfg['expno']), '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])]:
             if os.path.exists(thisPath):
                 if not(os.path.isdir(thisPath)):
@@ -1019,6 +1032,6 @@ def foldout(a):
 
 
 
-print(sys.argv)
+# print(sys.argv)
 
 run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))

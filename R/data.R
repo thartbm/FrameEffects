@@ -21,7 +21,7 @@ getAllData <- function(FUN=median) {
 
 getParticipants <- function() {
   
-  return(c(1:3))
+  return(c(1:6))
   
 }
 

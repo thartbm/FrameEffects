@@ -296,7 +296,7 @@ basicPlot <- function(target='none') {
        main='Experiment Time',xlab='frame movement [dva]',ylab='illusion strength [dva]',
        bty='n', ax=F, asp=1)
   
-  lines( x=c(0, 5), y=c(0, 5), lty=1, col='#999999')
+  lines( x=c(0, 5), y=c(0, 5), lty=2, col='#999999')
   
   for (interval in c(1,2,3,4,5)) {
     
@@ -311,13 +311,19 @@ basicPlot <- function(target='none') {
     for ( amplitude in X ) {
       
       idx <- which(idf$amplitude == amplitude)
+      
+      ip <- idf$percept[idx]
+      ip <- ip[which(!is.na(ip))]
+      
       if (length(idx) > 0) {
-        avg <- c(avg, mean(idf$percept[idx]))
+        #avg <- c(avg, mean(idf$percept[idx]))
+        avg <- c(avg, mean(ip))
       } else {
         avg <- c(avg, NA)
       }
       if (length(idx) > 1) {
-        ci  <- SMCL::getConfidenceInterval(idf$percept[idx])
+        #ci  <- SMCL::getConfidenceInterval(idf$percept[idx])
+        ci  <- SMCL::getConfidenceInterval(ip)
         lci <- c(lci, ci[1])
         hci <- c(hci, ci[2])
       } else {
@@ -411,7 +417,8 @@ basicPlot <- function(target='none') {
        main='LDL Motion Perception',xlab='',ylab='perceived motion [dva]',
        bty='n', ax=F)
   
-  lines( x=c(0.5, 11.5), y=c(4, 4), lty=2, col='#999999')
+  lines( x=c(7.3, 11.7), y=c(4, 4), lty=2, col='#999999')
+  lines( x=c(0.5, 6.5), y=c(0.5, 6.5), lty=2, col='#999999')
   
   df <- df[which(round(df$period, digits=6) == 0.333333),]
   
@@ -509,6 +516,13 @@ basicPlot <- function(target='none') {
   
   axis(side=1, at=c(1,2,3,4,5,6))
   axis(side=2, at=c(0,4,8))
+  
+  mtext(text='motion [dva]',
+        side=1,
+        line=2.5,
+        at=3.5,
+        cex=0.75)
+  
   
   # plot 9: texture motion
   
