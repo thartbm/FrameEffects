@@ -3,3 +3,9 @@
 *.svg
 *.png
 *.tiff
+
+
+# ignore text files:
+*.odt
+*.doc
+*.docx
