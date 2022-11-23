@@ -33,6 +33,10 @@ getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
   
   for (ppno in participants) {
     
+    if (ppno %in% c(6)) {
+      next()
+    }
+    
     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/responses.csv',ppno)
     df <- read.csv(filename, stringsAsFactors = F)
     
@@ -104,7 +108,7 @@ getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
   hor_offset_map <- c('[0.0, 0.0]'=0,
                       '[0.0, 0]'=0,
                       '[0.0, 12.0]'=0,
-                      '0.0, 3.0]'=0,
+                      '[0.0, 3.0]'=0,
                       '[0.0, 6.0]'=0,
                       '[0.0, 9.0]'=0,
                       '[12.0, 0]'=12,
@@ -114,7 +118,7 @@ getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
   ver_offset_map <- c('[0.0, 0.0]'=0,
                       '[0.0, 0]'=0,
                       '[0.0, 12.0]'=12,
-                      '0.0, 3.0]'=3,
+                      '[0.0, 3.0]'=3,
                       '[0.0, 6.0]'=6,
                       '[0.0, 9.0]'=9,
                       '[12.0, 0]'=0,

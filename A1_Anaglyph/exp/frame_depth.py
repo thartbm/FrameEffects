@@ -412,8 +412,11 @@ def getStimuli(cfg, setup='tablet'):
     #CYAN = [-0.081, 0.75, 0.75]
 
     # "mobile" tablet:
-    RED  = [0.75, 0.018, 0.018]
-    CYAN = [-0.121, 0.75, 0.75]
+    # RED  = [0.75, 0.018, 0.018]
+    # CYAN = [-0.121, 0.75, 0.75]
+
+    RED  = cfg['RED']
+    CYAN = cfg['CYAN']
 
     cfg['hw']['top_cyan_dot'] = visual.Circle(win=cfg['hw']['win'],
                                          units='deg',
@@ -729,7 +732,7 @@ def getParticipant(cfg, ID=np.nan, check_path=True):
             print(cfg['CYAN'])
     else:
         print('red/cyan calibration not found for participant: '%(cfg['ID']))
-        print('expected: "../data/calibration/p%03d/red_cyan_calibration.json"'%(cfg['ID'])) 
+        print('expected: "../data/calibration/p%03d/red_cyan_calibration.json"'%(cfg['ID']))
 
     # set up folder's for groups and participants to store the data
     if check_path:
