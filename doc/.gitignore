@@ -4,7 +4,15 @@
 *.png
 *.tiff
 
+<<<<<<< HEAD
 # and other files:
 *.docx
 *.doc
 *.odt
+=======
+
+# ignore text files:
+*.odt
+*.doc
+*.docx
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7

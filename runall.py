@@ -92,24 +92,41 @@ def runall(demo=False):
     # because we set the seed with participant ID * 99999
     random.shuffle(experiments)
 
+<<<<<<< HEAD
     for exp_idx in range(len(experiments)):
 
         expcode = experiments[exp_idx]
 
         if expcode == 'A1':
             print('\nrunning A1: Anaglyph\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+    for exp_no in range(len(experiments)):
+
+        expcode = experiments[exp_no]
+
+        if expcode == 'A1':
+            print('\nrunning A1: Anaglyph\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
 
             os.chdir('A1_Anaglyph/exp/')
 
             # run it, first calibration:
             os.system('ipython3 red_cyan_calibration.py %d'%(all_cfg['ID']))
             # then the actual task:
+<<<<<<< HEAD
             os.system('ipython3 frame_depth.py %d %d'%(exp_version, all_cfg['ID']))
+=======
+            os.system('ipython3 frame_depth.py %d %d'%(expno, all_cfg['ID']))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
 
             os.chdir('../..')
             print('\n[exp A1 done]\n')
         if expcode == 'A2':
+<<<<<<< HEAD
             print('\nrunning A2: Probe Distance\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning A2: Probe Distance\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('A2_ProbeDistance/exp/')
 
             # run it!
@@ -126,7 +143,11 @@ def runall(demo=False):
         #    print('[exp A3 done]')
 
         if expcode == 'B1':
+<<<<<<< HEAD
             print('\nrunning B1: Apparent Lag\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning B1: Apparent Lag\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('B1_ApparentLag/exp/')
 
             # run it!
@@ -135,7 +156,11 @@ def runall(demo=False):
             os.chdir('../..')
             print('\n[exp B1 done]\n')
         if expcode == 'B2':
+<<<<<<< HEAD
             print('\nrunning B2: Pre/Post Diction\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning B2: Pre/Post Diction\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('B2_PreDiction/exp/')
 
             # run it!
@@ -145,7 +170,11 @@ def runall(demo=False):
             print('\n[exp B2 done]\n')
 
         if expcode == 'C1':
+<<<<<<< HEAD
             print('\nrunning C1: Self Motion\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning C1: Self Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('C1_SelfMotion/exp/')
 
             # run it!
@@ -154,7 +183,11 @@ def runall(demo=False):
             os.chdir('../..')
             print('\n[exp C1 done]\n')
         if expcode == 'C2':
+<<<<<<< HEAD
             print('\nrunning C2: Dot-Texture Motion\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning C2: Dot-Texture Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('C2_TextureMotion/exp/')
 
             # run it!
@@ -163,7 +196,11 @@ def runall(demo=False):
             os.chdir('../..')
             print('\n[exp C2 done]\n')
         if expcode == 'C3':
+<<<<<<< HEAD
             print('\nrunning C3: Dot-Texture Perceived Frame Motion\n(task %d / %d)\n\n'%(exp_idx+1,len(experiments)))
+=======
+            print('\nrunning C3: Dot-Texture Perceived Frame Motion\n(task %d / %d)\n\n'%(exp_no,len(experiments)))
+>>>>>>> c1d88d6dcceb7ac459d6cda60ce49252a86cdeb7
             os.chdir('C3_PerceivedMotion/exp/')
 
             # run it!
