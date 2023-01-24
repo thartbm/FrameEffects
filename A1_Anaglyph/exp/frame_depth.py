@@ -59,12 +59,14 @@ def doTrial(cfg):
         disparities = {'top': 0.0, 'bottom': 0.0, 'frame': 0.0}
 
 
-    # change frequency and distance for static periods at the extremes:
-    if (0.35 - period) > 0:
-        # make sure there is a 350 ms inter-flash interval
-        extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
-    else:
-        extra_frames = 4
+    # # change frequency and distance for static periods at the extremes:
+    # if (0.35 - period) > 0:
+    #     # make sure there is a 350 ms inter-flash interval
+    #     extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
+    # else:
+    #     extra_frames = 4
+
+    extra_frames = 4 + int( max(0, (0.35 - period) / (1/30) ) )
 
     extra_time = (extra_frames/30)
 
@@ -412,8 +414,11 @@ def getStimuli(cfg, setup='tablet'):
     #CYAN = [-0.081, 0.75, 0.75]
 
     # "mobile" tablet:
-    RED  = [0.75, 0.018, 0.018]
-    CYAN = [-0.121, 0.75, 0.75]
+    # RED  = [0.75, 0.018, 0.018]
+    # CYAN = [-0.121, 0.75, 0.75]
+
+    RED  = cfg['RED']
+    CYAN = cfg['CYAN']
 
     cfg['hw']['top_cyan_dot'] = visual.Circle(win=cfg['hw']['win'],
                                          units='deg',
@@ -719,8 +724,21 @@ def getParticipant(cfg, ID=np.nan, check_path=True):
             # if it all doesn't work, we ask for input again...
             pass
 
+
+    if os.path.exists('../data/calibration/p%03d/red_cyan_calibration.json'%(cfg['ID'])):
+        with open('../data/calibration/p%03d/red_cyan_calibration.json'%(cfg['ID']), 'r') as fp:
+            RC_calib = json.load(fp)
+            cfg['RED']  = RC_calib['RED']
+            cfg['CYAN'] = RC_calib['CYAN']
+            print(cfg['RED'])
+            print(cfg['CYAN'])
+    else:
+        print('red/cyan calibration not found for participant: '%(cfg['ID']))
+        print('expected: "../data/calibration/p%03d/red_cyan_calibration.json"'%(cfg['ID']))
+
     # set up folder's for groups and participants to store the data
     if check_path:
+
         for thisPath in ['../data', '../data/exp_%d'%(cfg['expno']), '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])]:
             if os.path.exists(thisPath):
                 if not(os.path.isdir(thisPath)):
@@ -1019,6 +1037,6 @@ def foldout(a):
 
 
 
-print(sys.argv)
+# print(sys.argv)
 
 run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))

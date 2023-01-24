@@ -177,6 +177,8 @@ def doDotTrial(cfg):
     else:
         extra_frames = 9
 
+    extra_frames = 9 + int( max(0, (0.35 - period) / (1/60) ) )
+
     p = period + (extra_frames/60)
     d = (distance/period) * p
 

@@ -3,3 +3,8 @@
 *.svg
 *.png
 *.tiff
+
+# and other files:
+*.docx
+*.doc
+*.odt
