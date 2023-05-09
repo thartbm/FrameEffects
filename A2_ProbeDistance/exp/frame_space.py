@@ -105,7 +105,7 @@ def doTrial(cfg):
 
     waiting_for_response = True
 
-    flashdot_centre = [-8, -8]
+    flashdot_centre = [-8, -7]
     cfg['hw']['bluedot'].pos = [flashdot_centre[0], flashdot_centre[1]+1]
     cfg['hw']['reddot'].pos = [flashdot_centre[0], flashdot_centre[1]-1]
 
@@ -200,8 +200,8 @@ def doTrial(cfg):
         percept = (mousepos[0] + mouse_offset) / 4
 
         # blue is on top:
-        cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]]
-        cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]]
+        cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]+2]
+        cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]+2]
         cfg['hw']['bluedot_ref'].draw()
         cfg['hw']['reddot_ref'].draw()
 
@@ -448,6 +448,18 @@ def getTasks(cfg):
                          {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[ 0.0,  9.0]},
                          {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[ 0.0, 12.0]},
 
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 3.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 6.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 9.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[12.0,  0]},
+
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  0.0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  3.0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  6.0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  9.0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0, 12.0]},
+
                          ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=5, nrepetitions=1, shuffle=True) )
@@ -475,6 +487,21 @@ def getTasks(cfg):
                          ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
+
+    if cfg['expno']==3:
+
+        # period: 1.0, 1/2, 1/3, 1/4, 1/5
+        # amplit: 2.4, 4.8, 7.2, 9.6, 12
+        # (speeds: 12, 24, 36, 48, 60 deg/s)
+        condictionary = [
+
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[12.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[13,12], 'frameoffset':[ 0.0, 12.0]},
+
+                         ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=True) )
 
 
 
