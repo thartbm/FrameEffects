@@ -1,0 +1,45 @@
+---
+title: "Frame effects in space and time"
+output: html_notebook
+---
+
+# Overview
+
+Here we present plots and analyses of a data set where 14 participants all did the same 6 experiments on frame effects. 
+Experiments testing effects in space:
+
+1. horizontal and vertical offsets of the frame and probes, with different frame sizes
+2. offset between frame and probes in depth using red-blue anaglyph glasses
+
+Experiments testing effects in time:
+
+3. pre- and post diction, frame only visible for 1, 2 or 3 passes (half cycles), either with both probes in the first or last movement, only 1, or both just before or after the frame was visible
+4. probes presented at different time points during the frame motion cycles (not just at the extreme time points, when the frame changes direction)
+
+Motion of the frame:
+
+5. dot-pattern frames, and backgrounds to test if the edges of the frame matter, or the motion behind the probes
+6. frames with internal motion, that matches, ignores, counters or doubles the frame's motion
+7. frames moved by the participant, potentially giving an extra source of information
+
+In tasks where this was not too much out of place, a standard frame was shown with 5 different motion amplitudes. The tasks were randomized in order based on participant ID, such that the perception of this set of frame could also be tracked through time-on-task.
+
+8. effect of time-on-task on illusion strength
+
+# Setup
+
+Assuming all libraries are installed on the system, we first we import local functions.
+
+```{r source-libraries}
+
+# functions handling data:
+source('R/data.R')
+
+# functions making figures:
+source('R/figures.R')
+
+# functions doing stats:
+source('R/stats.R')
+
+```
+
