@@ -1268,11 +1268,21 @@ def getTasks(cfg):
 
     if cfg['expno']==200:
 
-        condictionary = [{'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 0},
+        condictionary = [
+                         {'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 0},
                          {'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 5},
                          {'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 10},
                          {'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 15},
                          {'period':1/2, 'amplitude':12, 'stimtype':'classicframe', 'frameoffset': 20}
+                        ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+
+    # SFN basic demo:
+    if cfg['expno']==201:
+
+        condictionary = [
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
                         ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
@@ -1300,6 +1310,8 @@ def getTasks(cfg):
                          ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+
+
 
 def dictToBlockTrials(cfg, condictionary, nblocks, nrepetitions):
 
@@ -1423,4 +1435,5 @@ def cleanExit(cfg):
 
 
 
+# run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))
 run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))
