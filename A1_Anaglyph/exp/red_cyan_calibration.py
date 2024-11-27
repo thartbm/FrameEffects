@@ -208,6 +208,7 @@ def showStimuli(cfg):
     B = 0
 
     step = 0.001
+    step = 2 / 255
 
     cfg['hw']['win'].flip()
 
