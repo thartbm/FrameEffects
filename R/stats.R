@@ -152,6 +152,28 @@ doStatistics <- function() {
   
   # [5] "B2_PreDiction"
   
+  # df1 <- df[which(df$flashoffset %in% c(1,-1)),]
+  a1dfPre  <- aggregate(percept ~ participant + flashoffset, data = df[which(df$flashoffset == 1),], FUN=mean)
+  a1dfPost <- aggregate(percept ~ participant + flashoffset, data = df[which(df$flashoffset < 0 & df$flashoffset == -df$framepasses),], FUN=mean)
+  
+  a1df <- rbind(a1dfPre, a1dfPost)
+  a1df$diction <- 'pre'
+  a1df$diction[a1df$flashoffset < 0] <- 'post'
+  
+  post1 <- a1df$percept[which(a1df$diction == 'post')]
+  pre1 <- a1df$percept[which(a1df$diction == 'pre')]
+  t.test(post1, pre1, paired=TRUE) # this is significant, but could just be because of the 2 pass data being an outlier?
+  
+  for (fps in c(1,2,3)) {
+    a1df <- aggregate(percept ~ participant + flashoffset, data = df1[which(df1$framepasses == fps),], FUN=mean)
+    post1 <- a1df$percept[c(1:14)]
+    pre1 <- a1df$percept[c(15:28)]
+    print(post1 - pre1)
+    cat(sprintf('frame passes: %d\n', fps))
+    print(t.test(post1, pre1, paired=TRUE))
+  }  
+  
+  
   
   df <- allData[['T1_ExperimentTime']]
   
