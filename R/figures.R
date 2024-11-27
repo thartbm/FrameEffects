@@ -1,8 +1,29 @@
 
+getColors <- function() {
+  
+  cols.op <- c(rgb(255, 147, 41,  255, max = 255), # orange:  21, 255, 148
+               rgb(229, 22,  54,  255, max = 255), # red:    248, 210, 126
+               rgb(207, 0,   216, 255, max = 255), # pink:   211, 255, 108
+               rgb(127, 0,   216, 255, max = 255), # violet: 195, 255, 108
+               rgb(0,   19,  136, 255, max = 255)) # blue:   164, 255, 68
+  
+  cols.tr <- c(rgb(255, 147, 41,  32,  max = 255), # orange:  21, 255, 148
+               rgb(229, 22,  54,  32,  max = 255), # red:    248, 210, 126
+               rgb(207, 0,   216, 32,  max = 255), # pink:   211, 255, 108
+               rgb(127, 0,   216, 32,  max = 255), # violet: 195, 255, 108
+               rgb(0,   19,  136, 32,  max = 255)) # blue:   164, 255, 68
+  
+  cols <- list()
+  cols$op <- cols.op
+  cols$tr <- cols.tr
+  
+  return(cols)
+  
+}
 
 basicPlot <- function(target='none') {
 
-  width <- 9.291338583
+  width  <- 9.291338583
   height <- 7.755905512
 
   if (target=='svg') {
@@ -18,19 +39,10 @@ basicPlot <- function(target='none') {
                       ncol = 3,
                       byrow = TRUE)  )
 
-
-  cols.op <- c(rgb(255, 147, 41,  255, max = 255), # orange:  21, 255, 148
-               rgb(229, 22,  54,  255, max = 255), # red:    248, 210, 126
-               rgb(207, 0,   216, 255, max = 255), # pink:   211, 255, 108
-               rgb(127, 0,   216, 255, max = 255), # violet: 195, 255, 108
-               rgb(0,   19,  136, 255, max = 255)) # blue:   164, 255, 68
-
-  cols.tr <- c(rgb(255, 147, 41,  32,  max = 255), # orange:  21, 255, 148
-               rgb(229, 22,  54,  32,  max = 255), # red:    248, 210, 126
-               rgb(207, 0,   216, 32,  max = 255), # pink:   211, 255, 108
-               rgb(127, 0,   216, 32,  max = 255), # violet: 195, 255, 108
-               rgb(0,   19,  136, 32,  max = 255)) # blue:   164, 255, 68
-
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
 
   # plot 1: anaglyph
 
@@ -51,7 +63,7 @@ basicPlot <- function(target='none') {
 
     cdf <- df[which(df$condition == condition),]
     avg <- mean(cdf$percept)
-    ci  <- SMCL::getConfidenceInterval(data=cdf$percept)
+    ci  <- Reach::getConfidenceInterval(data=cdf$percept)
     # print(avg)
     # print(ci)
 
@@ -76,7 +88,7 @@ basicPlot <- function(target='none') {
 
   text( seq(1, 4, by=1) + 0.2,
         par("usr")[3] - 0.75,
-        labels = conditions,
+        labels = list('same plane'='same plane', 'back frame'='back frame', 'front frame'='front frame', 'stradled'='straddled')[conditions],
         srt = 33,
         pos = 2,
         xpd = TRUE )
@@ -107,13 +119,14 @@ basicPlot <- function(target='none') {
     for (hos in X) {
 
       avg <- c(avg, mean(fdf$percept[which(fdf$hor_offset == hos)]))
-      ci  <- SMCL::getConfidenceInterval(fdf$percept[which(fdf$hor_offset == hos)])
+      ci  <- Reach::getConfidenceInterval(fdf$percept[which(fdf$hor_offset == hos)])
       lci <- c(lci,ci[1])
       hci <- c(hci,ci[2])
 
     }
 
     col.idx <- ((fsi-1)*2)+1
+    # col.idx <- fsi
 
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
@@ -153,13 +166,14 @@ basicPlot <- function(target='none') {
     for (vos in X) {
 
       avg <- c(avg, mean(fdf$percept[which(fdf$ver_offset == vos)]))
-      ci  <- SMCL::getConfidenceInterval(fdf$percept[which(fdf$ver_offset == vos)])
+      ci  <- Reach::getConfidenceInterval(fdf$percept[which(fdf$ver_offset == vos)])
       lci <- c(lci,ci[1])
       hci <- c(hci,ci[2])
 
     }
 
     col.idx <- ((fsi-1)*2)+1
+    # col.idx <- fsi
 
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
@@ -203,7 +217,7 @@ basicPlot <- function(target='none') {
       idx <- which(cdf$framelag == fl)
 
       avg <- c(avg, mean(cdf$percept[idx]))
-      ci  <- SMCL::getConfidenceInterval(cdf$percept[idx])
+      ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
       lci <- c(lci,ci[1])
       hci <- c(hci,ci[2])
 
@@ -260,7 +274,7 @@ basicPlot <- function(target='none') {
 
         idx <- which(sdf$flashoffset == fos)
         avg <- c(avg, mean(sdf$percept[idx]))
-        ci <- SMCL::getConfidenceInterval(sdf$percept[idx])
+        ci <- Reach::getConfidenceInterval(sdf$percept[idx])
         lci <- c(lci, ci[1])
         hci <- c(hci, ci[2])
 
@@ -298,7 +312,7 @@ basicPlot <- function(target='none') {
 
   lines( x=c(0, 5), y=c(0, 5), lty=2, col='#999999')
 
-  for (interval in c(1,2,3,4,5)) {
+  for (interval in c(1,2,3,4)) {
 
     idf <- df[which(df$interval == interval),]
 
@@ -307,6 +321,8 @@ basicPlot <- function(target='none') {
     hci <- c()
 
     X <- sort( unique(idf$amplitude) )
+    
+    X <- c(0.8, 1.6, 2.4, 3.2, 4.0)
 
     for ( amplitude in X ) {
 
@@ -323,7 +339,7 @@ basicPlot <- function(target='none') {
       }
       if (length(idx) > 1) {
         #ci  <- SMCL::getConfidenceInterval(idf$percept[idx])
-        ci  <- SMCL::getConfidenceInterval(ip)
+        ci  <- Reach::getConfidenceInterval(ip)
         lci <- c(lci, ci[1])
         hci <- c(hci, ci[2])
       } else {
@@ -346,11 +362,10 @@ basicPlot <- function(target='none') {
 
   legend(-2,
          6.6,
-         legend=c('~10 min.',
-                  '~30 min.',
-                  '~50 min.',
-                  '~70 min.',
-                  '~90 min.'),
+         legend=c('0-30 min.',
+                  '30-60 min.',
+                  '60-90 min.',
+                  '90-120 min.'),
          lty=1,
          col=cols.op,
          bty='n')
@@ -380,7 +395,7 @@ basicPlot <- function(target='none') {
 
     percepts <- df$percept[idx]
     avg <- mean(percepts)
-    ci  <- SMCL::getConfidenceInterval(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
 
     polygon( x = condno+c(-0.35,0.0,0.0,-0.35),
              y = rep(ci,each=2),
@@ -440,7 +455,7 @@ basicPlot <- function(target='none') {
 
       idx <- which(sdf$amplitude == amplitude)
       avg <- c(avg, mean(sdf$percept[idx]))
-      ci  <- SMCL::getConfidenceInterval(sdf$percept[idx])
+      ci  <- Reach::getConfidenceInterval(sdf$percept[idx])
       lci <- c(lci, ci[1])
       hci <- c(hci, ci[2])
 
@@ -486,7 +501,7 @@ basicPlot <- function(target='none') {
     percepts <- sdf$percept
 
     avg <- mean(percepts)
-    ci  <- SMCL::getConfidenceInterval(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
 
     polygon( x = stimno+c(6.65,7,7,6.65),
              y = rep(ci, each=2),
@@ -567,7 +582,7 @@ basicPlot <- function(target='none') {
     percepts <- df$percept[which(df$stimtype == stimtypes[stimno])]
 
     avg <- mean(percepts)
-    ci  <- SMCL::getConfidenceInterval(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
 
     polygon( x = stimno+c(-0.35,0,0,-0.35)+xad,
              y = rep(ci, each=2),
@@ -602,4 +617,238 @@ basicPlot <- function(target='none') {
     dev.off()
   }
 
+}
+
+QRcodes <- function() {
+  
+  youtube <-  "https://youtu.be/aI8rsW-Ev34"
+  pdf     <-  "http://mariusthart.net/tHart_CVR_2023.pdf"
+  
+  # layout(mat=matrix(c(1,2),ncol=1))
+  
+  plot(qrcode::qr_code(youtube), main='video')
+  # plot.new()
+  plot(qrcode::qr_code(pdf), main='poster')
+  
+}
+
+fig1_offsets <- function(target='inline') {
+  
+  width  <- 7
+  height <- 3.5
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig1_offset.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig1_offset.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1:2),
+                      ncol = 2,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+
+fig2_depth <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig2_depth.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig2_depth.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+
+fig3_prepost <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig3_prepost.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig3_prepost.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1:2),
+                      ncol = 2,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+
+fig4_probelag <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig4_probelag.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig4_probelag.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+fig5_background <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig5_background.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig5_background.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+
+fig6_internalmotion <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig6_internal.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig6_internal.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+
+fig7_selfmotion <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig7_selfmotion.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig7_selfmotion.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
+fig8_tasktime <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig8_tasktime.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig8_tasktime.pdf', width=width, height=height)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
 }
