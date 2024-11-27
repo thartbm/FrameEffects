@@ -39,7 +39,7 @@ def run_exp(expno=1, setup='tablet', ID=np.nan):
 
     # set up visual objects for the task:
     # (function defined per experiment)
-    cfg = getStimuli(cfg)
+    cfg = getStimuli(cfg, setup=setup)
 
     # set up blocks and trials/tasks within them:
     # (function defined per experiment)
@@ -600,19 +600,20 @@ def getTasks(cfg):
         # period: 1.0, 1/2, 1/3, 1/4, 1/5
         # amplit: 2.4, 4.8, 7.2, 9.6, 12
         # (speeds: 12, 24, 36, 48, 60 deg/s)
-        condictionary = [{'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
+        condictionary = [
+                         {'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
                          {'period':1/2, 'amplitude':12, 'stimtype':'classicframe'},
                          {'period':1/3, 'amplitude':12, 'stimtype':'classicframe'},
                          {'period':1/4, 'amplitude':12, 'stimtype':'classicframe'},
                          {'period':1/5, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':2.4, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':4.8, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':7.2, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':9.6, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':12., 'stimtype':'classicframe'},
+                         {'period':1/5, 'amplitude':10, 'stimtype':'classicframe'},
+                         {'period':1/5, 'amplitude':8, 'stimtype':'classicframe'},
+                         {'period':1/5, 'amplitude':6, 'stimtype':'classicframe'},
+                         {'period':1/5, 'amplitude':4, 'stimtype':'classicframe'},
+                        #  {'period':1/5, 'amplitude':12., 'stimtype':'classicframe'},
                          ]
 
-        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
     if cfg['expno']==1:
 
@@ -747,6 +748,8 @@ def getTasks(cfg):
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
 
+
+
     if cfg['expno']==5:
 
         condictionary = [
@@ -768,6 +771,22 @@ def getTasks(cfg):
                         ]
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+
+
+    if cfg['expno']==6:
+
+        condictionary = [
+
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1}
+                        #  ,
+                        #  {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1},
+                        #  {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 2, 'framepasses':1}
+
+                        ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
 
 
@@ -892,4 +911,4 @@ def cleanExit(cfg):
 
 
 
-run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))
+run_exp(expno=int(sys.argv[1]), setup='laptop', ID=int(sys.argv[2]))
