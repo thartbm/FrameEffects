@@ -3,7 +3,12 @@
 *.svg
 *.png
 *.tiff
-# ignore text files:
+
+# and other files:
+*.docx
+*.doc
+*.odt
+
 *.odt
 *.doc
 *.docx
