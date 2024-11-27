@@ -141,12 +141,14 @@ def doTrial(cfg):
         # maybe mapping should just be 1 if unspecified?
         trialdict['mapping'] = mapping
 
-    # change frequency and distance for static periods at the extremes:
-    if (0.35 - period) > 0:
-        # make sure there is a 350 ms inter-flash interval
-        extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
-    else:
-        extra_frames = 4
+    # # change frequency and distance for static periods at the extremes:
+    # if (0.35 - period) > 0:
+    #     # make sure there is a 350 ms inter-flash interval
+    #     extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
+    # else:
+    #     extra_frames = 4
+
+    extra_frames = 4 + int( max(0, (0.35 - period) / (1/30) ) )
 
     extra_time = (extra_frames/30)
 
@@ -347,9 +349,9 @@ def doTrial(cfg):
             percept = percept + 0.05
 
 
-        cfg['hw']['text'].text = '%0.2f'%(percept)
-        cfg['hw']['text'].pos = [-8,8]
-        cfg['hw']['text'].draw()
+        # cfg['hw']['text'].text = '%0.2f'%(percept)
+        # cfg['hw']['text'].pos = [-8,8]
+        # cfg['hw']['text'].draw()
 
         # blue is on top:
         cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]]

@@ -164,11 +164,13 @@ def doDotTrial(cfg):
         trialdict['dotlife'] = maxdotlife
 
     # change frequency and distance for static periods at the extremes:
-    if (0.35 - period) > 0:
-        # make sure there is a 350 ms inter-flash interval
-        extra_frames = int( np.ceil( (0.35 - period) / (1/60) ) * 2 )
-    else:
-        extra_frames = 9
+    # if (0.35 - period) > 0:
+    #     # make sure there is a 350 ms inter-flash interval
+    #     extra_frames = int( np.ceil( (0.35 - period) / (1/60) ) * 2 )
+    # else:
+    #     extra_frames = 9
+
+    extra_frames = 9 + int( max(0, (0.35 - period) / (1/60) ) )
 
     p = period + (extra_frames/60)
     d = (distance/period) * p

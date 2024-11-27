@@ -157,11 +157,13 @@ def doTrial(cfg):
 
 
     # change frequency and distance for static periods at the extremes:
-    if (0.35 - period) > 0:
-        # make sure there is a 350 ms inter-flash interval
-        extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
-    else:
-        extra_frames = 4
+    # if (0.35 - period) > 0:
+    #     # make sure there is a 350 ms inter-flash interval
+    #     extra_frames = int( np.ceil( (0.35 - period) / (1/30) ) )
+    # else:
+    #     extra_frames = 4
+
+    extra_frames = 4 + int( max(0, (0.35 - period) / (1/30) ) )
 
     extra_time = (extra_frames/30)
 
