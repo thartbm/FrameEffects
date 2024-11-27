@@ -866,7 +866,7 @@ def getTasks(cfg):
                          # alternative amplitudes:
                          {'period':1/3, 'amplitude':3.2, 'stimtype':'classicframe', 'framelag': 0},
                          {'period':1/3, 'amplitude':2.4, 'stimtype':'classicframe', 'framelag': 0},
-                         {'period':1/3, 'amplitude':1.8, 'stimtype':'classicframe', 'framelag': 0},
+                         {'period':1/3, 'amplitude':1.6, 'stimtype':'classicframe', 'framelag': 0},
                          {'period':1/3, 'amplitude':0.8, 'stimtype':'classicframe', 'framelag': 0},
 
 
