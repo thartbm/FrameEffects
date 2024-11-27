@@ -3,9 +3,8 @@
 *.svg
 *.png
 *.tiff
-
-
 # ignore text files:
 *.odt
 *.doc
 *.docx
+VSS2023'tHart.Abstract.docx
