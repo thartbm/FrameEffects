@@ -475,6 +475,23 @@ def getTasks(cfg):
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
 
+    if cfg['expno']==100:
+
+        # period: 1.0, 1/2, 1/3, 1/4, 1/5
+        # amplit: 2.4, 4.8, 7.2, 9.6, 12
+        # (speeds: 12, 24, 36, 48, 60 deg/s)
+        condictionary = [
+
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 0,  0]},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 7,  0]},
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 0,  7]}
+
+                         ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
+
+
+
 
 
 
