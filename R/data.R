@@ -21,7 +21,7 @@ getAllData <- function(FUN=median) {
 
 getParticipants <- function() {
   
-  return(c(1:6))
+  return(c(1:14))
   
 }
 
@@ -33,7 +33,7 @@ getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
   
   for (ppno in participants) {
     
-    if (ppno %in% c(6)) {
+    if (ppno %in% c(6,14)) {
       next()
     }
     
@@ -72,6 +72,10 @@ getDepthControlData <- function(participants, timedata=FALSE, FUN=median) {
   DCdf <- NA
   
   for (ppno in participants) {
+    
+    if (ppno %in% c(14)) {
+      next()
+    }
     
     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/depth_perception_check.csv',ppno)
     df <- read.csv(filename, stringsAsFactors = F)
@@ -140,7 +144,6 @@ getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
 
     } else {
-      
       df$inner_framesize <- c('[4, 3]'=3, '[7, 6]'=6, '[10, 9]'=9)[df$framesize]
       df$hor_offset      <- hor_offset_map[df$frameoffset]
       df$ver_offset      <- ver_offset_map[df$frameoffset]
@@ -222,6 +225,8 @@ getPreDictionData <- function(participants, timedata=FALSE, FUN=median) {
     } else {
       
       df <- df[which(df$amplitude == 4),]
+      # df <- df[which(abs(df$flashoffset) < 3),]
+      df <- df[which(df$framepasses < 4),]
       df <- aggregate(percept ~ period + amplitude + flashoffset + framepasses, data=df, FUN=FUN, na.rm=FALSE)
       
     }
@@ -246,14 +251,14 @@ getExperimentTimeData <- function(participants, FUN=median) {
   timeData <- list(  'A2_ProbeDistance'          = getProbeDistanceData(participants, timedata=TRUE, FUN=FUN),
                      'B1_ApparentLag'            = getApparentLagData(participants, timedata=TRUE, FUN=FUN),
                      'B2_PreDiction'             = getPreDictionData(participants, timedata=TRUE, FUN=FUN),
-                     'C1_SelfMoved'              = getSelfMotionData(participants, timedata=TRUE, FUN=FUN),
+                     # 'C1_SelfMoved'              = getSelfMotionData(participants, timedata=TRUE, FUN=FUN),
                      'C2_TextureMotion'          = getTextureMotionData(participants, timedata=TRUE, FUN=FUN)     )
-
+  
   
   intervalData <- NA
   
-  intervalduration <- 20 * 60
-  intervalnumber <- 5
+  intervalduration <- 30 * 60
+  intervalnumber <- 4
   
   
   participant <- c()
@@ -334,6 +339,10 @@ getParticipantStartTime <- function(ppno) {
   
   for (task in tasks) {
     filename <- sprintf('%s/data/exp_1/p%03d/cfg.json', task, ppno)
+    
+    if (task == 'A1_Anaglyph' & ppno == 14) {
+      next
+    }
     
     cfg <- RJSONIO::fromJSON(content=filename)
     expstart <- cfg$expstart
