@@ -1,6 +1,28 @@
 
 library('RJSONIO')
 
+downloadData <- function() {
+  
+  Reach::downloadOSFdata( repository = 'ufzsq',
+                          filelist = list('data' =  c('A1_Anaglyph.zip',
+                                                      'A2_ProbeDistance.zip',
+                                                      'B1_ApparentLag.zip',
+                                                      'B2_PreDiction.zip',
+                                                      'C1_SelfMoved.zip',
+                                                      'C2_TextureMotion.zip',
+                                                      'C2_PerceivedTextureMotion.zip')),
+                          folder     = '.',
+                          unzip      = TRUE,
+                          removezips = TRUE)
+  
+  Reach::downloadOSFdata( repository = 'ufzsq',
+                          filelist = list('data' =  'participants.csv'),
+                          folder     = 'data')
+  
+
+}
+
+
 getAllData <- function(FUN=median) {
   
   participants <- getParticipants()
