@@ -652,6 +652,105 @@ fig1_offsets <- function(target='inline') {
   cols.op <- cols$op
   cols.tr <- cols$tr
   
+  participants <- getParticipants()
+  
+  df <- getProbeDistanceData(participants, FUN=median)
+  
+  ############ classic/raw data plots:
+  
+  plot(-1000,-1000,
+       xlim=c(-1,13), ylim=c(0,6),
+       main='Horizontal Offset',xlab='horizontal offset [dva]',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x = c(-0.5,12.5), y = c(4, 4), col='#999999', lty=2)
+  
+  
+  ddf <- df[which(df$ver_offset == 0),]
+  
+  for (fsi in c(1:3)) {
+    
+    fdf <- ddf[which(ddf$inner_framesize == fsi*3),]
+    
+    avg <- c()
+    hci <- c()
+    lci <- c()
+    
+    X <- sort ( unique( fdf$hor_offset) )
+    for (hos in X) {
+      
+      avg <- c(avg, mean(fdf$percept[which(fdf$hor_offset == hos)]))
+      ci  <- Reach::getConfidenceInterval(fdf$percept[which(fdf$hor_offset == hos)])
+      lci <- c(lci,ci[1])
+      hci <- c(hci,ci[2])
+      
+    }
+    
+    col.idx <- ((fsi-1)*2)+1
+    # col.idx <- fsi
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             border = NA,
+             col=cols.tr[col.idx])
+    lines(X,avg,col=cols.op[col.idx])
+    
+  }
+  
+  axis(side=2, at=c(0,2,4,6))
+  axis(side=1, at=c(0,3,6,9,12))
+  
+  legend(6,6,legend=sprintf('%d dva',c(1:3)*3),title='inner frame size', bty='n',lty=1,col=cols.op[c(1,3,5)])
+  
+  # plot 3: vertical frame offset
+  
+  plot(-1000,-1000,
+       xlim=c(-1,13), ylim=c(0,6),
+       main='Vertical Offset',xlab='vertical offset [dva]',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x = c(-0.5,12.5), y = c(4, 4), col='#999999', lty=2)
+  
+  # df <- allData[['A2_ProbeDistance']]
+  
+  ddf <- df[which(df$hor_offset == 0),]
+  
+  for (fsi in c(1:3)) {
+    
+    fdf <- ddf[which(ddf$inner_framesize == fsi*3),]
+    
+    avg <- c()
+    hci <- c()
+    lci <- c()
+    
+    X <- sort ( unique( fdf$ver_offset) )
+    for (vos in X) {
+      
+      avg <- c(avg, mean(fdf$percept[which(fdf$ver_offset == vos)]))
+      ci  <- Reach::getConfidenceInterval(fdf$percept[which(fdf$ver_offset == vos)])
+      lci <- c(lci,ci[1])
+      hci <- c(hci,ci[2])
+      
+    }
+    
+    col.idx <- ((fsi-1)*2)+1
+    # col.idx <- fsi
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             border = NA,
+             col=cols.tr[col.idx])
+    lines(X,avg,col=cols.op[col.idx])
+    
+  }
+  
+  axis(side=2, at=c(0,2,4,6))
+  axis(side=1, at=c(0,3,6,9,12))
+  
+  legend(6,6,legend=sprintf('%d dva',c(1:3)*3),title='inner frame size', bty='n',lty=1,col=cols.op[c(1,3,5)])
+  
+  ############### different approach?
+  
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -679,6 +778,60 @@ fig2_depth <- function(target='inline') {
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
+  
+  participants <- getParticipants()
+  
+  control <- getDepthControlData(participants, FUN=median)
+  
+  gooddepth <- aggregate(correct ~ participant, data=control, FUN=mean)
+  participants <- gooddepth$participant[which(gooddepth$correct > 0.75)]
+  
+  df <- getAnaglyphData(participants, FUN=median)
+  
+  plot(-1000,-1000,
+       xlim=c(0.5,4.5), ylim=c(0,6),
+       main='Anaglyph',xlab='',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x = c(0.5,4.5), y = c(4, 4), col='#999999', lty=2)
+  
+  conditions <- c('same plane', 'back frame', 'front frame', 'stradled')
+  
+  for (condno in c(1:length(conditions))) {
+    
+    condition <- conditions[condno]
+    
+    cdf <- df[which(df$condition == condition),]
+    avg <- mean(cdf$percept)
+    ci  <- Reach::getConfidenceInterval(data=cdf$percept)
+    # print(avg)
+    # print(ci)
+    
+    points( x = rep(condno+0.2, dim(cdf)[1]),
+            y = cdf$percept,
+            pch = 16,
+            col = cols.tr[condno])
+    
+    polygon( x      = condno+c(-0.35,0.,0.,-0.35),
+             y      = rep(ci, each=2),
+             border = NA,
+             col    = cols.tr[condno] )
+    
+    lines( x   = condno+c(-0.35,0.),
+           y   = rep(avg,2),
+           col = cols.op[condno])
+    
+  }
+  
+  axis(side=2, at=c(0,2,4,6))
+  axis(side=1, at=c(1,2,3,4), labels=rep('',length(conditions)), srt=45)
+  
+  text( seq(1, 4, by=1) + 0.2,
+        par("usr")[3] - 0.75,
+        labels = list('same plane'='same plane', 'back frame'='back frame', 'front frame'='front frame', 'stradled'='straddled')[conditions],
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -708,6 +861,9 @@ fig3_prepost <- function(target='inline') {
   cols.op <- cols$op
   cols.tr <- cols$tr
   
+  participants <- getParticipants()
+  
+  
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -736,6 +892,9 @@ fig4_probelag <- function(target='inline') {
   cols.op <- cols$op
   cols.tr <- cols$tr
   
+  participants <- getParticipants()
+  
+  
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -762,6 +921,9 @@ fig5_background <- function(target='inline') {
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
+  
+  participants <- getParticipants()
+  
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -791,6 +953,9 @@ fig6_internalmotion <- function(target='inline') {
   cols.op <- cols$op
   cols.tr <- cols$tr
   
+  participants <- getParticipants()
+  
+  
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -819,6 +984,9 @@ fig7_selfmotion <- function(target='inline') {
   cols.op <- cols$op
   cols.tr <- cols$tr
   
+  participants <- getParticipants()
+  
+  
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -845,6 +1013,9 @@ fig8_tasktime <- function(target='inline') {
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
+  
+  participants <- getParticipants()
+  
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
