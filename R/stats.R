@@ -268,3 +268,47 @@ logisticFunctionError <- function(par,x,y) {
   return( mean( errors^2 ) )
   
 }
+
+
+probeDistanceANOVA <- function() {
+  
+  participants <- getParticipants()
+  df <- getProbeDistanceData(participants, FUN=median)
+  
+  df$participant <- as.factor(df$participant)
+  
+  df <- df[which(df$hor_offset > 0 | df$ver_offset > 0),]
+  df$offset_dir <- NA
+  df$offset_dir[which(df$ver_offset == 0)] <- 'h'
+  df$offset_dir[which(df$hor_offset == 0)] <- 'v'
+  df$offset_size <- pmax(df$hor_offset, df$ver_offset)
+  
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('inner_framesize','offset_size','offset_dir')
+                           )
+  print(my_aov)
+  
+}
+
+depthANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  control <- getDepthControlData(participants, FUN=median)
+  
+  gooddepth <- aggregate(correct ~ participant, data=control, FUN=mean)
+  participants <- gooddepth$participant[which(gooddepth$correct > 0.75)]
+  
+  df <- getAnaglyphData(participants, FUN=median)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('condition')
+  )
+  print(my_aov)
+  
+}
