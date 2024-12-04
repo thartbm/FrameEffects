@@ -312,3 +312,199 @@ depthANOVA <- function() {
   print(my_aov)
   
 }
+
+postdictionANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPreDictionData(participants=participants, FUN=median)
+  
+  df$diction <- 'pre'
+  df$diction[which(df$flashoffset < 0)] <- 'post'
+  
+  post0 <- df[which(df$framepasses == 1 & df$flashoffset == 0),]
+  post0$diction <- 'post'
+  
+  df <- rbind(df,post0)
+  
+  nidx <- which(df$flashoffset < 0)
+  df$flashoffset[nidx] <- df$flashoffset[nidx] + df$framepasses[nidx] - 1
+  
+  df$participant <- as.factor(df$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('framepasses', 'flashoffset')
+  )
+  print(my_aov)
+  
+  df$flashoffset <- abs(df$flashoffset)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('framepasses', 'flashoffset', 'diction')
+  )
+  print(my_aov)
+  
+  
+}
+
+
+postdictionTtests <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPreDictionData(participants=participants, FUN=median)
+  
+  df$diction <- 'pre'
+  df$diction[which(df$flashoffset < 0)] <- 'post'
+  
+  post0 <- df[which(df$framepasses == 1 & df$flashoffset == 0),]
+  post0$diction <- 'post'
+  
+  df <- rbind(df,post0)
+  
+  nidx <- which(df$flashoffset < 0)
+  df$flashoffset[nidx] <- df$flashoffset[nidx] + df$framepasses[nidx] - 1
+  
+  df$participant <- as.factor(df$participant)
+  
+  df$flashoffset <- abs(df$flashoffset)
+  
+  for (flashoffset in c(0,1,2)) {
+    pre.idx <- which(df$flashoffset == flashoffset & df$diction == 'pre')
+    post.idx <- which(df$flashoffset == flashoffset & df$diction == 'post')
+    cat(sprintf('--------------\nflashoffset: %d\n',flashoffset))
+    print( t.test( x=df$percept[pre.idx],
+                   y=df$percept[post.idx],
+                   paired=TRUE)
+          )
+  }
+  
+}
+
+probeLagANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getApparentLagData(participants, FUN=median)
+  
+  df$participant <- as.factor(df$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('stimtype', 'framelag')
+  )
+  print(my_aov)
+  
+}
+
+
+motionperceptionANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  
+  df <- aggregate(percept ~ stimtype + amplitude + participant, data=df, FUN=median)
+  
+  df$participant <- as.factor(df$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('stimtype', 'amplitude')
+  )
+  print(my_aov)
+  
+}
+
+motionperceptionTtest <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  df <- df[which(df$amplitude == 4),]
+  
+  classic <-df$percept[which(df$stimtype == 'classicframe')]
+  background <-df$percept[which(df$stimtype == 'dotbackground')]
+
+  my_ttest <- t.test(classic, background, paired=TRUE)
+  print(my_ttest)
+  
+}
+
+textureBackgroundTtests <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  
+  stimtypes <- c( 'classicframe',
+                  'classicframe',
+                  'dotbackground' )
+  fixate   <- c( TRUE, FALSE, FALSE)
+  
+  cat('classic frame: fixation / free viewing\n')
+  my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==TRUE)],
+                      y=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)],
+                      paired=TRUE)
+  print(my_ttest)
+  
+  cat('classic frame vs. dot background\n')
+  my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)],
+                      y=df$percept[which(df$stimtype == 'dotbackground' & df$fixdot==FALSE)],
+                      paired=TRUE)
+  print(my_ttest)
+  
+  cat('dot background vs. ZERO\n')
+  my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)])
+  print(my_ttest)
+}
+
+internalmotionPerceptionANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  df <- df[which(df$stimtype %in% c('dotcounterframe','dotwindowframe','dotmovingframe','dotdoublerframe')),]
+  
+  df$participant <- as.factor(df$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('stimtype')
+  )
+  print(my_aov)
+  
+}
+
+internalmotionIllusionANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  df <- df[which(df$stimtype %in% c('dotcounterframe','dotwindowframe','dotmovingframe','dotdoublerframe')),]
+  
+  df$participant <- as.factor(df$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('stimtype')
+  )
+  print(my_aov)
+  
+}

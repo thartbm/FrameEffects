@@ -843,7 +843,7 @@ fig2_depth <- function(target='inline') {
 
 fig3_prepost <- function(target='inline') {
   
-  width  <- 4
+  width  <- 8
   height <- 4
   
   if (target=='svg') {
@@ -863,7 +863,135 @@ fig3_prepost <- function(target='inline') {
   
   participants <- getParticipants()
   
+  df <- getPreDictionData(participants, FUN=median)
   
+  
+  plot(-1000,-1000,
+       xlim=c(-3,3), ylim=c(-.5,6),
+       main='Pre/Post-diction',xlab='probed pass',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x=c(-4.5, 4.5), y=c(4,4), lty=2, col='#999999')
+  lines( x=c(-4.5, 4.5), y=c(0,0), lty=2, col='#999999')
+  
+  for (passes in c(1,2,3)) {
+    
+    pdf <- df[which(df$framepasses == passes),]
+    
+    for (side in c('pre','post')) {
+      if (side == 'pre') {
+        sdf <- pdf[which(pdf$flashoffset >= 0),]
+        sdf$flashoffset <- sdf$flashoffset + 1
+        xad <- -0.5
+      }
+      if (side == 'post') {
+        sdf <- pdf[which(pdf$flashoffset <= (-1*(pdf$framepasses - 1))),]
+        sdf$flashoffset <- sdf$flashoffset + (sdf$framepasses - 2)
+        xad <-  0.5
+      }
+      
+      X <- sort( unique( sdf$flashoffset ) )
+      
+      avg <- c()
+      lci <- c()
+      hci <- c()
+      
+      for (fos in X) {
+        
+        idx <- which(sdf$flashoffset == fos)
+        avg <- c(avg, mean(sdf$percept[idx]))
+        ci <- Reach::getConfidenceInterval(sdf$percept[idx])
+        lci <- c(lci, ci[1])
+        hci <- c(hci, ci[2])
+        
+      }
+      
+      polygon( x = c(X+xad, rev(X+xad)),
+               y = c(lci, rev(hci)),
+               border=NA,
+               col=cols.tr[passes])
+      lines( x = X+xad,
+             y = avg,
+             col = cols.op[passes])
+      
+    }
+    
+  }
+  
+  axis(side=2, at=c(0,2,4))
+  axis(side=1, at=c(-2.5,-1.5,-0.5), labels=c('-2','-1','first'))
+  axis(side=1, at=c(0.5,1.5,2.5), labels=c('last','1','2'))
+  
+  text(-2.5,3,'post')
+  text( 2.5,3,'pre')
+  legend(-2,6.7,legend=c('1 pass', '2 passes', '3 passes'), bty='n',lty=1,col=cols.op[c(1,2,3)])
+  
+  
+  
+  # post-hoc illustration?
+  plot(-1000,-1000,
+       xlim=c(0.5,3.5), ylim=c(-0.6,6),
+       main='',xlab='probed pass',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x=c(0.5, 3.5), y=c(4,4), lty=2, col='#999999')
+  lines( x=c(0.5, 3.5), y=c(0,0), lty=2, col='#999999')
+  
+  # normalize data set...
+  df$diction <- 'pre'
+  df$diction[which(df$flashoffset < 0)] <- 'post'
+  
+  post0 <- df[which(df$framepasses == 1 & df$flashoffset == 0),]
+  post0$diction <- 'post'
+  
+  df <- rbind(df,post0)
+  
+  nidx <- which(df$flashoffset < 0)
+  df$flashoffset[nidx] <- df$flashoffset[nidx] + df$framepasses[nidx] - 1
+  
+  df$participant <- as.factor(df$participant)
+  
+  df$flashoffset <- abs(df$flashoffset)
+  
+
+  fodf <- aggregate (percept ~ participant + flashoffset + diction, data=df, FUN=mean)  
+  # now plot:
+  
+  for (flashoffset in c(0,1,2)) {
+    
+    post <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'post'))]
+    pre  <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'pre'))]
+    
+    po_avg <- mean(post)
+    pr_avg <- mean(pre)
+    po_CI <- Reach::getConfidenceInterval(post)
+    pr_CI <- Reach::getConfidenceInterval(pre)
+    
+    polygon(x = c(0.6,0.9,0.9,0.6)+flashoffset,
+            y = rep(po_CI,each=2),
+            border = NA,
+            col=cols.tr[2])
+    lines(x=c(0.6,0.9)+flashoffset,
+          y=rep(po_avg,2),
+          col=cols.op[2])
+    
+    polygon(x = c(1.1,1.4,1.4,1.1)+flashoffset,
+            y = rep(pr_CI,each=2),
+            border = NA,
+            col=cols.tr[5])
+    lines(x=c(1.1,1.4)+flashoffset,
+          y=rep(pr_avg,2),
+          col=cols.op[5])
+    
+  }
+  
+  axis(side=2, at=c(0,2,4))
+  axis(side=1, at=c(1,2,3), labels=c('first/last','+/- 1','+/- 2'))
+
+  legend(1.2,6.7,legend=c('post', 'pre'), bty='n',lty=1,col=cols.op[c(2,5)])
+  
+  text(x=c(1,2,3),y=2,
+       labels=c('n.s.', '***', '***'))
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -894,6 +1022,51 @@ fig4_probelag <- function(target='inline') {
   
   participants <- getParticipants()
   
+  df <- getApparentLagData(participants, FUN=median)
+  
+  plot(-1000,-1000,
+       xlim=c(-5,6), ylim=c(-2,6),
+       main='Apparent Motion Temporal Offset',xlab='probe lag [% frame pass]',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x=c(-4.5, 5.5), y=c(4,4), lty=2, col='#999999')
+  lines( x=c(-4.5, 5.5), y=c(0,0), lty=2, col='#999999')
+  
+  for (stimtype in c('classicframe','apparentframe')) {
+    
+    col.idx <- c('classicframe'=1,'apparentframe'=5)[stimtype]
+    
+    cdf <- df[which(df$stimtype == stimtype),]
+    
+    avg <- c()
+    hci <- c()
+    lci <- c()
+    
+    X <- sort ( unique( cdf$framelag) )
+    for (fl in X) {
+      
+      idx <- which(cdf$framelag == fl)
+      
+      avg <- c(avg, mean(cdf$percept[idx]))
+      ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
+      lci <- c(lci,ci[1])
+      hci <- c(hci,ci[2])
+      
+    }
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             border = NA,
+             col=cols.tr[col.idx])
+    lines(X,avg,col=cols.op[col.idx])
+    
+  }
+  
+  
+  axis(side=2, at=c(-2,0,2,4,6))
+  axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+  
+  legend(-3,6.25,legend=c('classic frame','apparent motion'), bty='n',lty=1,col=cols.op[c(1,5)])
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -904,7 +1077,7 @@ fig4_probelag <- function(target='inline') {
 
 fig5_background <- function(target='inline') {
   
-  width  <- 4
+  width  <- 8
   height <- 4
   
   if (target=='svg') {
@@ -914,9 +1087,10 @@ fig5_background <- function(target='inline') {
     cairo_pdf(filename='doc/fig/pdf/fig5_background.pdf', width=width, height=height)
   }
   
-  layout(mat = matrix(data = c(1),
-                      ncol = 1,
-                      byrow = TRUE)  )
+  layout(mat = matrix(data = c(1:2),
+                      ncol = 2,
+                      byrow = TRUE),
+         widths=c(1,1))
   
   cols <- getColors()
   cols.op <- cols$op
@@ -924,8 +1098,144 @@ fig5_background <- function(target='inline') {
   
   participants <- getParticipants()
   
+  df <- getPerceivedMotionData(participants, FUN=median)
   
+  plot(-1000,-1000,
+       xlim=c(0,7), ylim=c(0,8),
+       main='Motion Perception',xlab='motion amplitude [dva]',ylab='perceived motion [dva]',
+       bty='n', ax=F, asp=1)
   
+  lines( x=c(0.5, 6.5), y=c(0.5, 6.5), lty=2, col='#999999')
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  
+  # amplitude section
+  
+  adf <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  
+  X <- c(1,2,3,4,5,6)
+  
+  for (stimtype in c('classicframe','dotbackground')) {
+    
+    sdf <- adf[which(adf$stimtype == stimtype),]
+    
+    avg <- c()
+    lci <- c()
+    hci <- c()
+    
+    for (amplitude in X) {
+      
+      idx <- which(sdf$amplitude == amplitude)
+      avg <- c(avg, mean(sdf$percept[idx]))
+      ci  <- Reach::getConfidenceInterval(sdf$percept[idx])
+      lci <- c(lci, ci[1])
+      hci <- c(hci, ci[2])
+      
+    }
+    
+    if (stimtype == 'classicframe') {
+      col.op <- '#999999FF'
+      col.tr <- '#99999920'
+    } else {
+      col.op <- cols.op[5]
+      col.tr <- cols.tr[5]
+    }
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             border = NA,
+             col = col.tr)
+    lines( x = X,
+           y = avg,
+           col = col.op)
+    
+  }
+  
+  legend(-1,
+         8.5,
+         legend = c('dot background',
+                    'frame'),
+         lty=1,
+         col=c(cols.op[5],'#999999'),
+         bty='n',
+         seg.len = 1)
+  
+  axis(side=1, at=c(1,2,3,4,5,6))
+  axis(side=2, at=c(0,2,4,6,8))
+  
+
+  plot(-1000,-1000,
+       xlim=c(0,4), ylim=c(0,8),
+       main='Background vs. Frame',xlab='',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines(c(0.2,6.8), c(4,4),
+        col='#999999',lty=2)
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  
+  stimtypes <- c( 'classicframe',
+                  'classicframe',
+                  'dotbackground' )
+  fixate   <- c( TRUE, FALSE, FALSE)
+  
+  for (stimno in c(1:length(stimtypes))) {
+    
+    xad=0
+    if (stimno == 1) {
+      col.op <- '#333333'
+      col.tr <- '#99999920'
+    }
+    if (stimno == 2) {
+      col.op <- '#999999'
+      col.tr <- '#99999920'
+    }
+    if (stimno == 3) {
+      col.op <- cols.op[5]
+      col.tr <- cols.tr[5]
+    }
+    # if (stimno > 2) {
+    #   xad=1
+    #   col.op <- cols.op[stimno-2]
+    #   col.tr <- cols.tr[stimno-2]
+    # }
+    
+    
+    percepts <- df$percept[which(df$stimtype == stimtypes[stimno]  & df$fixdot == fixate[stimno])]
+    
+    avg <- mean(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
+    
+    polygon( x = stimno+c(-0.35,0,0,-0.35)+xad,
+             y = rep(ci, each=2),
+             border = NA,
+             col = col.tr)
+    points( x = rep(stimno+0.2, length(percepts))+xad,
+            y = percepts,
+            pch = 16,
+            col = col.tr)
+    lines( x = stimno+c(-0.35,0)+xad,
+           y = rep(avg,2),
+           col=col.op,
+           lty=c(3,1,1)[stimno])
+    
+  }
+  
+  axis(side=2,at=c(0,2,4,6,8))
+  axis(side=1,at=c(1,2,3),labels=rep('',3))
+  
+  text( c(1,2,3)+0.4,
+        par("usr")[3] - 0.7,
+        labels = c('frame fixated',
+                   'frame free',
+                   'dots free'),
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
+  
+
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
   }
@@ -945,8 +1255,8 @@ fig6_internalmotion <- function(target='inline') {
     cairo_pdf(filename='doc/fig/pdf/fig6_internal.pdf', width=width, height=height)
   }
   
-  layout(mat = matrix(data = c(1),
-                      ncol = 1,
+  layout(mat = matrix(data = c(1:2),
+                      ncol = 2,
                       byrow = TRUE)  )
   
   cols <- getColors()
@@ -954,6 +1264,126 @@ fig6_internalmotion <- function(target='inline') {
   cols.tr <- cols$tr
   
   participants <- getParticipants()
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  
+  plot(-1000,-1000,
+       xlim=c(1,6), ylim=c(0,8),
+       main='Internal motion perception',xlab='',ylab='perceived motion [dva]',
+       bty='n', ax=F)
+  
+  lines( x=c(1.3, 5.7), y=c(4, 4), lty=2, col='#999999')
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  
+  # amplitude section
+  
+
+  stimtypes <- c( 'dotcounterframe',
+                 'dotwindowframe',
+                 'dotmovingframe',
+                 'dotdoublerframe')
+  
+  for (stimno in c(1:length(stimtypes))) {
+    
+    stimtype <- stimtypes[stimno]
+    sdf <- df[which(df$stimtype == stimtype),]
+    
+    percepts <- sdf$percept
+    
+    avg <- mean(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
+    
+    polygon( x = stimno+c(0.65,1,1,0.65),
+             y = rep(ci, each=2),
+             border = NA,
+             col = cols.tr[stimno])
+    points( x = rep(stimno+1.2, length(percepts)),
+            y = percepts,
+            pch = 16,
+            col = cols.tr[stimno])
+    
+    lines( x = stimno+c(0.65,1),
+           y = rep(avg,2),
+           col=cols.op[stimno])
+    
+  }
+  
+  axis(side=1,at=c(2,3,4,5),labels=rep('',4))
+  
+  text( c(1,2,3,4)+1.4,
+        par("usr")[3] - 0.7,
+        labels = c('dots counter',
+                   'dots static',
+                   'dots match',
+                   'dots double'),
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
+  
+  
+  axis(side=2, at=c(0,2,4,6,8))
+  
+  # mtext(text='motion [dva]',
+  #       side=1,
+  #       line=2.5,
+  #       at=3.5,
+  #       cex=0.75)
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  plot(-1000,-1000,
+       xlim=c(0,5), ylim=c(0,8),
+       main='Internal motion illusion',xlab='',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines(c(0.2,6.8), c(4,4),
+        col='#999999',lty=2)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333 & df$fixdot == FALSE),]
+  
+  stimtypes <- c( 'dotcounterframe',
+                  'dotwindowframe',
+                  'dotmovingframe',
+                  'dotdoublerframe'  )
+  
+  for (stimno in c(1:length(stimtypes))) {
+    
+    xad=0
+    col.op <- cols.op[stimno]
+    col.tr <- cols.tr[stimno]
+  
+    percepts <- df$percept[which(df$stimtype == stimtypes[stimno])]
+    
+    avg <- mean(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
+    
+    polygon( x = stimno+c(-0.35,0,0,-0.35)+xad,
+             y = rep(ci, each=2),
+             border = NA,
+             col = col.tr)
+    points( x = rep(stimno+0.2, length(percepts))+xad,
+            y = percepts,
+            pch = 16,
+            col = col.tr)
+    lines( x = stimno+c(-0.35,0)+xad,
+           y = rep(avg,2),
+           col=col.op)
+    
+  }
+  
+  axis(side=2,at=c(0,2,4,6,8))
+  axis(side=1,at=c(1,2,3,4),labels=rep('',4))
+  
+  text( c(1,2,3,4)+0.4,
+        par("usr")[3] - 0.7,
+        labels = c('dots counter',
+                   'dots static',
+                   'dots match',
+                   'dots double'),
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
   
   
   
