@@ -1078,7 +1078,7 @@ fig4_probelag <- function(target='inline') {
 fig5_background <- function(target='inline') {
   
   width  <- 8
-  height <- 4
+  height <- 8
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig5_background.svg', width=width, height=height, fix_text_size = FALSE)
@@ -1087,8 +1087,8 @@ fig5_background <- function(target='inline') {
     cairo_pdf(filename='doc/fig/pdf/fig5_background.pdf', width=width, height=height)
   }
   
-  layout(mat = matrix(data = c(1:2),
-                      ncol = 2,
+  layout(mat = matrix(data = c(1:4),
+                      ncol = 2, nrow = 2,
                       byrow = TRUE),
          widths=c(1,1))
   
@@ -1105,7 +1105,9 @@ fig5_background <- function(target='inline') {
        main='Motion Perception',xlab='motion amplitude [dva]',ylab='perceived motion [dva]',
        bty='n', ax=F, asp=1)
   
-  lines( x=c(0.5, 6.5), y=c(0.5, 6.5), lty=2, col='#999999')
+  lines( x=c(0, 7), y=c(0, 7), lty=1, col='#999999')
+  lines( x=c(0.5, 6.5), y=c(4, 4), lty=2, col='#999999')
+  lines( x=c(4, 4), y=c(0, 8), lty=2, col='#999999')
   
   df <- df[which(round(df$period, digits=6) == 0.333333),]
   
@@ -1135,7 +1137,9 @@ fig5_background <- function(target='inline') {
     
     if (stimtype == 'classicframe') {
       col.op <- '#999999FF'
+      col.op <- cols.op[2]
       col.tr <- '#99999920'
+      col.tr <- cols.tr[2]
     } else {
       col.op <- cols.op[5]
       col.tr <- cols.tr[5]
@@ -1156,7 +1160,8 @@ fig5_background <- function(target='inline') {
          legend = c('dot background',
                     'frame'),
          lty=1,
-         col=c(cols.op[5],'#999999'),
+         # col=c(cols.op[5],'#999999'),
+         col=c(cols.op[5],cols.op[2]),
          bty='n',
          seg.len = 1)
   
@@ -1190,7 +1195,9 @@ fig5_background <- function(target='inline') {
     }
     if (stimno == 2) {
       col.op <- '#999999'
+      col.op <- cols.op[2]
       col.tr <- '#99999920'
+      col.tr <- cols.tr[2]
     }
     if (stimno == 3) {
       col.op <- cols.op[5]
@@ -1236,6 +1243,108 @@ fig5_background <- function(target='inline') {
         xpd = TRUE )
   
 
+  
+  
+  ### second version of the above plot with frame motion duration there as well...
+  
+  plot(-1000,-1000,
+       xlim=c(0.2,1), ylim=c(0,8),
+       main='Background vs. Frame',xlab='motion duration [s]',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines(c(0.2,6.8), c(4,4),
+        col='#999999',lty=2)
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  df$Hz <- 1/df$period
+  
+  stimtypes <- c( 'classicframe',
+                  'classicframe',
+                  'dotbackground' )
+  fixate   <- c( TRUE, FALSE, FALSE)
+  
+  for (stimno in c(1:length(stimtypes))) {
+    
+    xad=0
+    if (stimno == 1) {
+      col.op <- '#333333'
+      col.tr <- '#99999920'
+    }
+    if (stimno == 2) {
+      col.op <- '#999999'
+      col.tr <- '#99999920'
+    }
+    if (stimno == 2) {
+      col.op <- cols.op[2]
+      col.tr <- cols.tr[2]
+    }
+    if (stimno == 3) {
+      col.op <- cols.op[5]
+      col.tr <- cols.tr[5]
+    }
+    
+    # percepts <- df$percept[which(df$stimtype == stimtypes[stimno]  & df$fixdot == fixate[stimno])]
+    stimdf <- df[which(df$stimtype == stimtypes[stimno]  & df$fixdot == fixate[stimno]),]
+    
+    avg <- aggregate(percept ~ Hz, data=stimdf, FUN=mean)
+    ci  <- aggregate(percept ~ Hz, data=stimdf, FUN=Reach::getConfidenceInterval)
+    
+    
+    Y <- c( ci$percept[,1], rev(ci$percept[,2]) )
+    X <- c( rev(1/c(1:5)), 1/c(1:5))
+    
+    polygon( x=X,
+             y=Y,
+             border=NA,
+             col=col.tr
+             )
+    lines( x = rev(1/c(1:5)),
+           y = avg$percept,
+           col=col.op,
+           lty=c(3,1,1)[stimno])
+    
+  #   polygon( x = stimno+c(-0.35,0,0,-0.35)+xad,
+  #            y = rep(ci, each=2),
+  #            border = NA,
+  #            col = col.tr)
+  #   points( x = rep(stimno+0.2, length(percepts))+xad,
+  #           y = percepts,
+  #           pch = 16,
+  #           col = col.tr)
+  #   lines( x = stimno+c(-0.35,0)+xad,
+  #          y = rep(avg,2),
+  #          col=col.op,
+  #          lty=c(3,1,1)[stimno])
+  #   
+  }
+  
+  #axis(side=1,at=1/c(5,4,3,2,1),labels=c('&#8533;', '&#188;', '&#8531;', '&#189;', '1'))
+  axis(side=1,at=1/c(5,4,3,2,1),labels=c('⅕', '¼', '⅓', '½', '1'), cex.axis=0.85)
+  axis(side=2,at=c(0,2,4,6,8))
+  
+  # ⅕
+  # ¼
+  # ⅓
+  # ½
+  
+  # fraction deximal hex
+  # 1/2   &#189;	&#x00BD;
+  # 1/3   &#8531;	&#x2153;
+  # 1/4   &#188;  &#x00BC;
+  # 1/5   &#8533;	&#x2155;
+  
+  
+  # text( c(1,2,3)+0.4,
+  #       par("usr")[3] - 0.7,
+  #       labels = c('frame fixated',
+  #                  'frame free',
+  #                  'dots free'),
+  #       srt = 33,
+  #       pos = 2,
+  #       xpd = TRUE )
+  
+  
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
   }
@@ -1245,7 +1354,7 @@ fig5_background <- function(target='inline') {
 
 fig6_internalmotion <- function(target='inline') {
   
-  width  <- 4
+  width  <- 8
   height <- 4
   
   if (target=='svg') {
@@ -1410,12 +1519,64 @@ fig7_selfmotion <- function(target='inline') {
                       ncol = 1,
                       byrow = TRUE)  )
   
+  par(mar=c(5,4,2,0.1))
+  
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
   
   participants <- getParticipants()
   
+  df <- getSelfMotionData(participants, FUN=median)
+  
+  
+  plot(-1000,-1000,
+       xlim=c(0,3.5), ylim=c(0,6),
+       main='Self-Moved Frames',xlab='',ylab='illusion strength [dva]',
+       bty='n', ax=F)
+  
+  lines( x=c(0.5, 3.5), y=c(4, 4), lty=2, col='#999999')
+  
+  condf <- data.frame( 'stimtype'=c('moveframe','classicframe','moveframe'),
+                       'mapping'=c(-1,1,1),
+                       'label'=c('incongruent','control','congruent')         )
+  
+  for (condno in c(1,2,3)) {
+    
+    stimtype <- condf$stimtype[condno]
+    mapping  <- condf$mapping[condno]
+    idx      <- which(df$stimtype == stimtype & df$mapping == mapping)
+    
+    #print(idx)
+    
+    percepts <- df$percept[idx]
+    avg <- mean(percepts)
+    ci  <- Reach::getConfidenceInterval(percepts)
+    
+    polygon( x = condno+c(-0.35,0.0,0.0,-0.35),
+             y = rep(ci,each=2),
+             border = NA,
+             col = cols.tr[condno])
+    lines(x = condno+c(-0.35,0.0),
+          y = rep(avg,2),
+          col = cols.op[condno])
+    points(x = rep(condno+0.2, length(percepts)),
+           y = percepts,
+           pch=16,
+           col=cols.tr[condno])
+    
+  }
+  
+  #axis(side=1,at=c(1,2,3),labels = condf$label)
+  axis(side=1,at=c(1,2,3),labels = rep('',3))
+  axis(side=2,at=c(0,2,4,6))
+  
+  text( seq(1, 3, by=1) + 0.1,
+        par("usr")[3] - 0.75,
+        labels = condf$label,
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -1445,6 +1606,74 @@ fig8_tasktime <- function(target='inline') {
   cols.tr <- cols$tr
   
   participants <- getParticipants()
+  
+  
+  df <- getExperimentTimeData(participants, FUN=median)
+  
+  plot(-1000,-1000,
+       xlim=c(0,6), ylim=c(0,6),
+       main='Experiment Time',xlab='frame movement [dva]',ylab='illusion strength [dva]',
+       bty='n', ax=F, asp=1)
+  
+  lines( x=c(0, 5), y=c(0, 5), lty=2, col='#999999')
+  
+  for (interval in c(1,2,3,4)) {
+    
+    idf <- df[which(df$interval == interval),]
+    
+    avg <- c()
+    lci <- c()
+    hci <- c()
+    
+    X <- sort( unique(idf$amplitude) )
+    
+    X <- c(0.8, 1.6, 2.4, 3.2, 4.0)
+    
+    for ( amplitude in X ) {
+      
+      idx <- which(idf$amplitude == amplitude)
+      
+      ip <- idf$percept[idx]
+      ip <- ip[which(!is.na(ip))]
+      
+      if (length(idx) > 0) {
+        #avg <- c(avg, mean(idf$percept[idx]))
+        avg <- c(avg, mean(ip))
+      } else {
+        avg <- c(avg, NA)
+      }
+      if (length(idx) > 1) {
+        #ci  <- SMCL::getConfidenceInterval(idf$percept[idx])
+        ci  <- Reach::getConfidenceInterval(ip)
+        lci <- c(lci, ci[1])
+        hci <- c(hci, ci[2])
+      } else {
+        lci <- c(lci, NA)
+        hci <- c(hci, NA)
+      }
+      
+    }
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             col = cols.tr[interval],
+             border = NA)
+    lines(X,avg,col=cols.op[interval])
+    
+  }
+  
+  axis(side=1,at=c(0,2,4,6))
+  axis(side=2,at=c(0,2,4,6))
+  
+  legend(-1.2,
+         6.6,
+         legend=c('0-30 min.',
+                  '30-60 min.',
+                  '60-90 min.',
+                  '90-120 min.'),
+         lty=1,
+         col=cols.op,
+         bty='n')
   
   
   

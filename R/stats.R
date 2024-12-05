@@ -269,6 +269,7 @@ logisticFunctionError <- function(par,x,y) {
   
 }
 
+# horizontal / vertical distance -----
 
 probeDistanceANOVA <- function() {
   
@@ -293,6 +294,8 @@ probeDistanceANOVA <- function() {
   
 }
 
+# depth ----
+
 depthANOVA <- function() {
   
   participants <- getParticipants()
@@ -312,6 +315,8 @@ depthANOVA <- function() {
   print(my_aov)
   
 }
+
+# pre- and post-diction -----
 
 postdictionANOVA <- function() {
   
@@ -385,6 +390,8 @@ postdictionTtests <- function() {
   
 }
 
+# lagged probes -----
+
 probeLagANOVA <- function() {
   
   participants <- getParticipants()
@@ -402,6 +409,7 @@ probeLagANOVA <- function() {
   
 }
 
+# random dot texture motion perception ----
 
 motionperceptionANOVA <- function() {
   
@@ -443,6 +451,8 @@ motionperceptionTtest <- function() {
   
 }
 
+# random dot texture frames -----
+
 textureBackgroundTtests <- function() {
   
   participants <- getParticipants()
@@ -472,6 +482,35 @@ textureBackgroundTtests <- function() {
   my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)])
   print(my_ttest)
 }
+
+textureBackgroundANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  
+  df$condition <- 2
+  df$condition[which(df$stimtype == 'dotbackground')] <- 3
+  df$condition[which(df$fixdot == TRUE)] <- 1
+  
+  df$condition <- as.factor(df$condition)
+  df$participant <- as.factor(df$participant)
+  
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('condition','period')
+  )
+  print(my_aov)
+  
+  
+}
+
+# internal motion -----
+
 
 internalmotionPerceptionANOVA <- function() {
   
@@ -506,5 +545,73 @@ internalmotionIllusionANOVA <- function() {
                            within=c('stimtype')
   )
   print(my_aov)
+  
+}
+
+# self-moved frames -----
+
+selfMovedFrameANOVA <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getSelfMotionData(participants, FUN=median)
+  
+  df$condition <- 2
+  df$condition[which(df$stimtype == 'moveframe')] <- 3
+  df$condition[which(df$mapping == -1)] <- 1
+  
+  df$participant <- as.factor(df$participant)
+  df$condition <- as.factor(df$condition)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df,
+                           within=c('condition')
+  )
+  print(my_aov)
+  
+  
+}
+
+
+# time-on-task
+
+library('lme4')
+library('lmerTest')
+library('optimx')
+
+timeontaskLME <- function() {
+  
+  default.contrasts <- options('contrasts')
+  options(contrasts=c('contr.sum','contr.poly'))
+  
+  participants <- getParticipants()
+  
+  my_data <- getExperimentTimeData(participants, FUN=median)
+  
+  my_data <- my_data[which(my_data$amplitude != 1.8),]
+  
+  # my_data$amplitude   <- as.factor(my_data$amplitude)
+  # my_data$interval    <- as.factor(my_data$interval)
+  my_data$participant <- as.factor(my_data$participant)
+  
+  # my_lmer <- lmerTest::lmer(percept ~ amplitude + interval - (1|participant),
+  #                                  na.action = na.exclude,
+  #                                  data = my_data,
+  #                                  REML = TRUE,
+  #                                  control = lmerControl(optimizer ="Nelder_Mead")
+  # )
+  
+
+  my_lmer <- lmerTest::lmer(percept ~ amplitude * interval - (1|participant),
+                            na.action = na.exclude,
+                            data = my_data,
+                            REML = TRUE,
+                            control = lme4::lmerControl(optimizer ='optimx', optCtrl=list(method='L-BFGS-B'))
+  )
+  
+  # print(my_lmer)
+  
+  print(anova(my_lmer,ddf='Satterthwaite',type=3))
   
 }

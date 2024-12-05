@@ -1,30 +1,31 @@
 ---
 title: "Frame effects in space and time"
-output: html_notebook
+output:
+  word_document: default
+  html_notebook: default
 ---
 
 # Overview
 
-Here we present plots and analyses of a data set where 14 participants all did the same 6 experiments on frame effects. 
-Experiments testing effects in space:
+Here we present plots and analyses of a data set where 14 participants all did the same 6 experiments on frame effects. Experiments testing effects in space:
 
-1. horizontal and vertical offsets of the frame and probes, with different frame sizes
-2. offset between frame and probes in depth using red-blue anaglyph glasses
+1.  horizontal and vertical offsets of the frame and probes, with different frame sizes
+2.  offset between frame and probes in depth using red-blue anaglyph glasses
 
 Experiments testing effects in time:
 
-3. pre- and post diction, frame only visible for 1, 2 or 3 passes (half cycles), either with both probes in the first or last movement, only 1, or both just before or after the frame was visible
-4. probes presented at different time points during the frame motion cycles (not just at the extreme time points, when the frame changes direction)
+3.  pre- and post diction, frame only visible for 1, 2 or 3 passes (half cycles), either with both probes in the first or last movement, only 1, or both just before or after the frame was visible
+4.  probes presented at different time points during the frame motion cycles (not just at the extreme time points, when the frame changes direction)
 
 Motion of the frame:
 
-5. dot-pattern frames, and backgrounds to test if the edges of the frame matter, or the motion behind the probes
-6. frames with internal motion, that matches, ignores, counters or doubles the frame's motion
-7. frames moved by the participant, potentially giving an extra source of information
+5.  dot-pattern frames, and backgrounds to test if the edges of the frame matter, or the motion behind the probes
+6.  frames with internal motion, that matches, ignores, counters or doubles the frame's motion
+7.  frames moved by the participant, potentially giving an extra source of information
 
 In tasks where this was not too much out of place, a standard frame was shown with 5 different motion amplitudes. The tasks were randomized in order based on participant ID, such that the perception of this set of frame could also be tracked through time-on-task.
 
-8. effect of time-on-task on illusion strength
+8.  effect of time-on-task on illusion strength
 
 # Setup
 
@@ -43,3 +44,312 @@ source('R/stats.R')
 
 ```
 
+# Effects of space
+
+In two tasks we varied the distance between the frame and the probes. In the first we systematically tested various horizontal and vertical offsets. In the second we try to look at offsets in depth.
+
+## 1. Horizontal and vertical offsets
+
+Here, we used the same frame movement amplitude (4 dva) and cycle duration (1/4 s) for all stimuli. The inner frame size was varied between 3, 6, and 9 dva (6 dva is used in most other task), which translates to outer frame sizes of 4, 7 and 10 dva. Then we either applied horizontal or vertical offsets between the probes and the frame. Since the regular stimuli are in the lower left corner of the screen, we either moved the frame to the right, or upward by 0, 3, 6, 9 or 12 dva.
+
+We take the median reported percept for all trials within each of the 15 conditions (frame-sizes x frame offsets) for each participant. Here we plot the average across participants, along with a 95% confidence interval of the mean, assuming a t-distribution:
+
+```{r offset-figure, fig.width=8, fig.height=4}
+fig1_offsets()
+```
+
+There clearly is an affect of frame offset: larger offsets result in smaller illusions. This may interact with the direction of the offset and the size of the frame. Which we will first test with an ANOVA:
+
+Ignoring conditions with no offset, we run an ANOVA on percept with with offset direction, offset size, and frame size (Greenhouse-Geiser corrections have been applied):
+
+```{r offset-anova}
+probeDistanceANOVA()
+```
+
+There is the expected main effect of offset size (F(2.11, 27.44)=93.91, p\<.001), as well as a main effect of frame size (F(1.63,21.14)=7.98, p=.004). There is no main effect of, or interaction involving the offset direction. There is an interaction between frame size and offset direction (F(3.45,44.86)=6.17, p\<.001). This may have to do with the distance between any frame edge and the probes, which would be larger for larger frames and no offset, but smaller for the maximum offset.
+
+This can be tested by fitting the data as predicted by some function (inverse cumulative normal distribution) with offsets / scales based on the above significant factors, or fitting the data with the same function and offsets / scale, but corrected for minimum (average? maximum?) distance between frame and probes. The distance between frame and probes does involve the offset direction, which was not a factor in any significant effects.
+
+...
+
+...
+
+...
+
+## 2. Depth offsets
+
+Here we test if offsets in depth between the frame and the flashed probed have any effect on illusion size. We could put the frame behind the probes, in front of the probes, or even between the probes. We try this by using red-blue cardboard glasses, creating anaglyph stimuli. To make sure there are no effects of this setup to begin with, we also present a frame with probes in the same plane of depth.
+
+(The psychopy window's blend mode was set to 'add', so overlapping versions of stimuli would be equally visible to each eye as compared to when they were not overlapping.)
+
+In this task, the frame is unchanged, and hence always presented at the screen depth. The probes are each presented as a red and blue dot. These would either have 0.5 dva offset in either direction (relative to the screen) or no offset. Without offset, they would be perceived in the same plane of depth as the frame, and with offset they would be perceived as in front of or behind the frame. With a 60 cm viewing distance... we can calculate the perceived distance from the screen... given average interpupillary distance. WebMD says the average is 63 mm, and the normal range -whatever that is- is from 50 to 75 mm. Since the positive and negative offset would lead to (slightly) different perceived depth offsets, and we can easily calculate this for the average as well as the upper and lower limit of the normal range, we should get 6 depth values describing the distribution of depth offsets.
+
+First, to test depth perception in our participants they perform a short task judging depth distances between two circles. The two circles have the same size as the probes, as well as the same vertical distance between them, are offset in depth with the same offsets as used in the main task. One participant could not do this task, and also skipped the main task. Of the remaining 13 participants, 11 had a response criterion over 75% correct, and these were used for data analysis (although including all 13 doesn't meaningfully change the results).
+
+First we look at the reported illusion strength in all 4 conditions:
+
+```{r depth-figure, fig.width=4, fig.height=4}
+fig2_depth()
+```
+
+Dots are the median responses within individual participants, lines the average across participants, and shaded areas the 95% confidence interval of the mean estimated by assuming a t-distribution.
+
+There does not seem to be any effect of condition on illusion strength. We verify this with a one-way ANOVA.
+
+```{r depth-anova}
+depthANOVA()
+```
+
+There are indeed no notable differences between conditions.
+
+## Conclusions on spatial effects
+
+It seems that proximity between the frameand probes in the fronto-parallel plane is required for the illusion to occur, but the probes do not need to be inside the frame: a frame moving close to the probes, still evokes the illusion. Simultaneously, however, offsets in depth, in so far as we were able to produce these, had no measurable effect on illusion strength. It could be that stronger offsets in depth are required for the frame to no longer be considered relevant by the visual system for locating the probes.
+
+With the data at hand, we can say that the illusion works within a range of distances between the frame and the probes, with the illusory effect gradually decreasing with increasing distance, and no effect of offsets in depth.
+
+# Effects of time
+
+Here we test various effects of time on the illusion in 2 experiments. First we test if the illusion also works when the frame and probes are not on the screen simultaneously, and then how (and if?) the illusion weakens when the probes are flashed at lagged timepoints relative to the frame motion.
+
+## 3. Pre- and post diction
+
+First, we test if the brain uses prediction of frame position, i.e. is there an illusion in perceived probe position when the probes are flashed after the frame has disappeared. We also test the possibility of postdiction, where the probe positions are retro-actively re-interpreted when the frame appears after the probes have been flashed on the screen.
+
+This could require some build-up of expectations, so we try this with 1, 2 or 3 frame passes. And we test different effects of timing.
+
+There's a "baseline" condition, where both probes are flashed during the first/last movement pass (half a cycle) of the frame presentation. There is also a condition where 1 dot is present with the frame there, while the other appears before/after the frame appears. And finally a condition where both probes are presented before/after the frame, i.e. neither probe is on the screen while the frame is also there.
+
+The maximum stimulus duration would last up to 5 frame movement passes (2.5 cycles). We add at least 6 passes (3 cycles) in between presentation of the stimuli, or 7 passes if the stimulus consists of an odd number of passes.
+
+Most conditions were repeated 8 times. Note that a single frame pass, with both probes flashed during the first frame pass is the same as flashing both during the last frame pass (so this is not replicated).
+
+We did also add single frame passes at 4 lower frame movement amplitudes, for the overall effect of time on task. These were each presented 4 times to the participants.
+
+Pilots already indicated normal illusion strength when both probes were flashed while the frame with the frame, and close to no illusion when the probes where both flashed while there was no frame. The conditions with 1 probe flashed with the frame were still somewhat unclear, so we added conditions with one probe flashed during the first or last of 4 or 5 frame movement passes (and the other before/after). These were each also presented 4 times to the participants (so the results are a bit noisier).
+
+Let's first look at the main data from this experiment.
+
+```{r postdiction_fig, fig.width=8, fig.height=4}
+fig3_prepost()
+```
+
+Here, the X-axis represents the time when the probes are flashed, relative to the onset/offset of the frame movement. On the left, the probes are flashed before the frame is on the screen (-2 passes), and on the right after the frame has disappeared (+2 passes).
+
+Here we analyse this data, with a repeated-measures ANOVA on the illusion strength (percept) using the factors... would that be 2 factors? (probed pass X number of passes) or 3 factors? (absolute probed pass offset X pre/post diction X number of passes). I'll do both, and if there is no effect, we can choose the simplest one.
+
+The timing of when the probes are flashed should have an effect, as it can be clearly seen in the figure. It doesn't look like there is a clear effect of the number of passes. But for the conditions where 1 probes was flashed simultaneously with the frame, there might be an effect of whether the other probes was flashed before or after the frame appeared/disappeared. This would probably be most clearly shown in the 3 factor ANOVA's post-hoc tests.
+
+```{r}
+postdictionANOVA()
+```
+
+In the first ANOVA with 2 factors, there is a main effect of both `framepasses` (F(1.41,18.36)=4.26, p=.042) and of `flashoffset` (F(2.84,36.86)=144.40), p\<.001). There is no interation of the two.
+
+The second ANOVA with 3 factors, there is no longer an effect of `framepasses` but there is still a main effect of `flashoffset` (F(1.88,24.39)=310.67, p\<.001). There is no main effect of `diction` (post or pre), but `flashoffset` does interact with `diction` (F(1.19,15.45)=5.98, p=.023). This is probably because of the difference in illusion strength between stimuli where either the second or the first flashed probed was shown simultaneously with the frame. We do 3 post-hoc t-tests to check this out.
+
+```{r}
+postdictionTtests()
+```
+
+This shows that with both probes flashed during the first / last frame there is no difference in illusion strength. With only 1 probe flashed with the frame, and the other before or after the frame, the illusion is stronger after the frame, than before. Whereas with both probes flashed before / after the frame, there is a significant difference, but the illusion seems to go in the expected direction before the frame onset, and in the opposite direction after the frame. The effect might be of equal magnitude, but is rather weak in each case.
+
+Not sure what these last points actually mean.
+
+Perhaps the best thing to do is drop the second ANOVA and use the first? That does leave an effect of the number of frame passes to explain... which I don't even really see in the figures.
+
+## 4. Lagged probes
+
+Here we test the use of probes that are not flashed at the extreme points of the motion of the frame, but with various offsets. This has been done before (XXX), and this shows a reduction of illusion strength. Here we compare this to apparent motion frames, where the frame is only visible at the extremes of the motion. That is, in most conditions the probes are flashed while the frame is not present. In the previous experiment the timing offsets were multiples of 1 frame pass, but here we use smaller timing offsets, and see if probes flashed while the frame is not present in the apparent motion frame, evoke smaller illusions than those where the frame is continuously on the screen.
+
+The frame motion amplitude is 4 dva, the frame size is 6 dva on the inside (7 dva outside). Frame motion duration is 1/3 of a second, i.e. 1/3 of a second between the extremes of the frames position (including a static period, when the probes are usually flashed). The offsets of the probe flashes are divided into 10 offsets, from -40% to +50% of the duration of 1 frame pass. At roughly those two extreme lags, we'd expect no illusory horizontal offset between the two probes.
+
+Let's have a look at the reported percepts:
+
+```{r laggedprobe_fig, fig.width=4, fig.height=4}
+fig4_probelag()
+```
+
+Within the classic frame stimuli (yellow) there is some modulation of illusion strength, but it does not seem to go down to 0 at any point. The apparent motion frame seems to evoke somewhat smaller illusions, and there appears to be a stronger modulation of the illusion by lagged presentation of the probes.
+
+Let's test for statistical significance with a 2x10 repeated measures ANOVA on the percept, using frame type (classic or apparent motion) and probe lag (-40% up to +50%) as factors:
+
+```{r laggedprobeANOVA}
+probeLagANOVA()
+```
+
+Do we need follow-ups to this?
+
+## Conclusions on effects of time
+
+The illusion is modulated in time. However, the temporal proximity seems to require at least one probe be perceived more or less simultaneously with the frame. This extends to the apparent motion frame. While the illusion is still there with lagged probes with a frame the moves with apparent motion, the lags seem to decrease the illusion more for the apparent motion frame as compared to the classic frame. However, there is some illusion present, even if the frame and probes are not presented entirely simultaneously.
+
+# Effects of motion
+
+In this section, we investigate several aspects of the motion of the frame.
+
+## 5. Frames vs. backgrounds
+
+Here we test if the frame needs to be a frame, with edges, or if a patterned background strip elicits the same effect. The amount of perceived motion could be an issue here, so we first test how much motion participants perceive without flashed probes.
+
+Here is the data:
+
+```{r background-motion-fig, fig.width=8, fig.height=8}
+fig5_background()
+```
+
+In the first panel (top left), we can see that the amount of motion seems to be overestimated for both the regular frame as well as the moving brackground strip. It seems close, but it could be perhaps a bit more overestimated for the regular frame. Let's test that statistically:
+
+```{r motion-perception-anova}
+motionperceptionANOVA()
+```
+
+Of course, there is a main effect of motion amplitude, but there is also an effect of stimulus type. There is no interaction however.
+
+As the effect seems larger for larger amplitudes in the figure, and since we the 4 dva amplitude stimuli we used subsequently for the illusion is not the largest amplitude we tested here, we could also just compare the perceived motion at 4 dva for the regular frame and for the background motion.
+
+```{r motion-perception-ttest}
+motionperceptionTtest()
+```
+
+Strictly speaking this is not significant. However, the amplitude difference is ~0.87 dva, which is more than 20% of the actual motion. So are we sure the perceived motion is equivalent?
+
+Ignoring this, we now look at the illusion in the same stimuli. There are 2 extra conditions we test here. First, it's know that motion duration of the frame doesn't affect illusion strength, but this is not know for random dot backgrounds, so we include 5 motion durations here. Further, it could be that fixating peripherally, vs. free viewing (including looking dircetly at the stimulus) affects illusion strength. So for the frames, we have included trials with and without fixation requirements (not checked with an eye-tracker).
+
+The data is plotted twice, once with only the 1/3 s motion duration also used in the previous motion perception control task, and once using all motion durations: 1/5 s, 1/4 s, 1/3 s, 1/2 s and 1 s.
+
+First, it does not seem like there is any difference in illusion strength with free viewing or fixation (peripheral stimulus). The illusion does seem weaker with random dot backgrounds, although it is still there. We test this in 3 t-tests:
+
+```{r texture-background-ttests}
+textureBackgroundTtests()
+```
+
+The tests confirm what we can see in the data (top right panel of the above figure).
+
+We can also analyze the data with any potential effects of motion duration. From the figure it seems pretty clear that this does not have any effect on illusion strength, but we test this with an ANOVA anyway:
+
+```{r}
+textureBackgroundANOVA()
+```
+
+This paints the same picture as before, and confirms there is no effect of motion duration in either regular frames (as expected) nor in random dor backgrounds (F(2.3,29.94)=0.47, p=.653). There is an effect of condition (F(1.98,25.78)=53.88, p<.001) but no interaction (F(4.01,52.25)=1.17, p=.335).
+
+We could now wonder if the observed difference in illusion strength between moving frames and moving backgrounds can be explained by a difference in the perceived (or at least, reported) motion in that background. On the one hand there is more perceived motion reported from frames that move 4 dva as compared to background textures moving 4 dva. On the other hand, that difference is \~0.87 dva, while the difference in illusion strength is \~1.65 dva. This difference would be even bigger if we'd convert this to a proportion change relative to one of the two types of stimuli.
+
+Not sure how to handle this.
+
+## 6. Internal frame motion
+
+The previous experiment showed that having an actual frame, with edges, works much better than just a pattern of dots. But it still works. If frames, with edges, consist of patterns of dots that (could) move independently of the frame, that may affect the illusion strength.
+
+We now test this with frames consisting of dots whose motion is:
+
+1.  (-1) opposite that of the frame
+2.  ( 0) static
+3.  (+1) the same as that of the frame
+4.  (+2) double that of the frame
+
+If the internal motion has any effect on the strength of the illusion, we could expect the illusion strength to be lowest for the first condition, ad highest for the last. With the third condition having about the same illusion strength as a classic frame.
+
+As before, we first look at the amount of perceived motion in these four stimuli without flashed probes, and then the illusory percept with flashed probes. The actual motion amplitude of the frames is 4 dva in all cases.
+
+Here is the data:
+
+```{r internal-motion-figure, fig.width=8, fig.height=4}
+fig6_internalmotion()
+```
+
+Seems like very little effect of the internal motion on perceived frame motion, or on illusion. Although the frame where the dots move double the amount of the frame might have some decreased motion perception and increased illusion. With run two F-tests on illusion strength, with internal dot motion (4 levels) as explanatory factor.
+
+First on perceived motion of the frame:
+
+```{r internal-motion-perception-anova}
+internalmotionPerceptionANOVA()
+```
+
+There is no effect of internal motion on the amount of perceived frame movement.
+
+Now an F-test on illusion strength:
+
+```{r internal-motion-illusion-anova}
+internalmotionIllusionANOVA()
+```
+
+Unexpectedly, there is an effect here. As post-hocs we could run contrasts between one level of the original factor (illusory percept with one frame type) versus the other levels (the percept with all other frame types).
+
+I need to check my very old notes on how to do this exactly.
+
+I'm guessing that the illusion is a tiny bit stronger in the frames where the dots enhance the motion of the frame. If so, that's neat, but doesn't really affect the main conclusions too much.
+
+## 7. Frames moved by the participant
+
+When people observe a frame being moved, their vision is passive, perhaps without much expectations. As seen in the pre-/post-diction analyses (results 3 here) there is no build-up of expectations over the course of 3 frame passes either. There could however, be an added efference-based expectation when participants move the frame themselves. We do a straightforward test here where people use a stylus on a drawing tablet with their right hand to move the frame left to right. The can simultaneously use the arrow keys on a keyboard to indicate their percept (although most participants seemed to alternate between first observing the stimulus, then adjusting the reference dots, and then going back to observing the sitmulus to confirm the reference dots were placed correctly, before making any final adjustments and finalizing the reported percept). We added two safeguards for this task. First, a cardboard slot was taped over the drawing tablet, keeping the stylus confined to the required horizontal regions, as well as ensuring that participants never had to look at the tablet or stylus to move it correctly. Second, to ensure roughly the same stimulus for all participants, auditory ticks were played as a kind of metronome. Participants were instructed that the sound of hitting the cardboard on either end should coincide with the metronome ticks as best as they could. Probes were flashed when participants were at the extremes.
+
+We had 3 conditions here, all with the same frame motion amplitude and duration. First, there was a control condition, where participants did not move the frame, but it moved as before. Second a congruent condition, where the frame move left, when the participant moved the stylus to the left, and it move right when the participant moved the styles to the right. And last, an incongruent condition, where the frame move right when the participant moved the stylus to the left, and vice versa.
+
+If the efference copy of the hand movement modulates the perceived frame movement, then the illusion could be stronger than the control condition in the congruent condition, and weaker in the incongruent condition.
+
+Let's have a look at the data:
+
+```{r self-motion-data, fig.width=4, fig.height=4}
+fig7_selfmotion()
+```
+
+The conditions are in order of potentially increasing illusion strength, but, as can be seen, there is no obvious difference between conditions.
+
+We run a 1-factor, repeated measures ANOVA (F-test) on percept, using condition as a 3-level factor.
+
+```{r self-moved-frame-ANOVA}
+selfMovedFrameANOVA()
+```
+
+Indeed there is no effect of condition (F(1.45,18.85)=1.62, p=.224). That is, we find no evidence that efference copies inform perception in this case. Suggesting that the illusion relies on visual systems only.
+
+## Motion conclusions
+
+We find that the vertical edges of the frame need to be present for the illusion to have its full strength; a texture moving in the background has a greatly diminished illusion strength (and somewhat decrease perceived motion). When such a random dot texture is present in a frame, the frame edges seem to suppress any additional effect from texture motion almost completely. [ANALYSIS NOT DONE] Any potential increase in expected frame motion does not increase the illusion strength (and perhaps does not increase the amount of perceived motion either, but this is untested). Either way, it seems that the frame needs to be clearly delineated from the rest of the environment for the illusion to occur and that the illusion relies on motion signals in the visual modality only.
+
+# Bonus analysis
+
+## 8. Time-on-task and illusion strength
+
+For some illusion, the brain somehow learns to see through them, such that the effect decreases the longer you look at the illusion. Our impression is that this is not the case for the frame illusion, but we have no data on this.
+
+Since completing all the above tasks took about 2 hours for most participants, and we added a few reference stimuli in all tasks where these would not draw a lot of attention, we can look at how the strength of the illusion varies over time-on-task.
+
+We divided the time in 4 epochs of 30 minutes, and took all responses from trials using the standard reference stimuli that started within each of those epochs.
+
+Let's look at the data here:
+
+```{r time-on-task-plot, fig.width=4, fig.height=4}
+fig8_tasktime()
+```
+
+We can see that the highest illusion strength might actually occur in the fourth (last) 30 minute epoch. But this plot only shows averages on the available data in each epoch, but data is not guaranteed for every participant, so this might just be coincidence.
+
+We would like to test this, but for the same reason (lots of missing data, some for each participant) we can not use a standard ANOVA. Instead, we run a linear mixed effects model, and convert it to ANOVA-like output use the Statterthwaite approximation.
+
+```{r time-on-task-LME}
+timeontaskLME()
+```
+
+So there is clearly an effect of amplitude, but no effect of interval and no interaction. This means we can conclude that there is no measurable decrease of illusion strength over the course of a 2 hour interval. The illusion 
+
+# Figure export
+
+This block outputs all above figures to various formats.
+
+```{r fig-export}
+for (target in c('pdf','svg')) {
+  
+  fig1_offsets(target=target)
+  fig2_depth(target=target)
+  fig3_prepost(target=target)
+  fig4_probelag(target=target)
+  fig5_background(target=target)
+  fig6_internalmotion(target=target)
+  fig7_selfmotion(target=target)
+  fig8_tasktime(target=target)
+  
+}
+```
