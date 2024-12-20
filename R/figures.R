@@ -634,8 +634,8 @@ QRcodes <- function() {
 
 fig1_offsets <- function(target='inline') {
   
-  width  <- 7
-  height <- 3.5
+  width  <- 8
+  height <- 4
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig1_offset.svg', width=width, height=height, fix_text_size = FALSE)
@@ -655,6 +655,8 @@ fig1_offsets <- function(target='inline') {
   participants <- getParticipants()
   
   df <- getProbeDistanceData(participants, FUN=median)
+  
+  # df <- addShortestDistanceToFrame(df)
   
   ############ classic/raw data plots:
   
@@ -749,9 +751,7 @@ fig1_offsets <- function(target='inline') {
   
   legend(6,6,legend=sprintf('%d dva',c(1:3)*3),title='inner frame size', bty='n',lty=1,col=cols.op[c(1,3,5)])
   
-  ############### different approach?
-  
-  
+
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
   }
@@ -864,7 +864,6 @@ fig3_prepost <- function(target='inline') {
   participants <- getParticipants()
   
   df <- getPreDictionData(participants, FUN=median)
-  
   
   plot(-1000,-1000,
        xlim=c(-3,3), ylim=c(-.5,6),

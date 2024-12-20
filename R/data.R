@@ -189,6 +189,73 @@ getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
   
 }
 
+# addShortestDistanceToFrame <- function(df) {
+#   
+#   df$hor_dist <- NA
+#   df$ver_dist <- NA
+#   
+#   fw <- 0.5 # frame edge with
+#   dr <- 0.5 # dot radius
+#   
+#   for (amp in unique(df$amplitude)) {
+#     
+#     for (fs in unique(df$inner_framesize)) {
+#       
+#       for (hor_offset in unique(df$hor_offset)) {
+#         idx <- which(df$amplitude == amp & 
+#                        df$inner_framesize == fs & 
+#                        df$hor_offset == hor_offset)
+#         # dots are horizontally in the middle of the non-offset frame:
+#         # blue: (0,1), red: (0,-1)
+#         
+#         # we do care about the horizontal movement of the frame... but
+#         # FOR NOW we don't care if the frame edges move over the position of the dots
+#         # (the dots aren't visible during frame movement anyway)
+#         
+#         # we only need worry about the left edge of the frame, with rightward horizontal offsets
+#         hf <- fs/2 # half inner frame width
+#         
+#         distances <- abs( (rep( c(-hf,-hf,-hf,-hf) +        # left edge of the frame only
+#                                   c(-fw,0,-fw,0) +          # outer & inner edge
+#                                   c(-dr,-dr,+dr,+dr),2)     # left & right side of the dot
+#                            + rep(amp/c(-2,2),each=4))       # frame in both extreme position
+#                           + hor_offset )                    # horizontal offset
+#         mindist <- min( distances ) 
+#         # mindist <- mean( distances )
+#         
+#         df$hor_dist[idx] <- mindist
+#       }
+#       
+#       for (ver_offset in unique(df$ver_offset)) {
+#         idx <- which(df$amplitude == amp & 
+#                        df$inner_framesize == fs & 
+#                        df$ver_offset == ver_offset)
+#         # dots are vertically offset from the center of the non-offset frame:
+#         # blue: (0,1), red: (0,-1)
+#         # so we need to look at the separate dots
+#         
+#         # however, we don't care about the horizontal frame motion
+#         hf <- fs/2 # half inner frame height
+#         
+#         distances <- abs( (rep( c(-hf,-hf,-hf,-hf) +        # bottom edge of the frame only
+#                                   c(-fw,0,-fw,0) +          # outer & inner edge
+#                                   c(-dr,-dr,+dr,+dr),2)     # top & bottom side of the dot
+#                            + rep(c(-1,1),each=4))           # each dot's vertical offset
+#                           + ver_offset )                    # vertical offset between dots
+#         mindist <- min( distances )   
+#         # mindist <- mean( distances )
+#         
+#         df$ver_dist[idx] <- mindist
+#       }
+#       
+#     }
+#     
+#   }
+#   
+#   return(df)
+#   
+# }
+
 # time data -----
 
 getApparentLagData <- function(participants, timedata=FALSE, FUN=median) {

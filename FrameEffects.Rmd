@@ -140,7 +140,7 @@ Here we analyse this data, with a repeated-measures ANOVA on the illusion streng
 
 The timing of when the probes are flashed should have an effect, as it can be clearly seen in the figure. It doesn't look like there is a clear effect of the number of passes. But for the conditions where 1 probes was flashed simultaneously with the frame, there might be an effect of whether the other probes was flashed before or after the frame appeared/disappeared. This would probably be most clearly shown in the 3 factor ANOVA's post-hoc tests.
 
-```{r}
+```{r postdiction-ANOVA}
 postdictionANOVA()
 ```
 
@@ -148,7 +148,7 @@ In the first ANOVA with 2 factors, there is a main effect of both `framepasses` 
 
 The second ANOVA with 3 factors, there is no longer an effect of `framepasses` but there is still a main effect of `flashoffset` (F(1.88,24.39)=310.67, p\<.001). There is no main effect of `diction` (post or pre), but `flashoffset` does interact with `diction` (F(1.19,15.45)=5.98, p=.023). This is probably because of the difference in illusion strength between stimuli where either the second or the first flashed probed was shown simultaneously with the frame. We do 3 post-hoc t-tests to check this out.
 
-```{r}
+```{r postdiction-t-tests}
 postdictionTtests()
 ```
 
@@ -212,7 +212,7 @@ As the effect seems larger for larger amplitudes in the figure, and since we the
 motionperceptionTtest()
 ```
 
-Strictly speaking this is not significant. However, the amplitude difference is ~0.87 dva, which is more than 20% of the actual motion. So are we sure the perceived motion is equivalent?
+Strictly speaking this is not significant. However, the amplitude difference is \~0.87 dva, which is more than 20% of the actual motion. So are we sure the perceived motion is equivalent?
 
 Ignoring this, we now look at the illusion in the same stimuli. There are 2 extra conditions we test here. First, it's know that motion duration of the frame doesn't affect illusion strength, but this is not know for random dot backgrounds, so we include 5 motion durations here. Further, it could be that fixating peripherally, vs. free viewing (including looking dircetly at the stimulus) affects illusion strength. So for the frames, we have included trials with and without fixation requirements (not checked with an eye-tracker).
 
@@ -232,7 +232,7 @@ We can also analyze the data with any potential effects of motion duration. From
 textureBackgroundANOVA()
 ```
 
-This paints the same picture as before, and confirms there is no effect of motion duration in either regular frames (as expected) nor in random dor backgrounds (F(2.3,29.94)=0.47, p=.653). There is an effect of condition (F(1.98,25.78)=53.88, p<.001) but no interaction (F(4.01,52.25)=1.17, p=.335).
+This paints the same picture as before, and confirms there is no effect of motion duration in either regular frames (as expected) nor in random dor backgrounds (F(2.3,29.94)=0.47, p=.653). There is an effect of condition (F(1.98,25.78)=53.88, p\<.001) but no interaction (F(4.01,52.25)=1.17, p=.335).
 
 We could now wonder if the observed difference in illusion strength between moving frames and moving backgrounds can be explained by a difference in the perceived (or at least, reported) motion in that background. On the one hand there is more perceived motion reported from frames that move 4 dva as compared to background textures moving 4 dva. On the other hand, that difference is \~0.87 dva, while the difference in illusion strength is \~1.65 dva. This difference would be even bigger if we'd convert this to a proportion change relative to one of the two types of stimuli.
 
@@ -333,7 +333,7 @@ We would like to test this, but for the same reason (lots of missing data, some 
 timeontaskLME()
 ```
 
-So there is clearly an effect of amplitude, but no effect of interval and no interaction. This means we can conclude that there is no measurable decrease of illusion strength over the course of a 2 hour interval. The illusion 
+So there is clearly an effect of amplitude, but no effect of interval and no interaction. This means we can conclude that there is no measurable decrease of illusion strength over the course of a 2 hour interval. The illusion
 
 # Figure export
 

@@ -603,14 +603,14 @@ def getTasks(cfg):
         # amplit: 2.4, 4.8, 7.2, 9.6, 12
         # (speeds: 12, 24, 36, 48, 60 deg/s)
         condictionary = [
-                         {'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/2, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/3, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/4, 'amplitude':12, 'stimtype':'classicframe'},
+                         # {'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
+                         # {'period':1/2, 'amplitude':12, 'stimtype':'classicframe'},
+                         # {'period':1/3, 'amplitude':12, 'stimtype':'classicframe'},
+                         # {'period':1/4, 'amplitude':12, 'stimtype':'classicframe'},
                          {'period':1/5, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':10, 'stimtype':'classicframe'},
+                         # {'period':1/5, 'amplitude':10, 'stimtype':'classicframe'},
                          {'period':1/5, 'amplitude':8, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':6, 'stimtype':'classicframe'},
+                         # {'period':1/5, 'amplitude':6, 'stimtype':'classicframe'},
                          {'period':1/5, 'amplitude':4, 'stimtype':'classicframe'},
                         #  {'period':1/5, 'amplitude':12., 'stimtype':'classicframe'},
                          ]
