@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="68.274948mm"
+   height="83.172386mm"
+   viewBox="0 0 68.274948 83.172386"
+   version="1.1"
+   id="svg6024"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6021" />
+  <g
+     id="layer1"
+     transform="translate(-30.479794,-35.880499)">
+    <g
+       id="g8641">
+      <rect
+         style="fill:#ed131e;fill-opacity:1;stroke-width:0;stroke-opacity:0;paint-order:stroke fill markers"
+         id="rect6107-7"
+         width="30.742777"
+         height="30.742777"
+         x="30.479794"
+         y="88.310112" />
+      <rect
+         style="fill:#ed131e;fill-opacity:1;stroke-width:0;stroke-opacity:0;paint-order:stroke fill markers"
+         id="rect6107-1"
+         width="30.742777"
+         height="30.742777"
+         x="68.011963"
+         y="88.310112" />
+    </g>
+    <g
+       id="g8621">
+      <g
+         id="g8615">
+        <rect
+           style="fill:#ed131e;fill-opacity:1;stroke-width:0;stroke-opacity:0;paint-order:stroke fill markers"
+           id="rect6107"
+           width="30.742777"
+           height="30.742777"
+           x="30.479794"
+           y="51.354145" />
+        <rect
+           style="fill:#ed131e;fill-opacity:1;stroke-width:0;stroke-opacity:0;paint-order:stroke fill markers"
+           id="rect6107-4"
+           width="30.742777"
+           height="30.742777"
+           x="68.011963"
+           y="51.354145" />
+      </g>
+      <path
+         id="path6329-4"
+         style="fill:#ed131e;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+         d="M 72.074915,52.175834 C 77.697867,50.253439 86.262033,47.406177 83.835624,40.222476 79.091048,31.572817 67.473131,37.099324 64.617266,45.857406 61.7614,37.099325 50.143483,31.572815 45.398909,40.222477 c -2.426411,7.1837 6.137756,10.030962 11.760707,11.953358 z" />
+    </g>
+  </g>
+</svg>
