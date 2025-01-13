@@ -4,6 +4,8 @@ import pandas as pd
 from psychopy import visual, core, event, monitors, tools
 from psychopy.hardware import keyboard
 
+import PIL
+
 # altenative keyboard read-out?
 from pyglet.window import key
 
@@ -45,10 +47,12 @@ def doTrial(cfg):
 
     print(framesize)
 
-    cfg['hw']['white_frame'].width = framesize[0]
-    cfg['hw']['white_frame'].height = framesize[0]
-    cfg['hw']['gray_frame'].width = framesize[1]
-    cfg['hw']['gray_frame'].height = framesize[1]
+    # cfg['hw']['white_frame'].width = framesize[0]
+    # cfg['hw']['white_frame'].height = framesize[0]
+    # cfg['hw']['gray_frame'].width = framesize[1]
+    # cfg['hw']['gray_frame'].height = framesize[1]
+
+    # cfg['hw']['tree'].width= framesize[0]
 
     print('frame size set...')
 
@@ -57,6 +61,7 @@ def doTrial(cfg):
     else:
         frameoffset = [0,0]
 
+    frameoffset = [0,0]
 
     # # change frequency and distance for static periods at the extremes:
     # if (0.35 - period) > 0:
@@ -105,26 +110,53 @@ def doTrial(cfg):
 
     waiting_for_response = True
 
-    flashdot_centre = [-8, -7]
-    cfg['hw']['bluedot'].pos = [flashdot_centre[0], flashdot_centre[1]+1]
-    cfg['hw']['reddot'].pos = [flashdot_centre[0], flashdot_centre[1]-1]
+    flashdot_centre = [0, -5]
+    # cfg['hw']['bluedot'].pos = [flashdot_centre[0], flashdot_centre[1]+1]
+    # cfg['hw']['reddot'].pos = [flashdot_centre[0], flashdot_centre[1]-1]
 
-    frame_centre = [flashdot_centre[0]+frameoffset[0], flashdot_centre[1]+frameoffset[1]]
+    cfg['hw']['gift_top'].pos    = [0, +0.6-4.5]
+    cfg['hw']['gift_bottom'].pos = [0, -0.5-4.5]
+
+
+    # frame_centre = [flashdot_centre[0]+frameoffset[0], flashdot_centre[1]+frameoffset[1]]
+    frame_centre = [0,0]
 
     print('preparation done...')
+
+    end_this_recording = False
+    
+    this_frame_time = - (1/30)
+    frameno = 1
 
     while waiting_for_response:
 
         # blank screen of random length between 1/3 and 2.3 seconds
-        while (time.time() - trial_start_time) < blank:
-            event.clearEvents(eventType='mouse')
-            event.clearEvents(eventType='keyboard')
-            cfg['hw']['win'].flip()
+        # while (time.time() - trial_start_time) < blank:
+        #     event.clearEvents(eventType='mouse')
+        #     event.clearEvents(eventType='keyboard')
+        #     cfg['hw']['win'].flip()
 
         # on every frame:
-        this_frame_time = time.time() - trial_start_time
-        frame_time_elapsed = this_frame_time - previous_frame_time
+        # this_frame_time = time.time() - trial_start_time
+        this_frame_time += (1/60)
+        # frame_time_elapsed = this_frame_time - previous_frame_time
         #print(round(1/frame_time_elapsed))
+
+
+
+        if this_frame_time < (p*4):
+            cfg['hw']['tree'].setOpacity(0)
+        if this_frame_time >= (p*4):
+            opacity = min((this_frame_time - (p*4))/(p*4), 1)
+            cfg['hw']['tree'].setOpacity(opacity)
+
+        if this_frame_time >= (p*16):
+            opacity = 1-min((this_frame_time - (p*16))/(p*4), 1)
+            cfg['hw']['tree'].setOpacity(opacity)
+
+        if this_frame_time >= (p*22):
+            end_this_recording = True
+
 
         # shorter variable for equations:
         t = this_frame_time
@@ -158,12 +190,22 @@ def doTrial(cfg):
         offsetX = offsetX * xfactor
 
         # show frame for the classic frame:
-        if trialdict['stimtype'] in ['classicframe']:
-            frame_pos = [offsetX+frame_centre[0], frame_centre[1]]
-            cfg['hw']['white_frame'].pos = frame_pos
-            cfg['hw']['white_frame'].draw()
-            cfg['hw']['gray_frame'].pos = frame_pos
-            cfg['hw']['gray_frame'].draw()
+        # if trialdict['stimtype'] in ['classicframe']:
+        #     frame_pos = [offsetX+frame_centre[0], frame_centre[1]]
+        #     cfg['hw']['white_frame'].pos = frame_pos
+        #     cfg['hw']['white_frame'].draw()
+        #     cfg['hw']['gray_frame'].pos = frame_pos
+        #     cfg['hw']['gray_frame'].draw()
+
+        frame_pos = [offsetX, 0]
+        cfg['hw']['tree'].pos = frame_pos
+        cfg['hw']['tree'].draw()
+
+        if flash_red:
+            cfg['hw']['gift_bottom'].draw()
+        if flash_blue:
+            cfg['hw']['gift_top'].draw()
+
 
     #    # show frame for timed frame:
     #    if trialdict['stimtype'] in ['timedframe']:
@@ -174,10 +216,10 @@ def doTrial(cfg):
     #            cfg['hw']['gray_frame'].pos = frame_pos
     #            cfg['hw']['gray_frame'].draw()
 
-        if trialdict['stimtype'] in ['barframe']:
-            frame_pos = [offsetX+frame_centre[0], frame_centre[1]]
-            cfg['hw']['white_bar'].pos = frame_pos
-            cfg['hw']['white_bar'].draw()
+        # if trialdict['stimtype'] in ['barframe']:
+        #     frame_pos = [offsetX+frame_centre[0], frame_centre[1]]
+        #     cfg['hw']['white_bar'].pos = frame_pos
+        #     cfg['hw']['white_bar'].draw()
 
         # flash the dots, if necessary:
         # special case for timed frame:
@@ -187,25 +229,29 @@ def doTrial(cfg):
     #                cfg['hw']['reddot'].draw()
     #            if flash_blue:
     #                cfg['hw']['bluedot'].draw()
-        else:
-            if flash_red:
-                cfg['hw']['reddot'].draw()
-            if flash_blue:
-                cfg['hw']['bluedot'].draw()
+        # else:
+        #     if flash_red:
+        #         cfg['hw']['reddot'].draw()
+        #     if flash_blue:
+        #         cfg['hw']['bluedot'].draw()
 
 
 
-        # in DEGREES:
-        mousepos = cfg['hw']['mouse'].getPos()
-        percept = (mousepos[0] + mouse_offset) / 4
+        # # in DEGREES:
+        # mousepos = cfg['hw']['mouse'].getPos()
+        # percept = (mousepos[0] + mouse_offset) / 4
 
-        # blue is on top:
-        cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]+2]
-        cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]+2]
-        cfg['hw']['bluedot_ref'].draw()
-        cfg['hw']['reddot_ref'].draw()
+        # # blue is on top:
+        # cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]+2]
+        # cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]+2]
+        # # cfg['hw']['bluedot_ref'].draw()
+        # # cfg['hw']['reddot_ref'].draw()
 
         cfg['hw']['win'].flip()
+        img = cfg['hw']['win'].getMovieFrame()
+        img.save('PIL/frame%04d.png'%(frameno))
+        frameno += 1
+        
 
         previous_frame_time = this_frame_time
 
@@ -214,36 +260,44 @@ def doTrial(cfg):
         blue_on     += [flash_blue]
         red_on      += [flash_red]
 
-        # key responses:
-        keys = event.getKeys(keyList=['space','escape'])
-        if len(keys):
-            if 'space' in keys:
-                waiting_for_response = False
-                reaction_time = this_frame_time - blank
-            if 'escape' in keys:
-                cleanExit(cfg)
-
-        if record_timing and ((this_frame_time - blank) >= 3.0):
+        if end_this_recording:
             waiting_for_response = False
 
+        # key responses:
+        # keys = event.getKeys(keyList=['space','escape'])
+        # if len(keys):
+        #     if 'space' in keys:
+        #         waiting_for_response = False
+        #         reaction_time = this_frame_time - blank
+        #     if 'escape' in keys:
+        #         cleanExit(cfg)
 
-    if record_timing:
-        pd.DataFrame({'time':frame_times,
-                      'frameX':frame_pos_X,
-                      'blue_flashed':blue_on,
-                      'red_flashed':red_on}).to_csv('timing_data/%0.3fd_%0.3fs.csv'%(distance, period), index=False)
-    else:
-        response                = trialdict
-        response['xfactor']     = xfactor
-        response['RT']          = reaction_time
-        response['percept_abs'] = percept
-        response['percept_rel'] = percept/3
-        response['percept_scl'] = (percept/3)*cfg['dot_offset']*2
-        response['trial_start'] = trial_start_time
-        response['blank']       = blank
+        # if record_timing and ((this_frame_time - blank) >= 3.0):
+        #     waiting_for_response = False
 
 
-        cfg['responses'] += [response]
+    # if record_timing:
+    #     pd.DataFrame({'time':frame_times,
+    #                   'frameX':frame_pos_X,
+    #                   'blue_flashed':blue_on,
+    #                   'red_flashed':red_on}).to_csv('timing_data/%0.3fd_%0.3fs.csv'%(distance, period), index=False)
+    # else:
+    #     response                = trialdict
+    #     response['xfactor']     = xfactor
+    #     response['RT']          = reaction_time
+    #     response['percept_abs'] = percept
+    #     response['percept_rel'] = percept/3
+    #     response['percept_scl'] = (percept/3)*cfg['dot_offset']*2
+    #     response['trial_start'] = trial_start_time
+    #     response['blank']       = blank
+
+
+    #     cfg['responses'] += [response]
+
+
+    # cfg['hw']['win'].saveMovieFrames('shaking_tree_2.mpeg', fps=60)
+    # cfg['hw']['win'].saveMovieFrames('frames/tree_frame.png', fps=30)
+    
 
     #cfg['hw']['white_frame'].height=15
     #cfg['hw']['gray_frame'].height=14
@@ -269,7 +323,7 @@ def runTasks(cfg):
         # do the trials:
         cfg['currenttrial'] = 0
 
-        showInstruction(cfg)
+        # showInstruction(cfg)
 
         while cfg['currenttrial'] < len(cfg['blocks'][cfg['currentblock']]['trialtypes']):
 
@@ -311,6 +365,26 @@ def getStimuli(cfg, setup='tablet'):
                                          fillColor=[1,-1,-1],
                                          pos=[0-cfg['stim_offsets'][0],-dot_offset-cfg['stim_offsets'][1]])
     #np.tan(np.pi/6)*6
+
+    cfg['hw']['tree'] = visual.ImageStim( win = cfg['hw']['win'],
+                                          image = 'tree2.png',
+                                          units = 'deg',
+                                        #   size = [7, 7.573868488],
+                                          size = [14, 15.147736976],
+                                          pos = [0,0])
+
+    cfg['hw']['gift_top'] = visual.ImageStim( win = cfg['hw']['win'],
+                                          image = 'gift_top.png',
+                                          units = 'deg',
+                                        #   size = [1.5, 1.014],
+                                          size = [2, 1.352],
+                                          pos = [0,0.6])
+    cfg['hw']['gift_bottom'] = visual.ImageStim( win = cfg['hw']['win'],
+                                          image = 'gift_bottom.png',
+                                          units = 'deg',
+                                        #   size = [1.5, 0.678],
+                                          size = [2, .904],
+                                          pos = [0,-0.5])
 
 
     cfg['hw']['white_frame'] = visual.Rect(win=cfg['hw']['win'],
@@ -368,7 +442,8 @@ def getStimuli(cfg, setup='tablet'):
     # but it crashes the system...
 
     cfg['hw']['text'] = visual.TextStim(win=cfg['hw']['win'],
-                                        text='Hello!'
+                                        text='Hello!',
+                                        color=[-1,-1,-1]
                                         )
     cfg['hw']['plus'] = visual.TextStim(win=cfg['hw']['win'],
                                         text='+',
@@ -519,6 +594,18 @@ def getTasks(cfg):
 
         return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
+    if cfg['expno']==25:
+
+        # period: 1.0, 1/2, 1/3, 1/4, 1/5
+        # amplit: 2.4, 4.8, 7.2, 9.6, 12
+        # (speeds: 12, 24, 36, 48, 60 deg/s)
+        condictionary = [
+
+                         {'period':1/2, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 0,  0]}
+
+                         ]
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
 
 
@@ -573,74 +660,76 @@ def run_exp(expno=1, setup='tablet', ID=np.nan):
         # do this in case of error:
         print('there was an error:')
         print(e)
-    else:
-        # if there is no error: export data as csv
-        # (function defined here)
-        cfg = exportData(cfg)
-    finally:
-        # always do this:
+    # else:
+    #     # if there is no error: export data as csv
+    #     # (function defined here)
+    #     # cfg = exportData(cfg)
+    # finally:
+    #     # always do this:
 
-        # save cfg, except for hardware related stuff (window object and stimuli pointing to it)
-        # (function defined here)
-        saveCfg(cfg)
+    #     # save cfg, except for hardware related stuff (window object and stimuli pointing to it)
+    #     # (function defined here)
+    #     # saveCfg(cfg)
 
-        # shut down the window object
-        # (function defined here)
-        cleanExit(cfg)
+    #     # shut down the window object
+    #     # (function defined here)
+    
+    cleanExit(cfg)
 
 def getParticipant(cfg, ID=np.nan, check_path=True):
 
-    print(cfg)
+    # print(cfg)
 
-    if np.isnan(ID):
-        # we need to get an integer number as participant ID:
-        IDnotANumber = True
-    else:
-        IDnotANumber = False
-        cfg['ID'] = ID
-        IDno = int(ID)
+    # if np.isnan(ID):
+    #     # we need to get an integer number as participant ID:
+    #     IDnotANumber = True
+    # else:
+    #     IDnotANumber = False
+    #     cfg['ID'] = ID
+    #     IDno = int(ID)
 
-    # and we will only be happy when this is the case:
-    while (IDnotANumber):
-        # we ask for input:
-        ID = input('Enter participant number: ')
-        # and try to see if we can convert it to an integer
-        try:
-            IDno = int(ID)
-            if isinstance(ID, int):
-                pass # everything is already good
-            # and if that integer really reflects the input
-            if isinstance(ID, str):
-                if not(ID == '%d'%(IDno)):
-                    continue
-            # only then are we satisfied:
-            IDnotANumber = False
-            # and store this in the cfg
-            cfg['ID'] = IDno
-        except Exception as err:
-            print(err)
-            # if it all doesn't work, we ask for input again...
-            pass
+    # # and we will only be happy when this is the case:
+    # while (IDnotANumber):
+    #     # we ask for input:
+    #     ID = input('Enter participant number: ')
+    #     # and try to see if we can convert it to an integer
+    #     try:
+    #         IDno = int(ID)
+    #         if isinstance(ID, int):
+    #             pass # everything is already good
+    #         # and if that integer really reflects the input
+    #         if isinstance(ID, str):
+    #             if not(ID == '%d'%(IDno)):
+    #                 continue
+    #         # only then are we satisfied:
+    #         IDnotANumber = False
+    #         # and store this in the cfg
+    #         cfg['ID'] = IDno
+    #     except Exception as err:
+    #         print(err)
+    #         # if it all doesn't work, we ask for input again...
+    #         pass
 
-    # set up folder's for groups and participants to store the data
-    if check_path:
-        for thisPath in ['../data', '../data/exp_%d'%(cfg['expno']), '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])]:
-            if os.path.exists(thisPath):
-                if not(os.path.isdir(thisPath)):
-                    os.makedirs
-                    sys.exit('"%s" should be a folder'%(thisPath))
-                else:
-                    # if participant folder exists, don't overwrite existing data?
-                    if (thisPath == '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])):
-                        sys.exit('participant already exists (crash recovery not implemented)')
-            else:
-                os.mkdir(thisPath)
+    # # set up folder's for groups and participants to store the data
+    # if check_path:
+    #     for thisPath in ['../data', '../data/exp_%d'%(cfg['expno']), '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])]:
+    #         if os.path.exists(thisPath):
+    #             if not(os.path.isdir(thisPath)):
+    #                 os.makedirs
+    #                 sys.exit('"%s" should be a folder'%(thisPath))
+    #             else:
+    #                 # if participant folder exists, don't overwrite existing data?
+    #                 if (thisPath == '../data/exp_%d/p%03d'%(cfg['expno'],cfg['ID'])):
+    #                     sys.exit('participant already exists (crash recovery not implemented)')
+    #         else:
+    #             os.mkdir(thisPath)
 
-        cfg['datadir'] = '../data/exp_%d/p%03d/'%(cfg['expno'],cfg['ID'])
+    #     cfg['datadir'] = '../data/exp_%d/p%03d/'%(cfg['expno'],cfg['ID'])
 
-    # we need to seed the random number generator:
-    random.seed(99999 * IDno)
+    # # we need to seed the random number generator:
+    # random.seed(99999 * IDno)
 
+    random.seed(99999)
     return cfg
 
 def setWindow(cfg, setup='tablet'):
@@ -699,11 +788,12 @@ def setWindow(cfg, setup='tablet'):
     cfg['trackextent'] = tools.monitorunittools.pix2deg( (5*wacomOneCM), cfg['hw']['mon'], correctFlat=False)
 
     # first set up the window and monitor:
-    cfg['hw']['win'] = visual.Window( fullscr=True,
-                                      size=resolution,
+    cfg['hw']['win'] = visual.Window( fullscr=False,
+                                    #   size=resolution,
+                                      size=[800,800],
                                       units='deg',
                                       waitBlanking=waitBlanking,
-                                      color=[0,0,0],
+                                      color=[1,1,1],
                                       monitor=mymonitor)
                                       # for anaglyphs: blendmode='add' !!!
 
@@ -750,7 +840,7 @@ def cleanExit(cfg):
 
     cfg['expfinish'] = time.time()
 
-    saveCfg(cfg)
+    # saveCfg(cfg)
 
     print('cfg stored as json')
 
@@ -785,8 +875,8 @@ def saveCfg(cfg):
     scfg = copy.copy(cfg)
     del scfg['hw']
 
-    with open('%scfg.json'%(cfg['datadir']), 'w') as fp:
-        json.dump(scfg, fp,  indent=4)
+    # with open('%scfg.json'%(cfg['datadir']), 'w') as fp:
+    #     json.dump(scfg, fp,  indent=4)
 
 def getPixPos(cfg):
 
@@ -829,7 +919,7 @@ def exportData(cfg):
     #for rk in respdict.keys():
     #    print([rk, len(respdict[rk])])
 
-    pd.DataFrame(respdict).to_csv('%sresponses.csv'%(cfg['datadir']), index=False)
+    # pd.DataFrame(respdict).to_csv('%sresponses.csv'%(cfg['datadir']), index=False)
 
     print('data exported to csv')
 
@@ -862,4 +952,5 @@ def foldout(a):
 
 print(sys.argv)
 
-run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))
+# run_exp(expno=int(sys.argv[1]), setup='tablet', ID=int(sys.argv[2]))
+run_exp(expno=25, setup='laptop', ID=0)
