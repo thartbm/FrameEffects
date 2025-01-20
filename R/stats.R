@@ -449,6 +449,9 @@ motionperceptionTtest <- function() {
   my_ttest <- t.test(classic, background, paired=TRUE)
   print(my_ttest)
   
+  cat('proportion motion motion perceived in dot backgrounds compared to frames:\n')
+  print(mean(background) / mean(classic))
+  
 }
 
 # random dot texture frames -----
@@ -479,8 +482,14 @@ textureBackgroundTtests <- function() {
   print(my_ttest)
   
   cat('dot background vs. ZERO\n')
-  my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)])
+  my_ttest <- t.test( x=df$percept[which(df$stimtype == 'dotbackground' & df$fixdot==FALSE)])
   print(my_ttest)
+  
+  cat('average effect in classic frame:\n')
+  print(mean(df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)]))
+  
+  cat('proportion illusory effect in dots background compared to frames:\n')
+  print(mean(df$percept[which(df$stimtype == 'dotbackground' & df$fixdot==FALSE)]) / mean((df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)])))
 }
 
 textureBackgroundANOVA <- function() {
