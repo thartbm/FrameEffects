@@ -2,3 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+
+
+*.pdf
+*.docx
+*.doc
+*.svg
+*.png
+*.tiff
+*.mp4
+*.mkv
