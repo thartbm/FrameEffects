@@ -632,16 +632,20 @@ QRcodes <- function() {
   
 }
 
-fig1_offsets <- function(target='inline') {
+fig3_offsets <- function(target='inline') {
   
   width  <- 8
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
-    svglite::svglite(file='doc/fig/svg/fig1_offset.svg', width=width, height=height, fix_text_size = FALSE)
+    svglite::svglite(file='doc/fig/svg/fig3_offset.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
-    cairo_pdf(filename='doc/fig/pdf/fig1_offset.pdf', width=width, height=height)
+    cairo_pdf(filename='doc/fig/pdf/fig3_offset.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig3_offset.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1:2),
@@ -662,8 +666,10 @@ fig1_offsets <- function(target='inline') {
   
   plot(-1000,-1000,
        xlim=c(-1,13), ylim=c(0,6),
-       main='Horizontal Offset',xlab='horizontal offset [dva]',ylab='illusion strength [dva]',
+       main='',xlab='horizontal offset [dva]',ylab='perceived seperation [dva]',
        bty='n', ax=F)
+  
+  title(main='A', adj=0)
   
   lines( x = c(-0.5,12.5), y = c(4, 4), col='#999999', lty=2)
   
@@ -691,6 +697,13 @@ fig1_offsets <- function(target='inline') {
     col.idx <- ((fsi-1)*2)+1
     # col.idx <- fsi
     
+    ofs <- 1 + (fsi*3)
+    
+    lines(x = rep(2.5+(0.5*ofs),2),
+          y = c(0,4),
+          col = cols.op[col.idx],
+          lty=2)
+    
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
              border = NA,
@@ -702,14 +715,17 @@ fig1_offsets <- function(target='inline') {
   axis(side=2, at=c(0,2,4,6))
   axis(side=1, at=c(0,3,6,9,12))
   
-  legend(6,6,legend=sprintf('%d dva',c(1:3)*3),title='inner frame size', bty='n',lty=1,col=cols.op[c(1,3,5)])
+  legend(6,7,legend=sprintf('%d dva',1+c(1:3)*3),title='frame size', bty='n',lty=1,col=cols.op[c(1,3,5)],xpd=TRUE)
   
   # plot 3: vertical frame offset
   
   plot(-1000,-1000,
        xlim=c(-1,13), ylim=c(0,6),
-       main='Vertical Offset',xlab='vertical offset [dva]',ylab='illusion strength [dva]',
+       main='',xlab='vertical offset [dva]',ylab='perceived separation [dva]',
        bty='n', ax=F)
+  
+  title(main='B', adj=0)
+  
   
   lines( x = c(-0.5,12.5), y = c(4, 4), col='#999999', lty=2)
   
@@ -738,6 +754,13 @@ fig1_offsets <- function(target='inline') {
     col.idx <- ((fsi-1)*2)+1
     # col.idx <- fsi
     
+    ofs <- 1 + (fsi*3)
+    
+    lines(x = rep(1.5+(0.5*ofs),2),
+          y = c(0,4),
+          col = cols.op[col.idx],
+          lty=2)
+    
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
              border = NA,
@@ -749,7 +772,7 @@ fig1_offsets <- function(target='inline') {
   axis(side=2, at=c(0,2,4,6))
   axis(side=1, at=c(0,3,6,9,12))
   
-  legend(6,6,legend=sprintf('%d dva',c(1:3)*3),title='inner frame size', bty='n',lty=1,col=cols.op[c(1,3,5)])
+  legend(6,7,legend=sprintf('%d dva',1+c(1:3)*3),title='frame size', bty='n',lty=1,col=cols.op[c(1,3,5)],xpd=TRUE)
   
 
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -759,17 +782,22 @@ fig1_offsets <- function(target='inline') {
 }
 
 
-fig2_depth <- function(target='inline') {
+fig4_depth <- function(target='inline') {
   
   width  <- 4
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
-    svglite::svglite(file='doc/fig/svg/fig2_depth.svg', width=width, height=height, fix_text_size = FALSE)
+    svglite::svglite(file='doc/fig/svg/fig4_depth.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
-    cairo_pdf(filename='doc/fig/pdf/fig2_depth.pdf', width=width, height=height)
+    cairo_pdf(filename='doc/fig/pdf/fig_depth.pdf', width=width, height=height)
   }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig4_depth.png', width=width*dpi, height=height*dpi, res=dpi)
+  }
+  
   
   layout(mat = matrix(data = c(1),
                       ncol = 1,
@@ -790,7 +818,7 @@ fig2_depth <- function(target='inline') {
   
   plot(-1000,-1000,
        xlim=c(0.5,4.5), ylim=c(0,6),
-       main='Anaglyph',xlab='',ylab='illusion strength [dva]',
+       main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
   
   lines( x = c(0.5,4.5), y = c(4, 4), col='#999999', lty=2)
@@ -845,12 +873,16 @@ fig3_prepost <- function(target='inline') {
   
   width  <- 8
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig3_prepost.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig3_prepost.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig3_prepost.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1:2),
@@ -1001,8 +1033,9 @@ fig3_prepost <- function(target='inline') {
 
 fig4_probelag <- function(target='inline') {
   
-  width  <- 4
+  width  <- 8
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig4_probelag.svg', width=width, height=height, fix_text_size = FALSE)
@@ -1010,26 +1043,32 @@ fig4_probelag <- function(target='inline') {
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig4_probelag.pdf', width=width, height=height)
   }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig4_probelag.png', width=width*dpi, height=height*dpi, res=dpi)
+  }
   
-  layout(mat = matrix(data = c(1),
-                      ncol = 1,
+  layout(mat = matrix(data = c(1,2),
+                      nrow = 1,
                       byrow = TRUE)  )
   
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
   
-  participants <- getParticipants()
+  # participants <- getParticipants()
+  participants <- c(1:8)
   
   df <- getApparentLagData(participants, FUN=median)
   
   plot(-1000,-1000,
-       xlim=c(-5,6), ylim=c(-2,6),
+       xlim=c(-5,6), ylim=c(-1,5),
        main='Apparent Motion Temporal Offset',xlab='probe lag [% frame pass]',ylab='illusion strength [dva]',
        bty='n', ax=F)
   
   lines( x=c(-4.5, 5.5), y=c(4,4), lty=2, col='#999999')
   lines( x=c(-4.5, 5.5), y=c(0,0), lty=2, col='#999999')
+  
+  lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
   
   for (stimtype in c('classicframe','apparentframe')) {
     
@@ -1053,6 +1092,12 @@ fig4_probelag <- function(target='inline') {
       
     }
     
+    if (stimtype == 'classicframe') {
+      # X = X - 1
+    } else {
+      # X = X * -1
+    }
+    
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
              border = NA,
@@ -1062,11 +1107,74 @@ fig4_probelag <- function(target='inline') {
   }
   
   
-  axis(side=2, at=c(-2,0,2,4,6))
-  axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+  axis(side=2, at=c(0,2,4))
+  # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+  axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
   
-  legend(-3,6.25,legend=c('classic frame','apparent motion'), bty='n',lty=1,col=cols.op[c(1,5)])
+  legend(-4,5.6,legend=c('classic frame','apparent motion'), bty='n',lty=1,col=cols.op[c(1,5)])
   
+  
+  # # # # #    DIFFERENCE
+  
+  plot(-1000,-1000,
+       xlim=c(-1.5,1.5), ylim=c(-0.25,1.25),
+       main='Relative Illusion Strength',xlab='probe lag',ylab='apparent / classic',
+       bty='n', ax=F)
+  
+  lines( x=c(-1.5, 1.5), y=c(1,1), lty=2, col='#999999')
+  lines( x=c(-1.5, 1.5), y=c(0,0), lty=2, col='#999999')
+
+  avg <- c()
+  hci <- c()
+  lci <- c()
+  
+  col.idx <- 3
+  
+  for (flgr in c('before','during','after')) {
+    # print(fl)
+    
+    lg_df <- df[which(list('before'=df$framelag < -1, 'during'=df$framelag%in%c(-1,0,1), 'after'=df$framelag>1)[[flgr]]),]
+
+    classic  <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='classicframe'),], FUN=mean)
+    apparent <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='apparentframe'),], FUN=mean)
+    proportion <- apparent$percept / classic$percept
+    
+    
+    
+    # avg <- c(avg, mean(proportion))
+    avg <- mean(proportion)
+    ci  <- Reach::getConfidenceInterval(proportion)
+    # lci <- c(lci,ci[1])
+    # hci <- c(hci,ci[2])
+    lci <- c(lci,ci[1])
+    hci <- c(hci,ci[2])
+    
+    x <- list('before'=-1, 'during'=0, 'after'=1)[[flgr]]
+    
+    polygon( x = c(-0.3,0.3,0.3,-0.3)+x,
+             y = rep(ci, each=2),
+             border = NA,
+             col=cols.tr[col.idx], xpd=TRUE)
+    lines( x = c(-0.3,0.3)+x,
+           y = rep(avg,2),
+           col=cols.op[col.idx])
+    
+  }
+  
+  # print(avg)
+
+  # X = c(-1, 0, 1)
+  # 
+  # polygon( x = c(X, rev(X)),
+  #          y = c(lci, rev(hci)),
+  #          border = NA,
+  #          col=cols.tr[col.idx])
+  # lines(X,avg,col=cols.op[col.idx])
+  
+  axis(side=2, at=c(0,.5,1), labels=c('0%','50%','100%'))
+  # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+  # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
+  axis(side=1, at=c(-1,0,1), labels=c('-','simultaneous','+'))
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -1077,13 +1185,17 @@ fig4_probelag <- function(target='inline') {
 fig5_background <- function(target='inline') {
   
   width  <- 8
-  height <- 8
+  height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig5_background.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig5_background.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig5_background.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1:4),
@@ -1251,21 +1363,21 @@ fig5_background <- function(target='inline') {
        xlim=c(0.2,1), ylim=c(0,8),
        main='Background vs. Frame',xlab='motion duration [s]',ylab='illusion strength [dva]',
        bty='n', ax=F)
-  
+
   lines(c(0.2,6.8), c(4,4),
         col='#999999',lty=2)
-  
+
   df <- getTextureMotionData(participants, FUN=median)
-  
+
   df$Hz <- 1/df$period
-  
+
   stimtypes <- c( 'classicframe',
                   'classicframe',
                   'dotbackground' )
   fixate   <- c( TRUE, FALSE, FALSE)
-  
+
   for (stimno in c(1:length(stimtypes))) {
-    
+
     xad=0
     if (stimno == 1) {
       col.op <- '#333333'
@@ -1283,17 +1395,17 @@ fig5_background <- function(target='inline') {
       col.op <- cols.op[5]
       col.tr <- cols.tr[5]
     }
-    
+
     # percepts <- df$percept[which(df$stimtype == stimtypes[stimno]  & df$fixdot == fixate[stimno])]
     stimdf <- df[which(df$stimtype == stimtypes[stimno]  & df$fixdot == fixate[stimno]),]
-    
+
     avg <- aggregate(percept ~ Hz, data=stimdf, FUN=mean)
     ci  <- aggregate(percept ~ Hz, data=stimdf, FUN=Reach::getConfidenceInterval)
-    
-    
+
+
     Y <- c( ci$percept[,1], rev(ci$percept[,2]) )
     X <- c( rev(1/c(1:5)), 1/c(1:5))
-    
+
     polygon( x=X,
              y=Y,
              border=NA,
@@ -1303,7 +1415,7 @@ fig5_background <- function(target='inline') {
            y = avg$percept,
            col=col.op,
            lty=c(3,1,1)[stimno])
-    
+
   #   polygon( x = stimno+c(-0.35,0,0,-0.35)+xad,
   #            y = rep(ci, each=2),
   #            border = NA,
@@ -1316,9 +1428,9 @@ fig5_background <- function(target='inline') {
   #          y = rep(avg,2),
   #          col=col.op,
   #          lty=c(3,1,1)[stimno])
-  #   
+  #
   }
-  
+
   #axis(side=1,at=1/c(5,4,3,2,1),labels=c('&#8533;', '&#188;', '&#8531;', '&#189;', '1'))
   axis(side=1,at=1/c(5,4,3,2,1),labels=c('⅕', '¼', '⅓', '½', '1'), cex.axis=0.85)
   axis(side=2,at=c(0,2,4,6,8))
@@ -1335,14 +1447,14 @@ fig5_background <- function(target='inline') {
   # 1/5   &#8533;	&#x2155;
   
   
-  # text( c(1,2,3)+0.4,
-  #       par("usr")[3] - 0.7,
-  #       labels = c('frame fixated',
-  #                  'frame free',
-  #                  'dots free'),
-  #       srt = 33,
-  #       pos = 2,
-  #       xpd = TRUE )
+  text( c(1,2,3)+0.4,
+        par("usr")[3] - 0.7,
+        labels = c('frame fixated',
+                   'frame free',
+                   'dots free'),
+        srt = 33,
+        pos = 2,
+        xpd = TRUE )
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -1356,12 +1468,16 @@ fig6_internalmotion <- function(target='inline') {
   
   width  <- 8
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig6_internal.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig6_internal.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig6_internal.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1:2),
@@ -1507,12 +1623,16 @@ fig7_selfmotion <- function(target='inline') {
   
   width  <- 4
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig7_selfmotion.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig7_selfmotion.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig7_selfmotion.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1),
@@ -1589,12 +1709,16 @@ fig8_tasktime <- function(target='inline') {
   
   width  <- 4
   height <- 4
+  dpi    <- 300
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig8_tasktime.svg', width=width, height=height, fix_text_size = FALSE)
   }
   if (target=='pdf') {
     cairo_pdf(filename='doc/fig/pdf/fig8_tasktime.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig8_tasktime.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
   layout(mat = matrix(data = c(1),
