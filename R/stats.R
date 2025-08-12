@@ -337,12 +337,12 @@ postdictionANOVA <- function() {
   
   df$participant <- as.factor(df$participant)
   
-  my_aov <- afex::aov_ez(  id='participant',
-                           dv='percept',
-                           data=df,
-                           within=c('framepasses', 'flashoffset')
-  )
-  print(my_aov)
+  # my_aov <- afex::aov_ez(  id='participant',
+  #                          dv='percept',
+  #                          data=df,
+  #                          within=c('framepasses', 'flashoffset')
+  # )
+  # print(my_aov)
   
   df$flashoffset <- abs(df$flashoffset)
   
@@ -394,7 +394,8 @@ postdictionTtests <- function() {
 
 probeLagANOVA <- function() {
   
-  participants <- getParticipants()
+  # participants <- getParticipants()
+  participants <- c(1:8)
   
   df <- getApparentLagData(participants, FUN=median)
   
@@ -475,6 +476,12 @@ textureBackgroundTtests <- function() {
                       paired=TRUE)
   print(my_ttest)
   
+  mbtt <- BayesFactor::ttestBF( x =      df$percept[which(df$stimtype == 'classicframe' & df$fixdot==TRUE)],
+                                y =      df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)],
+                                paired = TRUE )
+  
+  print(mbtt)
+  
   cat('classic frame vs. dot background\n')
   my_ttest <- t.test( x=df$percept[which(df$stimtype == 'classicframe' & df$fixdot==FALSE)],
                       y=df$percept[which(df$stimtype == 'dotbackground' & df$fixdot==FALSE)],
@@ -554,6 +561,33 @@ internalmotionIllusionANOVA <- function() {
                            within=c('stimtype')
   )
   print(my_aov)
+  
+  
+  int.mot.contrasts <- list( counter.static  = c(-1, 0, 0, 1),
+                             static.moving   = c(0, 0, -1, 1),
+                             moving.doubler  = c(0, -1, 1, 0),
+                             doubler.static  = c(0, -1, 0, 1),
+                             doubler.counter = c(1, -1, 0, 0),
+                             moving.counter  = c(1, 0, -1, 0))
+  
+  cellmeans <- emmeans::emmeans(my_aov, specs=c('stimtype'))
+  cat('\n')
+  print(cellmeans)
+  
+  emmeans::contrast(cellmeans, int.mot.contrasts, adjust='sidak')
+  
+  df <- getTextureMotionData(participants, FUN=median)
+  df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & df$period==1/3),]
+  
+  print(t.test(x = df$percept[which(df$stimtype=='classicframe')],
+               y = df$percept[which(df$stimtype=='dotmovingframe')],
+               paired = TRUE))
+  
+  print( BayesFactor::ttestBF(
+                x = df$percept[which(df$stimtype=='classicframe')],
+                y = df$percept[which(df$stimtype=='dotmovingframe')],
+                paired = TRUE))
+  
   
 }
 
