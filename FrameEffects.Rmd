@@ -1,6 +1,7 @@
 ---
 title: "Frame effects in space and time"
 output:
+  pdf_document: default
   html_notebook: default
   word_document: default
 ---
@@ -60,7 +61,7 @@ Here, we used the same frame movement amplitude (4 dva) and cycle duration (1/4 
 We take the median reported percept for all trials within each of the 15 conditions (frame-sizes x frame offsets) for each participant. Here we plot the average across participants, along with a 95% confidence interval of the mean, assuming a t-distribution:
 
 ```{r offset-figure, fig.width=8, fig.height=4}
-fig1_offsets()
+fig3_offsets()
 ```
 
 There clearly is an affect of frame offset: larger offsets result in smaller illusions. This may interact with the direction of the offset and the size of the frame. Which we will first test with an ANOVA:
@@ -94,7 +95,7 @@ First, to test depth perception in our participants they perform a short task ju
 First we look at the reported illusion strength in all 4 conditions:
 
 ```{r depth-figure, fig.width=4, fig.height=4}
-fig2_depth()
+fig4_depth()
 ```
 
 Dots are the median responses within individual participants, lines the average across participants, and shaded areas the 95% confidence interval of the mean estimated by assuming a t-distribution.
@@ -138,7 +139,7 @@ The conditions with 1 probe flashed with the frame were still somewhat unclear, 
 Let's first look at the main data from this experiment.
 
 ```{r postdiction_fig, fig.width=8, fig.height=4}
-fig3_prepost()
+fig5_prepost()
 ```
 
 Here, the X-axis represents the time when the probes are flashed, relative to the onset/offset of the frame movement. On the left, the probes are flashed before the frame is on the screen (-2 passes), and on the right after the frame has disappeared (+2 passes).
@@ -177,8 +178,8 @@ The frame motion amplitude is 4 dva, the frame size is 6 dva on the inside (7 dv
 
 Let's have a look at the reported percepts:
 
-```{r laggedprobe_fig, fig.width=8, fig.height=4}
-fig4_probelag()
+```{r laggedprobe_fig, fig.width=5, fig.height=4}
+fig6_probelag()
 ```
 
 Within the classic frame stimuli (yellow) there is some modulation of illusion strength, but it does not seem to go down to 0 at any point. The apparent motion frame seems to evoke somewhat smaller illusions, and there appears to be a stronger modulation of the illusion by lagged presentation of the probes.
@@ -207,8 +208,8 @@ Here we test if the frame needs to be a frame, with edges, or if a patterned bac
 
 Here is the data:
 
-```{r background-motion-fig, fig.width=8, fig.height=4}
-fig5_background()
+```{r background-motion-fig, fig.width=11, fig.height=3.5}
+fig7_background()
 ```
 
 In the first panel (top left), we can see that the amount of motion seems to be overestimated for both the regular frame as well as the moving brackground strip. It seems close, but it could be perhaps a bit more overestimated for the regular frame. Let's test that statistically:
@@ -271,7 +272,7 @@ As before, we first look at the amount of perceived motion in these four stimuli
 Here is the data:
 
 ```{r internal-motion-figure, fig.width=8, fig.height=4}
-fig6_internalmotion()
+fig8_internalmotion()
 ```
 
 Seems like very little effect of the internal motion on perceived frame motion, or on illusion. Although the frame where the dots move double the amount of the frame might have some decreased motion perception and increased illusion. With run two F-tests on illusion strength, with internal dot motion (4 levels) as explanatory factor.
@@ -307,7 +308,7 @@ If the efference copy of the hand movement modulates the perceived frame movemen
 Let's have a look at the data:
 
 ```{r self-motion-data, fig.width=4, fig.height=4}
-fig7_selfmotion()
+fig9_selfmotion()
 ```
 
 The conditions are in order of potentially increasing illusion strength, but, as can be seen, there is no obvious difference between conditions.
@@ -337,7 +338,7 @@ We divided the time in 4 epochs of 30 minutes, and took all responses from trial
 Let's look at the data here:
 
 ```{r time-on-task-plot, fig.width=4, fig.height=4}
-fig8_tasktime()
+fig10_tasktime()
 ```
 
 We can see that the highest illusion strength might actually occur in the fourth (last) 30 minute epoch. But this plot only shows averages on the available data in each epoch, but data is not guaranteed for every participant, so this might just be coincidence.
@@ -357,14 +358,14 @@ This block outputs all above figures to various formats.
 ```{r fig-export}
 for (target in c('pdf', 'svg', 'png')) {
   
-  fig1_offsets(target=target)
-  fig2_depth(target=target)
-  fig3_prepost(target=target)
-  fig4_probelag(target=target)
-  fig5_background(target=target)
-  fig6_internalmotion(target=target)
-  fig7_selfmotion(target=target)
-  fig8_tasktime(target=target)
+  fig3_offsets(target=target)
+  fig4_depth(target=target)
+  fig5_prepost(target=target)
+  fig6_probelag(target=target)
+  fig7_background(target=target)
+  fig8_internalmotion(target=target)
+  fig9_selfmotion(target=target)
+  fig10_tasktime(target=target)
   
 }
 ```
