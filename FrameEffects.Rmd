@@ -1,9 +1,14 @@
 ---
 title: "Frame effects in space and time"
 output:
-  word_document: default
   html_notebook: default
+  word_document: default
 ---
+
+```{r setup, cache=FALSE, include=FALSE}
+library(knitr)
+opts_chunk$set(comment='')
+```
 
 # Overview
 
@@ -29,7 +34,7 @@ In tasks where this was not too much out of place, a standard frame was shown wi
 
 # Setup
 
-Assuming all libraries are installed on the system, we first we import local functions.
+Assuming all libraries are installed on the system, we first import local functions.
 
 ```{r source-libraries}
 
@@ -66,7 +71,9 @@ Ignoring conditions with no offset, we run an ANOVA on percept with with offset 
 probeDistanceANOVA()
 ```
 
-There is the expected main effect of offset size (F(2.11, 27.44)=93.91, p\<.001), as well as a main effect of frame size (F(1.63,21.14)=7.98, p=.004). There is no main effect of, or interaction involving the offset direction. There is an interaction between frame size and offset size (F(3.45,44.86)=6.17, p\<.001).
+There is the expected main effect of offset size (F(2.11, 27.44)=93.91, p\<.001), as well as a main effect of frame size (F(1.63,21.14)=7.98, p=.004). There is an interaction between frame size and offset size (F(3.45,44.86)=6.17, p\<.001).
+
+There is no effect of frame offset direction (F(1,13)=3.95, p=0.68) nor does frame offset direction interact with frame size (F(1.32,17.18)=3.22; p=0.81).
 
 It seems that the 9 dva frame elicits a smaller effect than the other two frame sizes when there is no offset, and a larger effect at 6 dva offset.
 
@@ -144,9 +151,9 @@ The timing of when the probes are flashed should have an effect, as it can be cl
 postdictionANOVA()
 ```
 
-In the first ANOVA with 2 factors, there is a main effect of both `framepasses` (F(1.41,18.36)=4.26, p=.042) and of `flashoffset` (F(2.84,36.86)=144.40), p\<.001). There is no interaction of the two.
+In the first ANOVA with 2 factors, there is a main effect of both _framepasses_ (F(1.41,18.36)=4.26, p=.042) and of _flashoffset_ (F(2.84,36.86)=144.40), p\<.001). There is no interaction of the two.
 
-The second ANOVA with 3 factors, there is no longer an effect of `framepasses` but there is still a main effect of `flashoffset` (F(1.88,24.39)=310.67, p\<.001). There is no main effect of `diction` (post or pre), but `flashoffset` does interact with `diction` (F(1.19,15.45)=5.98, p=.023). This is probably because of the difference in illusion strength between stimuli where either the second or the first flashed probed was shown simultaneously with the frame. We do 3 post-hoc t-tests to check this out.
+The second ANOVA with 3 factors, there is no longer an effect of _framepasses_ (F(1.24,16.12)=3.44; p=.075) but there is still a main effect of _flashoffset_ (F(1.88,24.39)=310.67, p\<.001). There is no main effect of _diction_ (post or pre), but _flashoffset_ does interact with _diction_ (F(1.19,15.45)=5.98, p=.023). This is probably because of the difference in illusion strength between stimuli where either the second or the first flashed probed was shown simultaneously with the frame. We do 3 post-hoc t-tests to check this out.
 
 ```{r postdiction-t-tests}
 postdictionTtests()
@@ -170,7 +177,7 @@ The frame motion amplitude is 4 dva, the frame size is 6 dva on the inside (7 dv
 
 Let's have a look at the reported percepts:
 
-```{r laggedprobe_fig, fig.width=4, fig.height=4}
+```{r laggedprobe_fig, fig.width=8, fig.height=4}
 fig4_probelag()
 ```
 
@@ -182,7 +189,9 @@ Let's test for statistical significance with a 2x10 repeated measures ANOVA on t
 probeLagANOVA()
 ```
 
-Do we need follow-ups to this?
+This more or less confirms what can be seen in the figure. First, classic frames overall seem to evoke a stronger illusion (the main effect of frame type). Second, there is a tempering of the illusory offset introduced by the various time lags between extreme frame positions (which is when the apparent motion frame is visible) and the presentation of the probes (the main effect of lag). That is, when the probes are presented at time points when the frame is not at it's extreme positions, there is less illusory offset.
+
+Third, there is also an interaction, meaning that the effect of the lag is different for the two frame types. It's hard to see what that difference is though.
 
 ## Conclusions on effects of time
 
@@ -198,7 +207,7 @@ Here we test if the frame needs to be a frame, with edges, or if a patterned bac
 
 Here is the data:
 
-```{r background-motion-fig, fig.width=9, fig.height=9}
+```{r background-motion-fig, fig.width=8, fig.height=4}
 fig5_background()
 ```
 
@@ -346,7 +355,7 @@ So there is clearly an effect of amplitude, but no effect of interval and no int
 This block outputs all above figures to various formats.
 
 ```{r fig-export}
-for (target in c('pdf','svg')) {
+for (target in c('pdf', 'svg', 'png')) {
   
   fig1_offsets(target=target)
   fig2_depth(target=target)
