@@ -31,6 +31,7 @@ getAllData <- function(FUN=median) {
                     'A1_DepthControl'           = getDepthControlData(participants, FUN=FUN),
                     'A2_ProbeDistance'          = getProbeDistanceData(participants, FUN=FUN),
                     'B1_ApparentLag'            = getApparentLagData(participants, FUN=FUN),
+                    # 'B1_ApparentLag'            = getApparentLagData(c(1:8), FUN=FUN),
                     'B2_PreDiction'             = getPreDictionData(participants, FUN=FUN),
                     'T1_ExperimentTime'         = getExperimentTimeData(participants, FUN=FUN),
                     'C1_SelfMoved'              = getSelfMotionData(participants, FUN=FUN),
@@ -314,7 +315,7 @@ getPreDictionData <- function(participants, timedata=FALSE, FUN=median) {
     } else {
       
       df <- df[which(df$amplitude == 4),]
-      # df <- df[which(abs(df$flashoffset) < 3),]
+      df <- df[which(abs(df$flashoffset) > -3),]
       df <- df[which(df$framepasses < 4),]
       df <- aggregate(percept ~ period + amplitude + flashoffset + framepasses, data=df, FUN=FUN, na.rm=FALSE)
       
@@ -357,6 +358,7 @@ getExperimentTimeData <- function(participants, FUN=median) {
   amplitude   <- c()
   percept     <- c()
   
+  dpdf <- NA
   
   for (ppno in participants) {
     
@@ -402,9 +404,19 @@ getExperimentTimeData <- function(participants, FUN=median) {
         
       }
       
+      if (is.data.frame(dpdf)) {
+        dpdf <- rbind(dpdf, inppdf)
+      } else {
+        dpdf <- inppdf
+      }
+
     }
     
   }
+  
+  # print(table(dpdf$amplitude))
+  # print(length(dpdf$amplitude))
+  
   
   df <- data.frame(participant, interval, from_s, to_s, amplitude, percept)
   
