@@ -574,7 +574,9 @@ internalmotionIllusionANOVA <- function() {
   cat('\n')
   print(cellmeans)
   
-  emmeans::contrast(cellmeans, int.mot.contrasts, adjust='sidak')
+  concon <- emmeans::contrast(cellmeans, int.mot.contrasts, adjust='sidak')
+  
+  print(concon)
   
   df <- getTextureMotionData(participants, FUN=median)
   df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & df$period==1/3),]
