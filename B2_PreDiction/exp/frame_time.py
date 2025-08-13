@@ -146,6 +146,14 @@ def doTrial(cfg):
         framepasses = 1
         trialdict['framepasses'] = 1
 
+    if 'label' in trialdict.keys():
+        label = trialdict['label']
+    else:
+        label = ''
+
+    cfg['hw']['text'].text = label
+    cfg['hw']['text'].pos = [4,4]
+
     # this is the length of a "supercycle" in "passes":
     # a pass is one movement of the frame from left to right or vice versa
     # so 1 cycle could be the time it takes for the frame to be wher it started
@@ -169,6 +177,7 @@ def doTrial(cfg):
 
     p = period + extra_time
     d = (distance/period) * p
+
 
     #print('period: %0.3f, p: %0.3f'%(period,p))
     #print('distance: %0.3f, d: %0.3f'%(distance,d))
@@ -195,8 +204,15 @@ def doTrial(cfg):
     # we show a blank screen for 1/3 - 2.3 of a second (uniform dist):
     blank = 1/3 + (random.random() * 1/3)
 
+    if cfg['expno'] == 2:
+        blank = p*2
+        demo_duration = blank + (supercycle_length * p * 2) - extra_time
+
     # the frame motion gets multiplied by -1 or 1:
     xfactor = [-1,1][random.randint(0,1)]
+
+    if cfg['expno'] == 2:
+        xfactor = 1
 
     # the mouse response has a random offset between -3 and 3 degrees
     mouse_offset = (random.random() - 0.5) * 6
@@ -226,8 +242,13 @@ def doTrial(cfg):
             event.clearEvents(eventType='keyboard')
             cfg['hw']['win'].flip()
 
+        if cfg['expno'] == 2:
+            if (time.time() - trial_start_time) > demo_duration:
+                reaction_time = 0
+                waiting_for_response = False
+
         # on every frame:
-        this_frame_time = time.time() - trial_start_time
+        this_frame_time = time.time() - trial_start_time - blank
         frame_time_elapsed = this_frame_time - previous_frame_time
         #print(round(1/frame_time_elapsed))
 
@@ -244,6 +265,11 @@ def doTrial(cfg):
         # dots_period is relative to the frame_period
 
         lead_in_passes = (framepasses+2)
+
+        if cfg['expno'] == 2:
+            lead_in_passes = (framepasses+2)
+            supercycle_time += 0
+            extra_time = 0
 
         frame_on = False
         if (abs(supercycle_time - ((lead_in_passes*p) - ((p*framepasses)/2))) < (((p*framepasses)+extra_time)/2)):
@@ -318,6 +344,8 @@ def doTrial(cfg):
             if flash_blue:
                 cfg['hw']['bluedot'].draw()
 
+        cfg['hw']['text'].draw()
+
 
 
         # in DEGREES:
@@ -329,8 +357,11 @@ def doTrial(cfg):
         # cfg['hw']['reddot_ref'].pos = [-percept+(2.5*cfg['stim_offsets'][0]),cfg['stim_offsets'][1]+6.5]
         cfg['hw']['bluedot_ref'].pos = [ (-1*frameoffset[0])+percept, (-1*frameoffset[1])+1 ]
         cfg['hw']['reddot_ref'].pos = [  (-1*frameoffset[0])-percept, (-1*frameoffset[1])-1 ]
-        cfg['hw']['bluedot_ref'].draw()
-        cfg['hw']['reddot_ref'].draw()
+        if cfg['expno'] == 2:
+            pass
+        else:
+            cfg['hw']['bluedot_ref'].draw()
+            cfg['hw']['reddot_ref'].draw()
 
         cfg['hw']['win'].flip()
 
@@ -704,16 +735,15 @@ def getTasks(cfg):
 
         condictionary = [
 
-                         # {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-3, 'framepasses':5},
-                         # {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':5},
-                         # {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-1, 'framepasses':5},
-                         # {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 0, 'framepasses':5},
-                         # {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':5},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': -1, 'framepasses':1},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': -2, 'framepasses':2},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': -3, 'framepasses':3},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': -4, 'framepasses':4},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': -5, 'framepasses':5},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 2, 'framepasses':1, 'label':'pre, 0 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'pre, 1 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 0, 'framepasses':1, 'label':'pre/post, 2 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-1, 'framepasses':1, 'label':'post, 1 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1, 'label':'post, 0 overlap'},
+
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'pre, 1 overlap\n1 frame pass'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':2, 'label':'pre, 1 overlap\n2 frame passes'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':3, 'label':'pre, 1 overlap\n3 frame passes'},
 
                         ]
 
