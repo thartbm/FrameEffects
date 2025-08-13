@@ -57,6 +57,11 @@ def doTrial(cfg):
     else:
         frameoffset = [0,0]
 
+    if 'label' in trialdict.keys():
+        label = trialdict['label']
+    else:
+        label = ''
+
 
     # # change frequency and distance for static periods at the extremes:
     # if (0.35 - period) > 0:
@@ -97,8 +102,14 @@ def doTrial(cfg):
     # we show a blank screen for 1/3 - 2.3 of a second (uniform dist):
     blank = 1/3 + (random.random() * 1/3)
 
+    if cfg['expno'] == 2:
+        blank = 1/3
+
     # the frame motion gets multiplied by -1 or 1:
     xfactor = [-1,1][random.randint(0,1)]
+
+    if cfg['expno'] == 2:
+        xfactor = 1
 
     # the mouse response has a random offset between -3 and 3 degrees
     mouse_offset = (random.random() - 0.5) * 6
@@ -111,9 +122,18 @@ def doTrial(cfg):
 
     frame_centre = [flashdot_centre[0]+frameoffset[0], flashdot_centre[1]+frameoffset[1]]
 
+    if cfg['expno'] == 2:
+        cfg['hw']['text'].text = label
+        cfg['hw']['text'].pos = [4,4]
+
     print('preparation done...')
 
     while waiting_for_response:
+
+        if cfg['expno'] == 2:
+            if (time.time() > (trial_start_time + 3.25)):
+                reaction_time = 0
+                waiting_for_response = False
 
         # blank screen of random length between 1/3 and 2.3 seconds
         while (time.time() - trial_start_time) < blank:
@@ -156,6 +176,9 @@ def doTrial(cfg):
 
         # flip offset according to invert percepts:
         offsetX = offsetX * xfactor
+
+        if cfg['expno'] == 2:
+            cfg['hw']['text'].draw()
 
         # show frame for the classic frame:
         if trialdict['stimtype'] in ['classicframe']:
@@ -202,8 +225,11 @@ def doTrial(cfg):
         # blue is on top:
         cfg['hw']['bluedot_ref'].pos = [percept-flashdot_centre[0], 1-flashdot_centre[0]+2]
         cfg['hw']['reddot_ref'].pos = [-percept-flashdot_centre[1],-1-flashdot_centre[1]+2]
-        cfg['hw']['bluedot_ref'].draw()
-        cfg['hw']['reddot_ref'].draw()
+        if cfg['expno'] == 2:
+            pass
+        else:
+            cfg['hw']['bluedot_ref'].draw()
+            cfg['hw']['reddot_ref'].draw()
 
         cfg['hw']['win'].flip()
 
@@ -472,17 +498,17 @@ def getTasks(cfg):
         # (speeds: 12, 24, 36, 48, 60 deg/s)
         condictionary = [
 
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[4,3], 'frameoffset':[ 0.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[4,3], 'frameoffset':[ 6.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[4,3], 'frameoffset':[12.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 0.0,  0], 'label':'no offset'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 6.0,  0], 'label':'6 dva horizontal offset'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[12.0,  0], 'label':'12 dva horizontal offset'},
 
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 0.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[ 6.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[12.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[0,  0.0], 'label':'no offset'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[0,  6.0], 'label':'6 dva vertical offset'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6], 'frameoffset':[0, 12.0], 'label':'12 dva vertical offset'},
 
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[ 0.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[ 6.0,  0]},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[12.0,  0]},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[7,6],  'frameoffset':[ 6.0,  0], 'label':'regular 7x7 dva frame'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[4,3],  'frameoffset':[ 6.0,  0], 'label':'small 4x4 dva frame'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'classicframe', 'framesize':[10,9], 'frameoffset':[ 6.0,  0], 'label':'large 10x10 dva frame'},
 
                          ]
 
