@@ -170,6 +170,15 @@ def doDotTrial(cfg):
         fixdot = False
         trialdict['fixdot'] = fixdot
 
+    if 'label' in trialdict.keys():
+        label = trialdict['label']
+    else:
+        label = ''
+    
+    cfg['hw']['text'].text = label
+    cfg['hw']['text'].pos = [4,4]
+
+
     # change frequency and distance for static periods at the extremes:
     if (0.35 - period) > 0:
         # make sure there is a 350 ms inter-flash interval
@@ -207,8 +216,14 @@ def doDotTrial(cfg):
     # we show a blank screen for 1/3 - 2.3 of a second (uniform dist):
     blank = 1/3 + (random.random() * 1/3)
 
+    if cfg['expno'] in [2,3]:
+        blank = 1/5
+
     # the frame motion gets multiplied by -1 or 1:
     xfactor = [-1,1][random.randint(0,1)]
+
+    if cfg['expno'] in [2,3]:
+        xfactor = 1
 
     # the mouse response has a random offset between -3 and 3 degrees
     mouse_offset = (random.random() - 0.5) * 6
@@ -235,6 +250,11 @@ def doDotTrial(cfg):
             event.clearEvents(eventType='mouse')
             event.clearEvents(eventType='keyboard')
             cfg['hw']['win'].flip()
+        
+        if cfg['expno'] in [2,3]:
+            if (time.time() > (trial_start_time + 3.5)):
+                reaction_time = 0
+                waiting_for_response = False
 
         # on every frame:
         this_frame_time = time.time() - trial_start_time
@@ -333,6 +353,10 @@ def doDotTrial(cfg):
             cfg['hw']['bluedot'].draw()
 
 
+        if cfg['expno'] in [2,3]:
+            cfg['hw']['text'].draw()
+
+
         # in DEGREES:
         mousepos = cfg['hw']['mouse'].getPos()
         percept = (mousepos[0] + mouse_offset) / 4
@@ -342,8 +366,11 @@ def doDotTrial(cfg):
         # cfg['hw']['reddot_ref'].pos = [-percept+(2.5*cfg['stim_offsets'][0]),cfg['stim_offsets'][1]+6.5]
         cfg['hw']['bluedot_ref'].pos = [ (-1*frameoffset[0])+percept, (-1*frameoffset[1])+1 ]
         cfg['hw']['reddot_ref'].pos = [  (-1*frameoffset[0])-percept, (-1*frameoffset[1])-1 ]
-        cfg['hw']['bluedot_ref'].draw()
-        cfg['hw']['reddot_ref'].draw()
+        if cfg['expno'] in [2,3]:
+            pass
+        else:
+            cfg['hw']['bluedot_ref'].draw()
+            cfg['hw']['reddot_ref'].draw()
 
         cfg['hw']['win'].flip()
 
@@ -391,6 +418,15 @@ def doDotTrial(cfg):
     cfg['hw']['win'].flip()
 
     return(cfg)
+
+
+# # # # # # # # # # # # # # # # # 
+# 
+# CURRENTLY UNUSED FUNCTION
+# doMouseTrial()
+# 
+# # # # # # # # # # # # # # # # #
+
 
 def doMouseTrial(cfg):
 
@@ -1096,59 +1132,73 @@ def getTasks(cfg):
 
         condictionary = [
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'dotmovingframe', 'fixdot':False},
+            {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False, 'label':'classic frame (free viewing)'},
+            {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True, 'label':'classic frame (fixation)'},
+            {'period':1/3, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False, 'label':'dot background'},
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'dotwindowframe', 'fixdot':False},
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
-             {'period':1/1, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
-             {'period':1/5, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'dotmovingframe', 'fixdot':False},
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
-             {'period':1/1, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
-             {'period':1/5, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
-             {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
-             {'period':1/1, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
-             {'period':1/5, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'dotwindowframe', 'fixdot':False},
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'dotcounterframe', 'fixdot':False},
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
+            #  {'period':1/1, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
+            #  {'period':1/5, 'amplitude':4, 'stimtype':'dotbackground', 'fixdot':False},
 
-             {'period':1/3, 'amplitude':4, 'stimtype':'dotdoublerframe', 'fixdot':False},
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
+            #  {'period':1/1, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
+            #  {'period':1/5, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
+            #  {'period':1/1, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
+            #  {'period':1/5, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':True},
+
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'dotcounterframe', 'fixdot':False},
+
+            #  {'period':1/3, 'amplitude':4, 'stimtype':'dotdoublerframe', 'fixdot':False},
 
              ]
 
-        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
     if cfg['expno']==3:
 
-        condictionary = [{'period':1.0, 'amplitude':12, 'stimtype':'dotmovingframe'},
-                         {'period':1/2, 'amplitude':12, 'stimtype':'dotmovingframe'},
-                         {'period':1/3, 'amplitude':12, 'stimtype':'dotmovingframe'},
-                         {'period':1/4, 'amplitude':12, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':12, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':2.4, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':4.8, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':7.2, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':9.6, 'stimtype':'dotmovingframe'},
-                         {'period':1/5, 'amplitude':12., 'stimtype':'dotmovingframe'},
+        condictionary = [
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'fixdot':False},
 
-                         {'period':1.0, 'amplitude':12, 'stimtype':'dotbackground'},
-                         {'period':1/2, 'amplitude':12, 'stimtype':'dotbackground'},
-                         {'period':1/3, 'amplitude':12, 'stimtype':'dotbackground'},
-                         {'period':1/4, 'amplitude':12, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':12, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':2.4, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':4.8, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':7.2, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':9.6, 'stimtype':'dotbackground'},
-                         {'period':1/5, 'amplitude':12., 'stimtype':'dotbackground'},
+                         {'period':1/3, 'amplitude':4, 'stimtype':'dotcounterframe', 'fixdot':False, 'label':'dots counter'}, # counter
+                         {'period':1/3, 'amplitude':4, 'stimtype':'dotwindowframe', 'fixdot':False, 'label':'dots static'},  # static
+                         {'period':1/3, 'amplitude':4, 'stimtype':'dotmovingframe', 'fixdot':False, 'label':'dots match'},  # moving              
+                         {'period':1/3, 'amplitude':4, 'stimtype':'dotdoublerframe', 'fixdot':False, 'label':'dots double'}, # double
 
-                         {'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':12, 'stimtype':'classicframe'},
-                         {'period':1/5, 'amplitude':2.4, 'stimtype':'classicframe'},
+            
+                        #  {'period':1.0, 'amplitude':12, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/2, 'amplitude':12, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/3, 'amplitude':12, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/4, 'amplitude':12, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':12, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':2.4, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':4.8, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':7.2, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':9.6, 'stimtype':'dotmovingframe'},
+                        #  {'period':1/5, 'amplitude':12., 'stimtype':'dotmovingframe'},
+
+                        #  {'period':1.0, 'amplitude':12, 'stimtype':'dotbackground'},
+                        #  {'period':1/2, 'amplitude':12, 'stimtype':'dotbackground'},
+                        #  {'period':1/3, 'amplitude':12, 'stimtype':'dotbackground'},
+                        #  {'period':1/4, 'amplitude':12, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':12, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':2.4, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':4.8, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':7.2, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':9.6, 'stimtype':'dotbackground'},
+                        #  {'period':1/5, 'amplitude':12., 'stimtype':'dotbackground'},
+
+                        #  {'period':1.0, 'amplitude':12, 'stimtype':'classicframe'},
+                        #  {'period':1/5, 'amplitude':12, 'stimtype':'classicframe'},
+                        #  {'period':1/5, 'amplitude':2.4, 'stimtype':'classicframe'},
                          ]
 
-        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=4, nrepetitions=3) )
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
     if cfg['expno']==4: # DEMO dot frame
 
@@ -1315,7 +1365,7 @@ def getTasks(cfg):
 
 
 
-def dictToBlockTrials(cfg, condictionary, nblocks, nrepetitions):
+def dictToBlockTrials(cfg, condictionary, nblocks, nrepetitions, shuffle=True):
 
     cfg['conditions'] = condictionary
 
@@ -1326,7 +1376,8 @@ def dictToBlockTrials(cfg, condictionary, nblocks, nrepetitions):
 
         for repeat in range(nrepetitions):
             trialtypes = list(range(len(condictionary)))
-            random.shuffle(trialtypes)
+            if shuffle:
+                random.shuffle(trialtypes)
             blockconditions += trialtypes
 
         blocks += [{'trialtypes':blockconditions,
