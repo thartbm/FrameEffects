@@ -85,6 +85,14 @@ def doDotTrial(cfg):
         maxdotlife = cfg['hw']['dotfield']['maxdotlife']
         # trialdict['dotlife'] = maxdotlife
 
+    if 'label' in trialdict.keys():
+        label = trialdict['label']
+    else:
+        label = ''
+
+    cfg['hw']['text'].text = label
+    cfg['hw']['text'].pos = [4,4]
+
     # # change frequency and distance for static periods at the extremes:
     # if (0.35 - period) > 0:
     #     # make sure there is a 350 ms inter-flash interval
@@ -126,8 +134,14 @@ def doDotTrial(cfg):
     # we show a blank screen for 1/3 - 2.3 of a second (uniform dist):
     blank = 1/3 + (random.random() * 1/3)
 
+    if cfg['expno'] in [2,3]:
+        blank = p
+
     # the frame motion gets multiplied by -1 or 1:
     xfactor = [-1,1][random.randint(0,1)]
+
+    if cfg['expno'] in [2,3]:
+        xfactor = 1
 
     # the mouse response has a random offset between -3 and 3 degrees
     mouse_offset = (random.random() - 0.5) * 6
@@ -152,6 +166,11 @@ def doDotTrial(cfg):
             event.clearEvents(eventType='mouse')
             event.clearEvents(eventType='keyboard')
             cfg['hw']['win'].flip()
+
+        if cfg['expno'] in [2,3]:
+            if (time.time() - trial_start_time) > (p * 9):
+                reaction_time = 0
+                waiting_for_response = False
 
         # on every frame:
         this_frame_time = time.time() - trial_start_time
@@ -252,8 +271,11 @@ def doDotTrial(cfg):
         # cfg['hw']['reddot_ref'].pos = [-percept+(2.5*cfg['stim_offsets'][0]),cfg['stim_offsets'][1]+6.5]
         cfg['hw']['bluedot_ref'].pos = [ (-1*frameoffset[0])+percept, (-1*frameoffset[1])+1 ]
         cfg['hw']['reddot_ref'].pos = [  (-1*frameoffset[0])-percept, (-1*frameoffset[1])-1 ]
-        cfg['hw']['bluedot_ref'].draw()
-        cfg['hw']['reddot_ref'].draw()
+        if cfg['expno'] in [2,3]:
+            cfg['hw']['text'].draw()
+        else:
+            cfg['hw']['bluedot_ref'].draw()
+            cfg['hw']['reddot_ref'].draw()
 
         cfg['hw']['win'].flip()
 
@@ -903,19 +925,28 @@ def getTasks(cfg):
 
         condictionary = [
 
-                         # {'period':1/3, 'amplitude':12, 'stimtype':'classicframe', 'framelag':-5},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag':-4},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag':-2},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 0},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 2},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 4},
+                          {'period':1/3, 'amplitude':4, 'stimtype':'classicframe',  'framelag':-3, 'label':'classic frame\ndots lead'},
+                          {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag':-3, 'label':'apparent motion frame\ndots lead'},
 
-                         # {'period':1/3, 'amplitude':12, 'stimtype':'apparentframe', 'framelag':-5},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag':-4},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag':-2},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 0},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 2},
-                         {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 4},
+                          {'period':1/3, 'amplitude':4, 'stimtype':'classicframe',  'framelag': 0, 'label':'classic frame\ndots synchronous'},
+                          {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 0, 'label':'apparent motion frame\ndots synchronous'},
+
+                          {'period':1/3, 'amplitude':4, 'stimtype':'classicframe',  'framelag': 3, 'label':'classic frame\ndots lag'},
+                          {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 3, 'label':'apparent motion frame\ndots lag'},
+
+                        #  # {'period':1/3, 'amplitude':12, 'stimtype':'classicframe', 'framelag':-5},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag':-4},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag':-2},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 0},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 2},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'classicframe', 'framelag': 4},
+
+                        #  # {'period':1/3, 'amplitude':12, 'stimtype':'apparentframe', 'framelag':-5},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag':-4},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag':-2},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 0},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 2},
+                        #  {'period':1/3, 'amplitude':4, 'stimtype':'apparentframe', 'framelag': 4},
 
                          ]
                          # frames are frame at 30 Hz (the monitor is 60 Hz)
@@ -925,10 +956,24 @@ def getTasks(cfg):
                          # 4 blocks?       (12 trials of each kind, we can lose a few and still have 10 per participant)
                          # or 4 repetitions X 3 blocks ???? (80 trials per block...)
 
-        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1) )
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
 
 
+    if cfg['expno']==3:
+
+        condictionary = [
+
+                          {'period':1/3, 'amplitude':0.8, 'stimtype':'classicframe',  'framelag': 0, 'label':'0.8 dva frame motion'},
+                          {'period':1/3, 'amplitude':1.6, 'stimtype':'classicframe',  'framelag': 0, 'label':'1.6 dva frame motion'},
+                          {'period':1/3, 'amplitude':2.4, 'stimtype':'classicframe',  'framelag': 0, 'label':'2.4 dva frame motion'},
+                          {'period':1/3, 'amplitude':3.2, 'stimtype':'classicframe',  'framelag': 0, 'label':'3.2 dva frame motion'},
+                          {'period':1/3, 'amplitude':4.0, 'stimtype':'classicframe',  'framelag': 0, 'label':'4.0 dva frame motion'},
+
+                        ]
+
+
+        return( dictToBlockTrials(cfg=cfg, condictionary=condictionary, nblocks=1, nrepetitions=1, shuffle=False) )
 
 
 
