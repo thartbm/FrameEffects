@@ -54,11 +54,21 @@ getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
   
   AnaDF <- NA
   
+  depthP <- getDepthControlData(participants=c(1:14), agg=F)
+  depthC <- aggregate(correct ~ participant, data=depthP, FUN=mean)
+  OKparticipants <- depthC$participant[which(depthC$correct > 0.75)]
+  
+  
   for (ppno in participants) {
     
-    if (ppno %in% c(6,14)) {
-      next()
+    if (!(ppno %in% OKparticipants)) {
+      next() # skip participants with bad depth control performance
     }
+    
+    # this was there, but it's incorrect!
+    # if (ppno %in% c(6,14)) {
+    #   next()
+    # }
     
     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/responses.csv',ppno)
     df <- read.csv(filename, stringsAsFactors = F)
@@ -89,7 +99,7 @@ getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
 
 }
 
-getDepthControlData <- function(participants, timedata=FALSE, FUN=median) {
+getDepthControlData <- function(participants, timedata=FALSE, FUN=mean, agg='condition') {
 
   
   DCdf <- NA
@@ -97,7 +107,7 @@ getDepthControlData <- function(participants, timedata=FALSE, FUN=median) {
   for (ppno in participants) {
     
     if (ppno %in% c(14)) {
-      next()
+      next() # no data for this participant
     }
     
     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/depth_perception_check.csv',ppno)
@@ -111,8 +121,10 @@ getDepthControlData <- function(participants, timedata=FALSE, FUN=median) {
       
     } 
       
-    df$correct <- sign(df$top - df$bottom) == df$response
-    df <- aggregate(correct ~ top + bottom, data=df, FUN=FUN, na.rm=TRUE)
+    df$correct <- as.numeric(sign(df$top - df$bottom) == df$response)
+    if (agg == 'condition') {
+      df <- aggregate(correct ~ top + bottom, data=df, FUN=FUN, na.rm=TRUE)
+    }
     df$participant <- ppno
     
     if (is.data.frame(DCdf)) {
@@ -121,6 +133,10 @@ getDepthControlData <- function(participants, timedata=FALSE, FUN=median) {
       DCdf <- df
     }
     
+  }
+  
+  if (agg == 'participant') {
+    DCdf <- aggregate(correct ~ participant, data=DCdf, FUN=FUN, na.rm=TRUE)
   }
   
   return(DCdf)
