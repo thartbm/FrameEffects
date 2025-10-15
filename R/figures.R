@@ -699,7 +699,11 @@ fig3_offsets <- function(target='inline') {
     
     ofs <- 1 + (fsi*3)
     
-    lines(x = rep(2.5+(0.5*ofs),2),
+    # frame motion = 4 / 2 = 2
+    # probe size   = 1 / 2 = 0.5
+    # add the half the outer frame size
+    
+    lines(x = rep(2+0.5+(0.5*ofs),2),
           y = c(0,4),
           col = cols.op[col.idx],
           lty=2)
@@ -880,7 +884,7 @@ fig4_depth <- function(target='inline') {
 
 fig5_prepost <- function(target='inline') {
   
-  width  <- 8
+  width  <- 4 # was 8
   height <- 4
   dpi    <- 300
   
@@ -894,8 +898,8 @@ fig5_prepost <- function(target='inline') {
     png(filename='doc/fig/png/fig5_prepost.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
-  layout(mat = matrix(data = c(1:2),
-                      ncol = 2,
+  layout(mat = matrix(data = c(1), # was c(1,2)
+                      nrow = 1,
                       byrow = TRUE)  )
   
   cols <- getColors()
@@ -910,7 +914,7 @@ fig5_prepost <- function(target='inline') {
        xlim=c(-3,3), ylim=c(-.5,6),
        main='',xlab='overlap',ylab='perceived separation [dva]',
        bty='n', ax=F)
-  title(main='A', adj=0)
+  # title(main='A', adj=0)
   
   lines( x=c(-4.5, 4.5), y=c(4,4), lty=2, col='#999999')
   lines( x=c(-4.5, 4.5), y=c(0,0), lty=2, col='#999999')
@@ -969,71 +973,71 @@ fig5_prepost <- function(target='inline') {
   
   
   
-  # post-hoc illustration?
-  plot(-1000,-1000,
-       xlim=c(0.5,3.5), ylim=c(-0.6,6),
-       main='',xlab='overlap',ylab='perceived separation [dva]',
-       bty='n', ax=F)
-  title(main='B', adj=0)
-  
-  lines( x=c(0.5, 3.5), y=c(4,4), lty=2, col='#999999')
-  lines( x=c(0.5, 3.5), y=c(0,0), lty=2, col='#999999')
-  
-  # normalize data set...
-  df$diction <- 'pre'
-  df$diction[which(df$flashoffset < 0)] <- 'post'
-  
-  post0 <- df[which(df$framepasses == 1 & df$flashoffset == 0),]
-  post0$diction <- 'post'
-  
-  df <- rbind(df,post0)
-  
-  nidx <- which(df$flashoffset < 0)
-  df$flashoffset[nidx] <- df$flashoffset[nidx] + df$framepasses[nidx] - 1
-  
-  df$participant <- as.factor(df$participant)
-  
-  df$flashoffset <- abs(df$flashoffset)
-  
-
-  fodf <- aggregate (percept ~ participant + flashoffset + diction, data=df, FUN=mean)  
-  # now plot:
-  
-  for (flashoffset in c(0,1,2)) {
-    
-    post <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'post'))]
-    pre  <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'pre'))]
-    
-    po_avg <- mean(post)
-    pr_avg <- mean(pre)
-    po_CI <- Reach::getConfidenceInterval(post)
-    pr_CI <- Reach::getConfidenceInterval(pre)
-    
-    polygon(x = c(0.6,0.9,0.9,0.6)+flashoffset,
-            y = rep(po_CI,each=2),
-            border = NA,
-            col=cols.tr[2])
-    lines(x=c(0.6,0.9)+flashoffset,
-          y=rep(po_avg,2),
-          col=cols.op[2])
-    
-    polygon(x = c(1.1,1.4,1.4,1.1)+flashoffset,
-            y = rep(pr_CI,each=2),
-            border = NA,
-            col=cols.tr[5])
-    lines(x=c(1.1,1.4)+flashoffset,
-          y=rep(pr_avg,2),
-          col=cols.op[5])
-    
-  }
-  
-  axis(side=2, at=c(0,2,4))
-  axis(side=1, at=c(1,2,3), labels=c('2','1','0'))
-
-  legend(1.2,6.7,legend=c('pre', 'post'), bty='n',lty=1,col=cols.op[c(2,5)])
-  
-  text(x=c(1,2,3),y=2,
-       labels=c('n.s.', '***', '***'))
+  # # post-hoc illustration?
+  # plot(-1000,-1000,
+  #      xlim=c(0.5,3.5), ylim=c(-0.6,6),
+  #      main='',xlab='overlap',ylab='perceived separation [dva]',
+  #      bty='n', ax=F)
+  # title(main='B', adj=0)
+  # 
+  # lines( x=c(0.5, 3.5), y=c(4,4), lty=2, col='#999999')
+  # lines( x=c(0.5, 3.5), y=c(0,0), lty=2, col='#999999')
+  # 
+  # # normalize data set...
+  # df$diction <- 'pre'
+  # df$diction[which(df$flashoffset < 0)] <- 'post'
+  # 
+  # post0 <- df[which(df$framepasses == 1 & df$flashoffset == 0),]
+  # post0$diction <- 'post'
+  # 
+  # df <- rbind(df,post0)
+  # 
+  # nidx <- which(df$flashoffset < 0)
+  # df$flashoffset[nidx] <- df$flashoffset[nidx] + df$framepasses[nidx] - 1
+  # 
+  # df$participant <- as.factor(df$participant)
+  # 
+  # df$flashoffset <- abs(df$flashoffset)
+  # 
+  # 
+  # fodf <- aggregate (percept ~ participant + flashoffset + diction, data=df, FUN=mean)  
+  # # now plot:
+  # 
+  # for (flashoffset in c(0,1,2)) {
+  #   
+  #   post <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'post'))]
+  #   pre  <- fodf$percept[(which(fodf$flashoffset == flashoffset & fodf$diction == 'pre'))]
+  #   
+  #   po_avg <- mean(post)
+  #   pr_avg <- mean(pre)
+  #   po_CI <- Reach::getConfidenceInterval(post)
+  #   pr_CI <- Reach::getConfidenceInterval(pre)
+  #   
+  #   polygon(x = c(0.6,0.9,0.9,0.6)+flashoffset,
+  #           y = rep(po_CI,each=2),
+  #           border = NA,
+  #           col=cols.tr[2])
+  #   lines(x=c(0.6,0.9)+flashoffset,
+  #         y=rep(po_avg,2),
+  #         col=cols.op[2])
+  #   
+  #   polygon(x = c(1.1,1.4,1.4,1.1)+flashoffset,
+  #           y = rep(pr_CI,each=2),
+  #           border = NA,
+  #           col=cols.tr[5])
+  #   lines(x=c(1.1,1.4)+flashoffset,
+  #         y=rep(pr_avg,2),
+  #         col=cols.op[5])
+  #   
+  # }
+  # 
+  # axis(side=2, at=c(0,2,4))
+  # axis(side=1, at=c(1,2,3), labels=c('2','1','0'))
+  # 
+  # legend(1.2,6.7,legend=c('pre', 'post'), bty='n',lty=1,col=cols.op[c(2,5)])
+  # 
+  # text(x=c(1,2,3),y=2,
+  #      labels=c('n.s.', '***', '***'))
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
@@ -1042,15 +1046,185 @@ fig5_prepost <- function(target='inline') {
 }
 
 
+# fig6_org_probelag <- function(target='inline') {
+#   
+#   binEffects <- FALSE
+#   
+#   width  <- 5
+#   height <- 4
+#   dpi    <- 300
+#   
+#   if (binEffects) { width = 8 }
+#   
+#   if (target=='svg') {
+#     svglite::svglite(file='doc/fig/svg/fig6_probelag.svg', width=width, height=height, fix_text_size = FALSE)
+#   }
+#   if (target=='pdf') {
+#     cairo_pdf(filename='doc/fig/pdf/fig6_probelag.pdf', width=width, height=height)
+#   }
+#   if (target=='png') {
+#     png(filename='doc/fig/png/fig6_probelag.png', width=width*dpi, height=height*dpi, res=dpi)
+#   }
+#   
+#   
+#   if (binEffects) {
+#     layout(mat = matrix(data = c(1,2),
+#                         nrow = 1,
+#                         byrow = TRUE)  )
+#   } else {
+#     layout(mat = matrix(data = c(1),
+#                         nrow = 1,
+#                         byrow = TRUE)  )
+#   }
+#   
+#   cols <- getColors()
+#   cols.op <- cols$op
+#   cols.tr <- cols$tr
+#   
+#   # participants <- getParticipants()
+#   participants <- c(1:8)
+#   
+#   df <- getApparentLagData(participants, FUN=median)
+#   
+#   plot(-1000,-1000,
+#        xlim=c(-5,6), ylim=c(-1,5),
+#        main='',xlab='probe lag [% frame pass]',ylab='perceived separation [dva]',
+#        bty='n', ax=F)
+#   if (binEffects) {
+#     title(main='A', adj=0)
+#   }
+#   
+#   lines( x=c(-4.5, 5.5), y=c(4,4), lty=2, col='#999999')
+#   lines( x=c(-4.5, 5.5), y=c(0,0), lty=2, col='#999999')
+#   
+#   lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
+#   
+#   for (stimtype in c('classicframe','apparentframe')) {
+#     
+#     col.idx <- c('classicframe'=1,'apparentframe'=5)[stimtype]
+#     
+#     cdf <- df[which(df$stimtype == stimtype),]
+#     
+#     avg <- c()
+#     hci <- c()
+#     lci <- c()
+#     
+#     X <- sort ( unique( cdf$framelag) )
+#     for (fl in X) {
+#       
+#       idx <- which(cdf$framelag == fl)
+#       
+#       avg <- c(avg, mean(cdf$percept[idx]))
+#       ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
+#       lci <- c(lci,ci[1])
+#       hci <- c(hci,ci[2])
+#       
+#     }
+#     
+#     if (stimtype == 'classicframe') {
+#       # X = X - 1
+#     } else {
+#       # X = X * -1
+#     }
+#     
+#     polygon( x = c(X, rev(X)),
+#              y = c(lci, rev(hci)),
+#              border = NA,
+#              col=cols.tr[col.idx])
+#     lines(X,avg,col=cols.op[col.idx])
+#     
+#   }
+#   
+#   
+#   axis(side=2, at=c(0,2,4))
+#   # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+#   axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
+#   
+#   legend(-4,5.6,legend=c('classic frame','apparent motion'), bty='n',lty=1,col=cols.op[c(1,5)])
+#   
+#   
+#   # # # # #    DIFFERENCE
+#   
+#   if (binEffects) {
+#     
+#     plot(-1000,-1000,
+#          xlim=c(-1.5,1.5), ylim=c(-0.25,1.25),
+#          main='',xlab='probe lag',ylab='apparent / classic',
+#          bty='n', ax=F)
+#     
+#     title(main='B', adj=0)
+#     
+#     lines( x=c(-1.5, 1.5), y=c(1,1), lty=2, col='#999999')
+#     lines( x=c(-1.5, 1.5), y=c(0,0), lty=2, col='#999999')
+#     
+#     avg <- c()
+#     hci <- c()
+#     lci <- c()
+#     
+#     col.idx <- 3
+#     
+#     for (flgr in c('before','during','after')) {
+#       # print(fl)
+#       
+#       lg_df <- df[which(list('before'=df$framelag < -1, 'during'=df$framelag%in%c(-1,0,1), 'after'=df$framelag>1)[[flgr]]),]
+#       
+#       classic  <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='classicframe'),], FUN=mean)
+#       apparent <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='apparentframe'),], FUN=mean)
+#       proportion <- apparent$percept / classic$percept
+#       
+#       
+#       
+#       # avg <- c(avg, mean(proportion))
+#       avg <- mean(proportion)
+#       ci  <- Reach::getConfidenceInterval(proportion)
+#       # lci <- c(lci,ci[1])
+#       # hci <- c(hci,ci[2])
+#       lci <- c(lci,ci[1])
+#       hci <- c(hci,ci[2])
+#       
+#       x <- list('before'=-1, 'during'=0, 'after'=1)[[flgr]]
+#       
+#       polygon( x = c(-0.3,0.3,0.3,-0.3)+x,
+#                y = rep(ci, each=2),
+#                border = NA,
+#                col=cols.tr[col.idx], xpd=TRUE)
+#       lines( x = c(-0.3,0.3)+x,
+#              y = rep(avg,2),
+#              col=cols.op[col.idx])
+#       
+#     }
+#     
+#     # print(avg)
+#     
+#     # X = c(-1, 0, 1)
+#     # 
+#     # polygon( x = c(X, rev(X)),
+#     #          y = c(lci, rev(hci)),
+#     #          border = NA,
+#     #          col=cols.tr[col.idx])
+#     # lines(X,avg,col=cols.op[col.idx])
+#     
+#     axis(side=2, at=c(0,.5,1), labels=c('0%','50%','100%'))
+#     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+#     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
+#     axis(side=1, at=c(-1,0,1), labels=c('-','simultaneous','+'))
+#     
+#   }
+#   
+#   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+#     dev.off()
+#   }
+#   
+# }
+
+
 fig6_probelag <- function(target='inline') {
   
   binEffects <- FALSE
   
-  width  <- 5
+  width  <- 4
   height <- 4
   dpi    <- 300
-  
-  if (binEffects) { width = 8 }
   
   if (target=='svg') {
     svglite::svglite(file='doc/fig/svg/fig6_probelag.svg', width=width, height=height, fix_text_size = FALSE)
@@ -1062,16 +1236,9 @@ fig6_probelag <- function(target='inline') {
     png(filename='doc/fig/png/fig6_probelag.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
-  
-  if (binEffects) {
-    layout(mat = matrix(data = c(1,2),
-                        nrow = 1,
-                        byrow = TRUE)  )
-  } else {
-    layout(mat = matrix(data = c(1),
-                        nrow = 1,
-                        byrow = TRUE)  )
-  }
+  layout(mat = matrix(data = c(1),
+                      nrow = 1,
+                      byrow = TRUE)  )
   
   cols <- getColors()
   cols.op <- cols$op
@@ -1082,18 +1249,22 @@ fig6_probelag <- function(target='inline') {
   
   df <- getApparentLagData(participants, FUN=median)
   
+  df$framelag <- abs(df$framelag)
+  
   plot(-1000,-1000,
-       xlim=c(-5,6), ylim=c(-1,5),
-       main='',xlab='probe lag [% frame pass]',ylab='perceived separation [dva]',
+       xlim=c(-0.5,5.5), ylim=c(-1,4),
+       main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
-  if (binEffects) {
-    title(main='A', adj=0)
-  }
   
-  lines( x=c(-4.5, 5.5), y=c(4,4), lty=2, col='#999999')
-  lines( x=c(-4.5, 5.5), y=c(0,0), lty=2, col='#999999')
+  title(xlab='probe lag [% frame pass]', line=4)
   
-  lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
+  
+  lines( x=c(-0.25, 5.25), y=c(4,4), lty=2, col='#999999')
+  lines( x=c(-0.25, 5.25), y=c(0,0), lty=2, col='#999999')
+  
+  # lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
+  
+  models <- probeLagLinQuad(verbosity=0,returnmodels=TRUE)
   
   for (stimtype in c('classicframe','apparentframe')) {
     
@@ -1123,87 +1294,58 @@ fig6_probelag <- function(target='inline') {
       # X = X * -1
     }
     
-    polygon( x = c(X, rev(X)),
-             y = c(lci, rev(hci)),
-             border = NA,
-             col=cols.tr[col.idx])
-    lines(X,avg,col=cols.op[col.idx])
-    
-  }
-  
-  
-  axis(side=2, at=c(0,2,4))
-  # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
-  axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
-  
-  legend(-4,5.6,legend=c('classic frame','apparent motion'), bty='n',lty=1,col=cols.op[c(1,5)])
-  
-  
-  # # # # #    DIFFERENCE
-  
-  if (binEffects) {
-    
-    plot(-1000,-1000,
-         xlim=c(-1.5,1.5), ylim=c(-0.25,1.25),
-         main='',xlab='probe lag',ylab='apparent / classic',
-         bty='n', ax=F)
-    
-    title(main='B', adj=0)
-    
-    lines( x=c(-1.5, 1.5), y=c(1,1), lty=2, col='#999999')
-    lines( x=c(-1.5, 1.5), y=c(0,0), lty=2, col='#999999')
-    
-    avg <- c()
-    hci <- c()
-    lci <- c()
-    
-    col.idx <- 3
-    
-    for (flgr in c('before','during','after')) {
-      # print(fl)
-      
-      lg_df <- df[which(list('before'=df$framelag < -1, 'during'=df$framelag%in%c(-1,0,1), 'after'=df$framelag>1)[[flgr]]),]
-      
-      classic  <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='classicframe'),], FUN=mean)
-      apparent <- aggregate(percept ~ participant, data=lg_df[which(lg_df$stimtype=='apparentframe'),], FUN=mean)
-      proportion <- apparent$percept / classic$percept
-      
-      
-      
-      # avg <- c(avg, mean(proportion))
-      avg <- mean(proportion)
-      ci  <- Reach::getConfidenceInterval(proportion)
-      # lci <- c(lci,ci[1])
-      # hci <- c(hci,ci[2])
-      lci <- c(lci,ci[1])
-      hci <- c(hci,ci[2])
-      
-      x <- list('before'=-1, 'during'=0, 'after'=1)[[flgr]]
-      
-      polygon( x = c(-0.3,0.3,0.3,-0.3)+x,
-               y = rep(ci, each=2),
-               border = NA,
-               col=cols.tr[col.idx], xpd=TRUE)
-      lines( x = c(-0.3,0.3)+x,
-             y = rep(avg,2),
-             col=cols.op[col.idx])
-      
-    }
-    
-    # print(avg)
-    
-    # X = c(-1, 0, 1)
-    # 
     # polygon( x = c(X, rev(X)),
     #          y = c(lci, rev(hci)),
     #          border = NA,
     #          col=cols.tr[col.idx])
     # lines(X,avg,col=cols.op[col.idx])
     
-    axis(side=2, at=c(0,.5,1), labels=c('0%','50%','100%'))
+    polygon( x = c(-0.1,0.1,0.1,-0.1)*2,
+             y = c(rep(lci[1],2), rep(hci[1],2)),
+             border=NA,
+             col=cols.tr[col.idx])
+    lines( x = c(-0.1,0.1)*2,
+           y = rep(avg[1],2),
+           col = cols.op[col.idx])
+    
+    points( x = X[2:length(X)],
+            y = avg[2:length(avg)],
+            pch = 1,
+            col = cols.op[col.idx])
+    
+    thismodel <- models[[stimtype]]
+    
+    # print(thismodel$coefficients)
+    
+    newX     <- seq(0,4,length.out=100)
+    lagp  <- newX/11
+    lagp2 <- lagp^2 
+    
+    intercept <- thismodel$coefficients['(Intercept)']
+    
+    if (names(thismodel$coefficients)[2] == 'lagp') {
+      pred <- thismodel$coefficients['lagp']*lagp + thismodel$coefficients['(Intercept)']
+    }
+    if (names(thismodel$coefficients)[2] == 'lagp2') {
+      pred <- thismodel$coefficients['lagp2']*lagp2 + thismodel$coefficients['(Intercept)']
+    }
+    
+    # Y <- predict(thismodel, newdata=data.frame(lagp=lagp, lagp2=lagp2) )
+    
+    lines( x = newX+1,
+           y = pred,
+           col = cols.op[col.idx]  )
+    
+    axis(side=2, at=c(0,2,4))
     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
-    axis(side=1, at=c(-1,0,1), labels=c('-','simultaneous','+'))
+    axis(side=1, at=c(0,1,2,3,4,5),labels=c('mid\npause',sprintf('%d%%',9*c(0:4))),las=2)
+    
+    legend(1, 
+           5.6,
+           legend=c('classic frame','apparent motion'), 
+           bty='n',lty=1,col=cols.op[c(1,5)],
+           xpd=TRUE)
     
   }
   
@@ -1213,10 +1355,156 @@ fig6_probelag <- function(target='inline') {
   
 }
 
+
+fig6_alt_probelag <- function(target='inline') {
+  
+  binEffects <- FALSE
+  
+  width  <- 5
+  height <- 4
+  dpi    <- 300
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig6_alt_probelag.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig6_alt_probelag.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig6_alt_probelag.png', width=width*dpi, height=height*dpi, res=dpi)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      nrow = 1,
+                      byrow = TRUE)  )
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  # participants <- getParticipants()
+  participants <- c(1:8)
+  
+  df <- getApparentLagData(participants, FUN=median)
+  
+  df$framelag <- abs(df$framelag)
+  df <- df[which(df$framelag <= 4),]
+  
+  plot(-1000,-1000,
+       xlim=c(-0.5,6.5), ylim=c(-1,4),
+       main='',xlab='',ylab='perceived separation [dva]',
+       bty='n', ax=F)
+  
+  title(xlab='probe lag [% frame pass]', line=4)
+  
+  
+  lines( x=c(-0.25, 6.25), y=c(4,4), lty=2, col='#999999')
+  lines( x=c(-0.25, 6.25), y=c(0,0), lty=2, col='#999999')
+  
+  # lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
+  
+  # models <- probeLagLinQuad(verbosity=0,returnmodels=TRUE)
+  
+  for (stimtype in c('classicframe','apparentframe')) {
+    
+    col.idx <- c('classicframe'=1,'apparentframe'=5)[stimtype]
+    
+    cdf <- df[which(df$stimtype == stimtype),]
+    
+    avg <- c()
+    hci <- c()
+    lci <- c()
+    
+    X <- sort ( unique( cdf$framelag) )
+    for (fl in X) {
+      
+      idx <- which(cdf$framelag == fl)
+      
+      avg <- c(avg, mean(cdf$percept[idx]))
+      ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
+      lci <- c(lci,ci[1])
+      hci <- c(hci,ci[2])
+      
+    }
+    
+    if (stimtype == 'classicframe') {
+      # X = X - 1
+    } else {
+      # X = X * -1
+    }
+    
+    # polygon( x = c(X, rev(X)),
+    #          y = c(lci, rev(hci)),
+    #          border = NA,
+    #          col=cols.tr[col.idx])
+    # lines(X,avg,col=cols.op[col.idx])
+    
+    polygon( x = c(-0.1,0.1,0.1,-0.1)*2,
+             y = c(rep(lci[1],2), rep(hci[1],2)),
+             border=NA,
+             col=cols.tr[col.idx])
+    lines( x = c(-0.1,0.1)*2,
+           y = rep(avg[1],2),
+           col = cols.op[col.idx])
+    
+    points( x = X[2:length(X)],
+            y = avg[2:length(avg)],
+            pch = 1,
+            col = cols.op[col.idx])
+    
+    lines( x = c(X[2],50/9),
+           y = c(avg[2], 0),
+           col = cols.op[col.idx],
+           lty=3
+           )
+    
+    # thismodel <- models[[stimtype]]
+    # 
+    # # print(thismodel$coefficients)
+    # 
+    # newX     <- seq(0,4,length.out=100)
+    # lagp  <- newX/11
+    # lagp2 <- lagp^2 
+    # 
+    # intercept <- thismodel$coefficients['(Intercept)']
+    # 
+    # if (names(thismodel$coefficients)[2] == 'lagp') {
+    #   pred <- thismodel$coefficients['lagp']*lagp + thismodel$coefficients['(Intercept)']
+    # }
+    # if (names(thismodel$coefficients)[2] == 'lagp2') {
+    #   pred <- thismodel$coefficients['lagp2']*lagp2 + thismodel$coefficients['(Intercept)']
+    # }
+    # 
+    # # Y <- predict(thismodel, newdata=data.frame(lagp=lagp, lagp2=lagp2) )
+    # 
+    # lines( x = newX+1,
+    #        y = pred,
+    #        col = cols.op[col.idx]  )
+    
+    axis(side=2, at=c(0,2,4))
+    # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+    # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
+    # axis(side=1, at=c(0,1,2,3,4,5),labels=c('mid\npause',sprintf('%d%%',9*c(0:4))),las=2)
+    axis(side=1, at=c(0,1,2,3,4,50/9),labels=c('mid\npause',sprintf('%d%%',9*c(0:3)),'50%'),las=2)
+    
+    legend(1, 
+           5.6,
+           legend=c('classic frame','apparent motion'), 
+           bty='n',lty=1,col=cols.op[c(1,5)],
+           xpd=TRUE)
+    
+  }  
+  
+  if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+    dev.off()
+  }
+  
+}
+
 fig7_background <- function(target='inline') {
   
-  width  <- 11
-  height <- 3.5
+  width  <- 6.5
+  height <- 7.7
   dpi    <- 300
   
   if (target=='svg') {
@@ -1229,9 +1517,11 @@ fig7_background <- function(target='inline') {
     png(filename='doc/fig/png/fig7_background.png', width=width*dpi, height=height*dpi, res=dpi)
   }
   
-  layout(mat = matrix(data = c(1:3),
-                      ncol = 3, nrow = 1,
+  layout(mat = matrix(data = c(1:4),
+                      ncol = 2, nrow = 2,
                       byrow = TRUE),
+         widths = c(1.5,1),
+         heights = c(1,1)
          )
   
   cols <- getColors()
@@ -1242,10 +1532,10 @@ fig7_background <- function(target='inline') {
   
   df <- getPerceivedMotionData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,7), ylim=c(0,8),
        main='',xlab='motion amplitude [dva]',ylab='perceived motion amplitude [dva]',
-       bty='n', ax=F, asp=1)
+       bty='n', ax=F)  # , asp=1
   title(main='A', adj=0)
   
   lines( x=c(0, 7), y=c(0, 7), lty=1, col='#999999')
@@ -1299,7 +1589,7 @@ fig7_background <- function(target='inline') {
     
   }
   
-  legend(-1,
+  legend(0,
          8.5,
          legend = c('dot background',
                     'frame'),
@@ -1312,12 +1602,92 @@ fig7_background <- function(target='inline') {
   axis(side=1, at=c(1,2,3,4,5,6))
   axis(side=2, at=c(0,2,4,6,8))
   
-
-  plot(-1000,-1000,
-       xlim=c(0,4), ylim=c(0,8),
+  # cat('finished A\n')
+  
+  # # # # # # # # # # 
+  # perceived probe separation over speed for dot background
+  
+  plot(NULL,NULL,
+       xlim=c(0.2,1), ylim=c(0,8),
+       main='',xlab='motion duration [ms]',ylab='perceived motion amplitude [dva]',
+       bty='n', ax=F, log='x')
+  title(main='B', adj=0)
+  
+  # lines( x=c(0, 7), y=c(0, 7), lty=1, col='#999999')
+  lines( x=c(0.2, 1), y=c(4, 4), lty=2, col='#999999')
+  # lines( x=c(4, 4), y=c(0, 8), lty=2, col='#999999')
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  df_dur <- df[which(df$amplitude == 4),]
+  
+  # amplitude section
+  
+  df_dur <- df_dur[which(df_dur$stimtype %in% c('classicframe','dotbackground')),]
+  
+  X <- 1/c(5,4,3,2,1)
+  
+  for (stimtype in c('classicframe','dotbackground')) {
+    
+    sdf <- df_dur[which(df_dur$stimtype == stimtype),]
+    
+    avg <- c()
+    lci <- c()
+    hci <- c()
+    
+    for (duration in X) {
+      
+      idx <- which(round(sdf$period,3) == round(duration,3))
+      avg <- c(avg, mean(sdf$percept[idx]))
+      ci  <- Reach::getConfidenceInterval(sdf$percept[idx])
+      lci <- c(lci, ci[1])
+      hci <- c(hci, ci[2])
+      
+    }
+    
+    if (stimtype == 'classicframe') {
+      col.op <- '#999999FF'
+      col.op <- cols.op[2]
+      col.tr <- '#99999920'
+      col.tr <- cols.tr[2]
+    } else {
+      col.op <- cols.op[5]
+      col.tr <- cols.tr[5]
+    }
+    
+    polygon( x = c(X, rev(X)),
+             y = c(lci, rev(hci)),
+             border = NA,
+             col = col.tr,
+             xpd=TRUE)
+    lines( x = X,
+           y = avg,
+           col = col.op)
+    
+  }
+  
+  # legend(-1,
+  #        8.5,
+  #        legend = c('dot background',
+  #                   'frame'),
+  #        lty=1,
+  #        # col=c(cols.op[5],'#999999'),
+  #        col=c(cols.op[5],cols.op[2]),
+  #        bty='n',
+  #        seg.len = 1)
+  
+  # axis(side=1, at=round(X,2), labels=c('⅕', '¼', '⅓', '½', '1'), cex.axis=0.85)
+  # axis(side=1, at=round(X,2), cex.axis=0.85)
+  # axis(side=1, at=round(X,2), cex.axis=0.85, las=2)
+  axis(side=1, at=c(0.2, 0.5, 1.0), labels=c('200', '500', '1000'), cex.axis=0.85, las=2)
+  axis(side=2, at=c(0,2,4,6,8))
+  
+  # cat('finished B\n')
+  
+  plot(NULL,NULL,
+       xlim=c(0,4), ylim=c(0,6),
        main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
-  title(main='B', adj=0)
+  title(main='C', adj=0)
   
   lines(c(0.2,6.8), c(4,4),
         col='#999999',lty=2)
@@ -1375,7 +1745,7 @@ fig7_background <- function(target='inline') {
     
   }
   
-  axis(side=2,at=c(0,2,4,6,8))
+  axis(side=2,at=c(0,2,4,6))
   axis(side=1,at=c(1,2,3),labels=rep('',3))
   
   text( c(1,2,3)+0.4,
@@ -1388,17 +1758,17 @@ fig7_background <- function(target='inline') {
         xpd = TRUE )
   
 
-  
+  # cat('finished C\n')
   
   ### second version of the above plot with frame motion duration there as well...
   
-  plot(-1000,-1000,
-       xlim=c(0.2,1), ylim=c(0,8),
-       main='',xlab='motion duration [s]',ylab='perceived separation [dva]',
-       bty='n', ax=F)
-  title(main='C', adj=0)
+  plot(NULL,NULL,
+       xlim=c(0.2,1), ylim=c(0,6),
+       main='',xlab='motion duration [ms]',ylab='perceived separation [dva]',
+       bty='n', ax=F, log='x')
+  title(main='D', adj=0)
 
-  lines(c(0.2,6.8), c(4,4),
+  lines(c(0.2,1), c(4,4),
         col='#999999',lty=2)
 
   df <- getTextureMotionData(participants, FUN=median)
@@ -1466,8 +1836,13 @@ fig7_background <- function(target='inline') {
   }
 
   #axis(side=1,at=1/c(5,4,3,2,1),labels=c('&#8533;', '&#188;', '&#8531;', '&#189;', '1'))
-  axis(side=1,at=1/c(5,4,3,2,1),labels=c('⅕', '¼', '⅓', '½', '1'), cex.axis=0.85)
-  axis(side=2,at=c(0,2,4,6,8))
+  # axis(side=1,at=1/c(5,4,3,2,1),labels=c('⅕', '¼', '⅓', '½', '1'), cex.axis=0.85)
+  # axis(side=1,at=round(1/c(5,4,3,2,1),2), cex.axis=0.85)
+  # axis(side=1,at=round(1/c(5,4,3,2,1),2), cex.axis=0.85, las=2)
+  axis(side=1, at=c(0.2, 0.5, 1.0), labels=c('200', '500', '1000'), cex.axis=0.85, las=2)
+  axis(side=2,at=c(0,2,4,6))
+  
+  # cat('finished D\n')
   
   # ⅕
   # ¼
@@ -1481,14 +1856,7 @@ fig7_background <- function(target='inline') {
   # 1/5   &#8533;	&#x2155;
   
   
-  text( c(1,2,3)+0.4,
-        par("usr")[3] - 0.7,
-        labels = c('frame fixated',
-                   'frame free',
-                   'dots free'),
-        srt = 33,
-        pos = 2,
-        xpd = TRUE )
+
   
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
