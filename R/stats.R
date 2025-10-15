@@ -399,7 +399,19 @@ probeLagANOVA <- function() {
   
   df <- getApparentLagData(participants, FUN=median)
   
+  # df$participant <- as.factor(df$participant)
+  # 
+  # my_aov <- afex::aov_ez(  id='participant',
+  #                          dv='percept',
+  #                          data=df,
+  #                          within=c('stimtype', 'framelag')
+  # )
+  # print(my_aov)
+  
+  df$framelag <- abs( df$framelag )
   df$participant <- as.factor(df$participant)
+  
+  df <- aggregate(percept ~ participant + stimtype + framelag, data=df, FUN=median)
   
   my_aov <- afex::aov_ez(  id='participant',
                            dv='percept',
@@ -408,7 +420,148 @@ probeLagANOVA <- function() {
   )
   print(my_aov)
   
+  
 }
+
+
+probeLagLinQuad <- function(verbosity=1,returnmodels=FALSE) {
+  
+  # https://stackoverflow.com/questions/16601106/missing-object-error-when-using-step-within-a-user-defined-function
+  
+  # participants <- getParticipants()
+  participants <- c(1:8)
+  
+  df <- getApparentLagData(participants, FUN=median)
+  
+  # print(str(df))
+  
+  df$framelag <- abs( df$framelag ) - 1
+  df <- df[which(df$framelag >= 0),]
+  
+  df$lagp  <- df$framelag * 1/11
+  df$lagp2 <- df$lagp^2
+    
+  # framelags <- sort(unique(df$framelag))
+  # flweights <- pmax(0, (framelags * 100/3) - (100/3) ) + c(0, 25/3, 0, 0, 0)
+  # 
+  # df$lagp  <- flweights[df$framelag + 1]
+  # df$lagp2 <- df$lagp^2
+  
+
+  df <- aggregate(cbind(percept, lagp, lagp2) ~ participant + framelag + stimtype, data=df, FUN=median)
+  
+  # print(str(df))
+  
+  models <- list()
+  
+  for (stimtype in c('classicframe', 'apparentframe')) {
+    
+    modelfit <- getBestFit(df[which(df$stimtype == stimtype),], verbosity=verbosity)
+    
+    models[[stimtype]] <- modelfit
+    
+  }
+  
+  if (returnmodels) {
+    return(models)
+  }
+  
+}
+
+
+getBestFit <- function(df, verbosity=0) {
+  
+  lm_lin <- lm(percept ~ lagp, data=df)
+  lm_qdr <- lm(percept ~ lagp2, data=df)
+  
+  if (AIC(lm_lin) < AIC(lm_qdr)) {
+    if (verbosity) {
+      cat('linear model is better\n')
+    }
+    return(lm_lin)
+  } else {
+    if (verbosity) {
+      cat('quadratic model is better\n')
+    }
+    return(lm_qdr)
+  }
+  
+  
+}
+
+
+lagDurations <- function() {
+  
+  framelags    <- c(-4:5)
+  lagdurations <- abs(framelags/30)
+  
+  probe_duration <- 2/30
+  pause_duration <- 2/30
+  
+  gapdurations <- pmax(0, lagdurations - ((probe_duration + pause_duration)/2))
+  
+  
+}
+
+
+makeLagPlot <- function() {
+  
+  probe_duration <- 2/30
+  pause_duration <- 2/30
+  move_duration  <- 1/3
+  
+  plot(NULL,NULL,
+       xlim=c(-.4, .4), ylim=c(-1,1),
+       xlab='time (s)',ylab='frame displacement',bty='n',xaxt='n',yaxt='n')
+  
+  
+  X <- cumsum( c( pause_duration,
+                  move_duration,
+                  pause_duration,
+                  move_duration,
+                  pause_duration,
+                  move_duration,
+                  pause_duration,
+                  move_duration) ) - (2*move_duration + 2.5*pause_duration)
+  
+  Y <- c(1, -1, -1, 1, 1, -1, -1, 1)
+  
+  lines(x=c(-.5,.5), y=c(0,0), col='gray', lty=2)
+  
+  lines(X,Y, lwd=2, col='blue')
+  
+  for (lag in seq(-4,5)) {
+    
+    lines(x <- rep(lag/30,2),
+          y <- c(-.6,.8),
+          lwd=1, col='#0000FF33')
+    
+    text(x=lag/30, y=-.9+(0.2*(lag %% 2)), labels=paste0(as.character(lag),'/30'), col='blue')
+    
+  }
+  
+  
+  for (lag in seq(-4,5)) {
+    
+    odd <- (lag+4) %% 10
+    
+    y <- (0.1 * odd) - (4/10)
+    
+    x <- (lag / 30) - (probe_duration/2)
+    
+    lines( x = c(x, x + probe_duration),
+           y = c(y, y),
+           lwd=4, col='#FF000066')
+    
+  }
+  
+  axis(1, at=seq(-0.4,0.4,by=0.1))
+  
+  axis(2, at=seq(-1,1,by=1))
+  
+    
+}
+
 
 # random dot texture motion perception ----
 
@@ -418,21 +571,57 @@ motionperceptionANOVA <- function() {
   
   df <- getPerceivedMotionData(participants, FUN=median)
   
-  df <- df[which(round(df$period, digits=6) == 0.333333),]
   df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  df_amp <- df[which(round(df$period, digits=6) == 0.333333),]
   
-  df <- aggregate(percept ~ stimtype + amplitude + participant, data=df, FUN=median)
   
-  df$participant <- as.factor(df$participant)
+  df_amp <- aggregate(percept ~ stimtype + amplitude + participant, data=df_amp, FUN=median)
+  
+  df_amp$participant <- as.factor(df_amp$participant)
   
   my_aov <- afex::aov_ez(  id='participant',
                            dv='percept',
-                           data=df,
+                           data=df_amp,
                            within=c('stimtype', 'amplitude')
   )
   print(my_aov)
   
+  df_dur <- df[which(df$amplitude == 4),]
+  
+  df_dur <- aggregate(percept ~ stimtype + period + participant, data=df_dur, FUN=median)
+  df_dur$participant <- as.factor(df_dur$participant)
+  
+  my_aov <- afex::aov_ez(  id='participant',
+                           dv='percept',
+                           data=df_dur,
+                           within=c('stimtype', 'period')
+  )
+  
+  print(my_aov)
+  
 }
+
+motionPerceptionDescriptors <- function() {
+  
+  participants <- getParticipants()
+  
+  df <- getPerceivedMotionData(participants, FUN=median)
+  
+  # df <- df[which(round(df$period, digits=6) == 0.333333),]
+  df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
+  df <- df[which(df$amplitude == 4),]
+  
+  classic <-    aggregate(percept ~ participant, data=df[which(df$stimtype == 'classicframe'),],  FUN=mean)
+  background <- aggregate(percept ~ participant, data=df[which(df$stimtype == 'dotbackground'),], FUN=mean)
+  
+  cat('classic frame:\n')
+  cat(sprintf(' mean: %.3f, sd: %.3f\n', mean(classic$percept), sd(classic$percept)))
+  
+  cat('dot background:\n')
+  cat(sprintf(' mean: %.3f, sd: %.3f\n', mean(background$percept), sd(background$percept)))
+  
+}
+
 
 motionperceptionTtest <- function() {
   
@@ -660,3 +849,4 @@ timeontaskLME <- function() {
   print(anova(my_lmer,ddf='Satterthwaite',type=3))
   
 }
+
