@@ -13,4 +13,7 @@
 *.mp4
 *.mkv
 
+*.docx
+*.nb.html
+
 notes.txt
