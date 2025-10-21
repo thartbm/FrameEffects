@@ -155,7 +155,7 @@ The conditions with 1 probe flashed with the frame were still somewhat unclear, 
 
 Let's first look at the main data from this experiment.
 
-```{r postdiction_fig, fig.width=8, fig.height=4}
+```{r postdiction_fig, fig.width=5, fig.height=4}
 fig5_prepost()
 ```
 
