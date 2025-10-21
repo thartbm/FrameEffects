@@ -50,6 +50,13 @@ source('R/stats.R')
 
 ```
 
+Download the data:
+
+```{r}
+downloadData()
+```
+
+
 # Effects of space
 
 In two tasks we varied the distance between the frame and the probes. In the first we systematically tested various horizontal and vertical offsets. In the second we try to look at offsets in depth.
