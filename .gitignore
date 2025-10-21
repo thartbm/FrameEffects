@@ -2,8 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-
-
 *.pdf
 *.docx
 *.doc
@@ -12,8 +10,8 @@
 *.tiff
 *.mp4
 *.mkv
-
 *.docx
 *.nb.html
-
 notes.txt
+FrameEffects.docx
+FrameEffects.nb.html
