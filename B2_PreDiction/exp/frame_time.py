@@ -735,15 +735,16 @@ def getTasks(cfg):
 
         condictionary = [
 
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 2, 'framepasses':1, 'label':'pre, 0 overlap'},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'pre, 1 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1, 'label':'pre, 0 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-1, 'framepasses':1, 'label':'pre, 1 overlap'},
                          {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 0, 'framepasses':1, 'label':'pre/post, 2 overlap'},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-1, 'framepasses':1, 'label':'post, 1 overlap'},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset':-2, 'framepasses':1, 'label':'post, 0 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'post, 1 overlap'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 2, 'framepasses':1, 'label':'post, 0 overlap'},
+                         
 
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'pre, 1 overlap\n1 frame pass'},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':2, 'label':'pre, 1 overlap\n2 frame passes'},
-                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':3, 'label':'pre, 1 overlap\n3 frame passes'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':1, 'label':'post, 1 overlap\n1 frame pass'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':2, 'label':'post, 1 overlap\n2 frame passes'},
+                         {'period':1/4, 'amplitude':4, 'stimtype':'timedframe', 'flashoffset': 1, 'framepasses':3, 'label':'post, 1 overlap\n3 frame passes'},
 
                         ]
 
