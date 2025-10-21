@@ -7,5 +7,3 @@ The repo is an R Studio project with a notebook. This notebook downloads other n
 There is no `renv` (yet) in this project, but it was run on R 4.5.1 with mostly up to date packages that were all from CRAN.
 
 The accompanying data repository is: <https://osf.io/ufzsq>
-
-## 
