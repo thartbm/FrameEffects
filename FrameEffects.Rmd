@@ -92,6 +92,16 @@ In this task, the frame is unchanged, and hence always presented at the screen d
 
 First, to test depth perception in our participants they perform a short task judging depth distances between two circles. The two circles have the same size as the probes, as well as the same vertical distance between them, are offset in depth with the same offsets as used in the main task. One participant could not do this task, and also skipped the main task. Of the remaining 13 participants, 11 had a response criterion over 75% correct, and these were used for data analysis (although including all 13 doesn't meaningfully change the results).
 
+```{r}
+knitr::kable( getDepthControlData( participants=c(1:14), 
+                                   timedata=FALSE, 
+                                   FUN=mean, 
+                                   agg='participant'
+                                 )
+              )
+```
+
+
 First we look at the reported illusion strength in all 4 conditions:
 
 ```{r depth-figure, fig.width=4, fig.height=4}
@@ -178,7 +188,7 @@ The frame motion amplitude is 4 dva, the frame size is 6 dva on the inside (7 dv
 
 Let's have a look at the reported percepts:
 
-```{r laggedprobe_fig, fig.width=5, fig.height=4}
+```{r laggedprobe_fig, fig.width=4, fig.height=5}
 fig6_probelag()
 ```
 
@@ -208,11 +218,11 @@ Here we test if the frame needs to be a frame, with edges, or if a patterned bac
 
 Here is the data:
 
-```{r background-motion-fig, fig.width=11, fig.height=3.5}
+```{r background-motion-fig, fig.width=8, fig.height=8}
 fig7_background()
 ```
 
-In the first panel (top left), we can see that the amount of motion seems to be overestimated for both the regular frame as well as the moving brackground strip. It seems close, but it could be perhaps a bit more overestimated for the regular frame. Let's test that statistically:
+In the first panel (top left), we can see that the amount of motion seems to be overestimated for both the regular frame as well as the moving background strip. It seems close, but it could be perhaps a bit more overestimated for the regular frame. Let's test that statistically:
 
 ```{r motion-perception-anova}
 motionperceptionANOVA()
@@ -220,15 +230,15 @@ motionperceptionANOVA()
 
 Of course, there is a main effect of motion amplitude, but there is also an effect of stimulus type. There is no interaction however.
 
-The effect seems larger for larger amplitudes in the figure. We used the 4 dva amplitude stimuli for the illusion later on, but this is not the largest amplitude we tested here. So we could also just compare the perceived motion at 4 dva for the regular frame and for the background motion. Which is what we do here:
+Motion duration (and hence speed) has no effect and does not interact with stimulus type.
 
-```{r motion-perception-ttest}
-motionperceptionTtest()
+These are the average perceived motion amplitudes at 4 dva for both stimulus types (free viewing):
+
+```{r}
+motionPerceptionDescriptors()
 ```
 
-Strictly speaking this is not significant. However, the amplitude difference is \~0.87 dva, which is more than 20% of the actual motion and 15% of the perceived motion in frames. So are we sure the perceived motion is equivalent? Maybe it's not that bad if it isn't?
-
-Ignoring this, we now look at the illusion in the same stimuli. There are 2 extra conditions we test here. First, it's known that motion duration of the frame doesn't affect illusion strength, but this is not known for random dot backgrounds, so we include 5 motion durations here. Further, it could be that fixating peripherally, vs. free viewing (including looking directly at the stimulus) affects illusion strength. So for the frames, we have included trials with and without fixation requirements (not checked with an eye-tracker though, coming?).
+We now look at the illusion in the same stimuli. There are 2 extra conditions we test here. First, it's known that motion duration of the frame doesn't affect illusion strength, but this is not known for random dot backgrounds, so we include 5 motion durations here. Further, it could be that fixating peripherally, vs. free viewing (including looking directly at the stimulus) affects illusion strength. So for the frames, we have included trials with and without fixation instructions.
 
 The data is plotted twice, once with only the 1/3 s motion duration also used in the previous motion perception control task, and once using all motion durations: 1/5 s, 1/4 s, 1/3 s, 1/2 s and 1 s.
 
@@ -250,20 +260,16 @@ textureBackgroundANOVA()
 
 This paints the same picture as before, and confirms there is no effect of motion duration in either regular frames (as expected) nor in random dor backgrounds (F(2.3,29.94)=0.47, p=.653). There is an effect of condition (F(1.98,25.78)=53.88, p\<.001) but no interaction (F(4.01,52.25)=1.17, p=.335).
 
-We could now wonder if the observed difference in illusion strength between moving frames and moving backgrounds can be explained by a difference in the perceived (or at least, reported) motion in that background. On the one hand there is more perceived motion reported from frames that move 4 dva as compared to background textures moving 4 dva. On the other hand, that difference is \~0.87 dva, while the difference in illusion strength is \~1.65 dva. This difference would be even bigger if we'd convert this to a proportion change relative to one of the two types of stimuli.
-
-Not sure how to handle this.
-
 ## 6. Internal frame motion
 
 The previous experiment showed that having an actual frame, with edges, works much better than just a pattern of dots. But it still works. If frames, with edges, consist of patterns of dots that (could) move independently of the frame, that may affect the illusion strength.
 
 We now test this with frames consisting of dots whose motion is:
 
-1.  (-2) opposite that of the frame
-2.  (-1) static (static relative to the screen)
-3.  ( 0) the same as that of the frame (these move with the frame)
-4.  (+1) double that of the frame
+1.  (-1) opposite that of the frame
+2.  ( 0) static (static relative to the screen)
+3.  (+1) the same as that of the frame (these move with the frame)
+4.  (+2) double that of the frame
 
 If the internal motion has any effect on the strength of the illusion, we could expect the illusion strength to be lowest for the first condition, and highest for the last. With the third condition having about the same illusion strength as a classic frame.
 
