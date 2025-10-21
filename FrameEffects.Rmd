@@ -195,7 +195,7 @@ The frame motion amplitude is 4 dva, the frame size is 6 dva on the inside (7 dv
 
 Let's have a look at the reported percepts:
 
-```{r laggedprobe_fig, fig.width=4, fig.height=5}
+```{r laggedprobe_fig, fig.width=4.5, fig.height=4}
 fig6_probelag()
 ```
 
@@ -225,7 +225,7 @@ Here we test if the frame needs to be a frame, with edges, or if a patterned bac
 
 Here is the data:
 
-```{r background-motion-fig, fig.width=8, fig.height=8}
+```{r background-motion-fig, fig.width=6.5, fig.height=7.7}
 fig7_background()
 ```
 
