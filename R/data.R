@@ -20,7 +20,7 @@ downloadData <- function() {
   #                         folder     = '.')
   
   Reach::downloadOSFdata( repository = 'ufzsq',
-                          filelist = list('data' =  c('allData.zip')),
+                          filelist = list('data' =  c('mData.zip')),
                           folder     = '.',
                           unzip      = TRUE,
                           removezips = TRUE)
@@ -35,8 +35,8 @@ getAllData <- function(FUN=median) {
   allData <- list(  'A1_Anaglyph'               = getAnaglyphData(participants, FUN=FUN),
                     'A1_DepthControl'           = getDepthControlData(participants, FUN=FUN),
                     'A2_ProbeDistance'          = getProbeDistanceData(participants, FUN=FUN),
-                    'B1_ApparentLag'            = getApparentLagData(participants, FUN=FUN),
-                    # 'B1_ApparentLag'            = getApparentLagData(c(1:8), FUN=FUN),
+                    # 'B1_ApparentLag'            = getApparentLagData(participants, FUN=FUN),
+                    'B1_ApparentLag'            = getApparentLagData(c(1:8), FUN=FUN),
                     'B2_PreDiction'             = getPreDictionData(participants, FUN=FUN),
                     'T1_ExperimentTime'         = getExperimentTimeData(participants, FUN=FUN),
                     'C1_SelfMoved'              = getSelfMotionData(participants, FUN=FUN),
@@ -53,13 +53,34 @@ getParticipants <- function() {
   
 }
 
+
+extractAllData <- function() {
+  
+  allData <- getAllData()
+  
+  for (name in names(allData)) {
+    
+    subdf <- allData[[name]]
+    
+    if (name == 'A1_DepthControl') {
+      subdf <- aggregate(correct ~ participant, data=subdf, FUN=mean)
+    }
+    
+    write.csv(subdf, sprintf('data/%s.csv', name), row.names=FALSE)
+    
+  }
+  
+  
+  
+}
+
 # space data -----
 
 getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
   
   AnaDF <- NA
   
-  depthP <- getDepthControlData(participants=c(1:14), agg=F)
+  depthP <- getDepthControlData(participants=participants, agg=F)
   depthC <- aggregate(correct ~ participant, data=depthP, FUN=mean)
   OKparticipants <- depthC$participant[which(depthC$correct > 0.75)]
   
