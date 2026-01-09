@@ -4,6 +4,7 @@
 .Ruserdata
 
 *.csv
+*.zip
 
 *.pdf
 *.docx
