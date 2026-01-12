@@ -1,9 +1,9 @@
 ---
 title: "Frame effects in space and time"
 output:
-  pdf_document: default
-  html_notebook: default
   word_document: default
+  html_notebook: default
+  pdf_document: default
 ---
 
 ```{r setup, cache=FALSE, include=FALSE}
@@ -52,7 +52,7 @@ source('R/stats.R')
 
 Download the data:
 
-```{r}
+```{r eval=FALSE}
 downloadData()
 ```
 
@@ -362,13 +362,13 @@ We would like to test this, but for the same reason (lots of missing data, some 
 timeontaskLME()
 ```
 
-So there is clearly an effect of amplitude, but no effect of interval and no interaction. This means we can conclude that there is no measurable decrease of illusion strength over the course of a 2 hour interval. The illusion
+So there is clearly an effect of amplitude, but no effect of interval and no interaction. This means we can conclude that there is no measurable decrease of illusion strength over the course of a 2 hour interval. The illusion seems not to be interpreted as an error by the visual system that then gets corrected over time.
 
 # Figure export
 
 This block outputs all above figures to various formats.
 
-```{r fig-export}
+```{r fig-export, include=FALSE, eval=FALSE}
 for (target in c('pdf', 'svg', 'png')) {
   
   fig3_offsets(target=target)
