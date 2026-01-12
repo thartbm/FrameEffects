@@ -284,11 +284,15 @@ probeDistanceANOVA <- function() {
   df$offset_dir[which(df$hor_offset == 0)] <- 'v'
   df$offset_size <- pmax(df$hor_offset, df$ver_offset)
   
+  names(df)[which(names(df) == 'inner_framesize')] <- 'framesize'
+  names(df)[which(names(df) == 'offset_size')] <- 'offset'
+  names(df)[which(names(df) == 'offset_dir')] <- 'direction'
+  
   
   my_aov <- afex::aov_ez(  id='participant',
                            dv='percept',
                            data=df,
-                           within=c('inner_framesize','offset_size','offset_dir')
+                           within=c('framesize','offset','direction')
                            )
   print(my_aov)
   
@@ -346,10 +350,15 @@ postdictionANOVA <- function() {
   
   df$flashoffset <- abs(df$flashoffset)
   
+  names(df)[which(names(df) == 'framepasses')] <- 'passes'
+  names(df)[which(names(df) == 'flashoffset')] <- 'overlap'
+  names(df)[which(names(df) == 'diction')] <- 'direction'
+  
+  
   my_aov <- afex::aov_ez(  id='participant',
                            dv='percept',
                            data=df,
-                           within=c('framepasses', 'flashoffset', 'diction')
+                           within=c('passes', 'overlap', 'direction')
   )
   print(my_aov)
   
