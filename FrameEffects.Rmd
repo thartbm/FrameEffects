@@ -35,9 +35,18 @@ In tasks where this was not too much out of place, a standard frame was shown wi
 
 # Setup
 
+Set up the renv packages used in this project:
+
+```{r eval=FALSE}
+# this installs the versions of packages used here
+# as recorded in the renv.lock file
+# the first time, this could take a while
+renv::restore()
+```
+
 Install personal package:
 
-```{r eval=F}
+```{r eval=FALSE}
 library('remotes')
 ip <- installed.packages()
 if ('Reach' %in% ip[,'Package']) {
@@ -115,12 +124,7 @@ In this task, the frame is unchanged, and hence always presented at the screen d
 First, to test depth perception in our participants they perform a short task judging depth distances between two circles. The two circles have the same size as the probes, as well as the same vertical distance between them, are offset in depth with the same offsets as used in the main task. One participant could not do this task, and also skipped the main task. Of the remaining 13 participants, 11 had a response criterion over 75% correct, and these were used for data analysis (although including all 13 doesn't meaningfully change the results).
 
 ```{r}
-knitr::kable( getDepthControlData( participants=c(1:14), 
-                                   timedata=FALSE, 
-                                   FUN=mean, 
-                                   agg='participant'
-                                 )
-              )
+knitr::kable( getDepthControlData() )
 ```
 
 
