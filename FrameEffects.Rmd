@@ -35,6 +35,21 @@ In tasks where this was not too much out of place, a standard frame was shown wi
 
 # Setup
 
+Install personal package:
+
+```{r eval=F}
+library('remotes')
+ip <- installed.packages()
+if ('Reach' %in% ip[,'Package']) {
+  if (ip[which(ip[,'Package'] == 'Reach'),'Version'] < "2023.12.17") {
+    remotes::install_github('thartbm/Reach')
+  }
+} else {
+  remotes::install_github('thartbm/Reach')
+}
+```
+
+
 Assuming all libraries are installed on the system, we first import local functions.
 
 ```{r source-libraries}
