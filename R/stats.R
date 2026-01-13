@@ -433,84 +433,84 @@ probeLagANOVA <- function() {
 }
 
 
-probeLagLinQuad <- function(verbosity=1,returnmodels=FALSE) {
-  
-  # https://stackoverflow.com/questions/16601106/missing-object-error-when-using-step-within-a-user-defined-function
-  
-  # participants <- getParticipants()
-  participants <- c(1:8)
-  
-  df <- getApparentLagData(participants, FUN=median)
-  
-  # print(str(df))
-  
-  df$framelag <- abs( df$framelag ) - 1
-  df <- df[which(df$framelag >= 0),]
-  
-  df$lagp  <- df$framelag * 1/11
-  df$lagp2 <- df$lagp^2
-    
-  # framelags <- sort(unique(df$framelag))
-  # flweights <- pmax(0, (framelags * 100/3) - (100/3) ) + c(0, 25/3, 0, 0, 0)
-  # 
-  # df$lagp  <- flweights[df$framelag + 1]
-  # df$lagp2 <- df$lagp^2
-  
-
-  df <- aggregate(cbind(percept, lagp, lagp2) ~ participant + framelag + stimtype, data=df, FUN=median)
-  
-  # print(str(df))
-  
-  models <- list()
-  
-  for (stimtype in c('classicframe', 'apparentframe')) {
-    
-    modelfit <- getBestFit(df[which(df$stimtype == stimtype),], verbosity=verbosity)
-    
-    models[[stimtype]] <- modelfit
-    
-  }
-  
-  if (returnmodels) {
-    return(models)
-  }
-  
-}
-
-
-getBestFit <- function(df, verbosity=0) {
-  
-  lm_lin <- lm(percept ~ lagp, data=df)
-  lm_qdr <- lm(percept ~ lagp2, data=df)
-  
-  if (AIC(lm_lin) < AIC(lm_qdr)) {
-    if (verbosity) {
-      cat('linear model is better\n')
-    }
-    return(lm_lin)
-  } else {
-    if (verbosity) {
-      cat('quadratic model is better\n')
-    }
-    return(lm_qdr)
-  }
-  
-  
-}
+# probeLagLinQuad <- function(verbosity=1,returnmodels=FALSE) {
+#   
+#   # https://stackoverflow.com/questions/16601106/missing-object-error-when-using-step-within-a-user-defined-function
+#   
+#   # participants <- getParticipants()
+#   participants <- c(1:8)
+#   
+#   df <- getApparentLagData(participants, FUN=median)
+#   
+#   # print(str(df))
+#   
+#   df$framelag <- abs( df$framelag ) - 1
+#   df <- df[which(df$framelag >= 0),]
+#   
+#   df$lagp  <- df$framelag * 1/11
+#   df$lagp2 <- df$lagp^2
+#     
+#   # framelags <- sort(unique(df$framelag))
+#   # flweights <- pmax(0, (framelags * 100/3) - (100/3) ) + c(0, 25/3, 0, 0, 0)
+#   # 
+#   # df$lagp  <- flweights[df$framelag + 1]
+#   # df$lagp2 <- df$lagp^2
+#   
+# 
+#   df <- aggregate(cbind(percept, lagp, lagp2) ~ participant + framelag + stimtype, data=df, FUN=median)
+#   
+#   # print(str(df))
+#   
+#   models <- list()
+#   
+#   for (stimtype in c('classicframe', 'apparentframe')) {
+#     
+#     modelfit <- getBestFit(df[which(df$stimtype == stimtype),], verbosity=verbosity)
+#     
+#     models[[stimtype]] <- modelfit
+#     
+#   }
+#   
+#   if (returnmodels) {
+#     return(models)
+#   }
+#   
+# }
 
 
-lagDurations <- function() {
-  
-  framelags    <- c(-4:5)
-  lagdurations <- abs(framelags/30)
-  
-  probe_duration <- 2/30
-  pause_duration <- 2/30
-  
-  gapdurations <- pmax(0, lagdurations - ((probe_duration + pause_duration)/2))
-  
-  
-}
+# getBestFit <- function(df, verbosity=0) {
+#   
+#   lm_lin <- lm(percept ~ lagp, data=df)
+#   lm_qdr <- lm(percept ~ lagp2, data=df)
+#   
+#   if (AIC(lm_lin) < AIC(lm_qdr)) {
+#     if (verbosity) {
+#       cat('linear model is better\n')
+#     }
+#     return(lm_lin)
+#   } else {
+#     if (verbosity) {
+#       cat('quadratic model is better\n')
+#     }
+#     return(lm_qdr)
+#   }
+#   
+#   
+# }
+
+
+# lagDurations <- function() {
+#   
+#   framelags    <- c(-4:5)
+#   lagdurations <- abs(framelags/30)
+#   
+#   probe_duration <- 2/30
+#   pause_duration <- 2/30
+#   
+#   gapdurations <- pmax(0, lagdurations - ((probe_duration + pause_duration)/2))
+#   
+#   
+# }
 
 
 makeLagPlot <- function() {
@@ -571,6 +571,45 @@ makeLagPlot <- function() {
     
 }
 
+probeInFrameOffsets <- function() {
+  
+  framelags    <- c(-4:5)
+  lagdurations <- abs(framelags/30) # framelags are at 30 Hz indeed
+  
+  # these are halved, since we only need the extent from the middle timepoint
+  probe_duration <- (2/30)/2 # check this!
+  pause_duration <- (4/60)/2 # 9/60 or 8/60? keep 4/60 for now
+  
+  probe_spacing <- c()
+
+  for (lagdur in lagdurations) {
+    probe_onset <- lagdur - probe_duration
+    
+    if (probe_onset < pause_duration) {
+      probe_offset <- lagdur + probe_duration
+      if (probe_offset <= pause_duration) {
+        probe_spacing <- c(probe_spacing, 4)
+      } else {
+        static_part <- (pause_duration - probe_onset) / (2*probe_duration)
+        
+        dynamic_duration <- probe_offset - pause_duration
+        dynamic_part <- dynamic_duration / (2*probe_duration)
+        frame_pos <- 4 / (1/3) * (dynamic_duration/2)
+        
+        probe_space <- (static_part * 4) + (dynamic_part * diff(c(frame_pos, 4 - frame_pos)))
+        probe_spacing <- c(probe_spacing, probe_space)
+      }
+    } else {
+      frame_pos <- 4 / (1/3) * (lagdur - pause_duration)
+      probe_spacing <- c(probe_spacing, diff(c(frame_pos, 4-frame_pos)))
+    }
+  }
+  
+  return( data.frame( framelag = framelags,
+                      lagduration = lagdurations,
+                      probespacing = probe_spacing ) )
+
+}
 
 # random dot texture motion perception ----
 
@@ -777,7 +816,7 @@ internalmotionIllusionANOVA <- function() {
   print(concon)
   
   df <- getTextureMotionData(participants, FUN=median)
-  df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & df$period==1/3),]
+  df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & round(df$period,4)==round(1/3,4)),]
   
   print(t.test(x = df$percept[which(df$stimtype=='classicframe')],
                y = df$percept[which(df$stimtype=='dotmovingframe')],
