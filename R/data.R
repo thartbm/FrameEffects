@@ -76,161 +76,186 @@ extractAllData <- function() {
 
 # space data -----
 
-getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
+getAnaglyphData <- function(participants, FUN) {
   
-  AnaDF <- NA
+  df <- read.csv('data/A1_Anaglyph.csv', stringsAsFactors = F)
   
-  depthP <- getDepthControlData(participants=participants, agg=F)
-  depthC <- aggregate(correct ~ participant, data=depthP, FUN=mean)
-  OKparticipants <- depthC$participant[which(depthC$correct > 0.75)]
+  return(df)
   
-  
-  for (ppno in participants) {
-    
-    if (!(ppno %in% OKparticipants)) {
-      next() # skip participants with bad depth control performance
-    }
-    
-    # this was there, but it's incorrect!
-    # if (ppno %in% c(6,14)) {
-    #   next()
-    # }
-    
-    filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    if (timedata) {
-    
-      df <- df[which(df$condition == 'same plane'),] 
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
-      
-    } else {
-      
-      df$percept <- df$percept_abs * 2 * df$xfactor
-      df <- aggregate(percept ~ period + amplitude + framesize + condition, data=df, FUN=FUN, na.rm=TRUE)
-
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(AnaDF)) {
-      AnaDF <- rbind(AnaDF, df)
-    } else {
-      AnaDF <- df
-    }
-      
-  }
-  
-  return(AnaDF)
-
 }
+# getAnaglyphData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   AnaDF <- NA
+#   
+#   depthP <- getDepthControlData(participants=participants, agg=F)
+#   depthC <- aggregate(correct ~ participant, data=depthP, FUN=mean)
+#   OKparticipants <- depthC$participant[which(depthC$correct > 0.75)]
+#   
+#   
+#   for (ppno in participants) {
+#     
+#     if (!(ppno %in% OKparticipants)) {
+#       next() # skip participants with bad depth control performance
+#     }
+#     
+#     # this was there, but it's incorrect!
+#     # if (ppno %in% c(6,14)) {
+#     #   next()
+#     # }
+#     
+#     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     if (timedata) {
+#     
+#       df <- df[which(df$condition == 'same plane'),] 
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+#       
+#     } else {
+#       
+#       df$percept <- df$percept_abs * 2 * df$xfactor
+#       df <- aggregate(percept ~ period + amplitude + framesize + condition, data=df, FUN=FUN, na.rm=TRUE)
+# 
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(AnaDF)) {
+#       AnaDF <- rbind(AnaDF, df)
+#     } else {
+#       AnaDF <- df
+#     }
+#       
+#   }
+#   
+#   return(AnaDF)
+# 
+# }
 
-getDepthControlData <- function(participants, timedata=FALSE, FUN=mean, agg='condition') {
-
+getDepthControlData <- function(participants, FUN) {
   
-  DCdf <- NA
+  df <- read.csv('data/A1_DepthControl.csv', stringsAsFactors = F)
   
-  for (ppno in participants) {
-    
-    if (ppno %in% c(14)) {
-      next() # no data for this participant
-    }
-    
-    filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/depth_perception_check.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    if (timedata) {
-      
-      cat('WARNING: no standard frame depth perception control task!\n')
-      
-      return(NULL)
-      
-    } 
-      
-    df$correct <- as.numeric(sign(df$top - df$bottom) == df$response)
-    if (agg == 'condition') {
-      df <- aggregate(correct ~ top + bottom, data=df, FUN=FUN, na.rm=TRUE)
-    }
-    df$participant <- ppno
-    
-    if (is.data.frame(DCdf)) {
-      DCdf <- rbind(DCdf, df)
-    } else {
-      DCdf <- df
-    }
-    
-  }
-  
-  if (agg == 'participant') {
-    DCdf <- aggregate(correct ~ participant, data=DCdf, FUN=FUN, na.rm=TRUE)
-  }
-  
-  return(DCdf)
+  return(df)
   
 }
 
-getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
-  
-  PDdf <- NA
-  
-  
-  hor_offset_map <- c('[0.0, 0.0]'=0,
-                      '[0.0, 0]'=0,
-                      '[0.0, 12.0]'=0,
-                      '[0.0, 3.0]'=0,
-                      '[0.0, 6.0]'=0,
-                      '[0.0, 9.0]'=0,
-                      '[12.0, 0]'=12,
-                      '[3.0, 0]'=3,
-                      '[6.0, 0]'=6,
-                      '[9.0, 0]'=9)
-  ver_offset_map <- c('[0.0, 0.0]'=0,
-                      '[0.0, 0]'=0,
-                      '[0.0, 12.0]'=12,
-                      '[0.0, 3.0]'=3,
-                      '[0.0, 6.0]'=6,
-                      '[0.0, 9.0]'=9,
-                      '[12.0, 0]'=0,
-                      '[3.0, 0]'=0,
-                      '[6.0, 0]'=0,
-                      '[9.0, 0]'=0)
-  
-  
-  for (ppno in participants) {
-    
-    filename <- sprintf('A2_ProbeDistance/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    df$percept <- df$percept_abs * 2 * df$xfactor
-    
-    if (timedata) {
-      
-      df <- df[which(df$frameoffset == '[0.0, 0]' & df$framesize == '[7, 6]'),]
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+# getDepthControlData <- function(participants, timedata=FALSE, FUN=mean, agg='condition') {
+# 
+#   
+#   DCdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     if (ppno %in% c(14)) {
+#       next() # no data for this participant
+#     }
+#     
+#     filename <- sprintf('A1_Anaglyph/data/exp_1/p%03d/depth_perception_check.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     if (timedata) {
+#       
+#       cat('WARNING: no standard frame depth perception control task!\n')
+#       
+#       return(NULL)
+#       
+#     } 
+#       
+#     df$correct <- as.numeric(sign(df$top - df$bottom) == df$response)
+#     if (agg == 'condition') {
+#       df <- aggregate(correct ~ top + bottom, data=df, FUN=FUN, na.rm=TRUE)
+#     }
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(DCdf)) {
+#       DCdf <- rbind(DCdf, df)
+#     } else {
+#       DCdf <- df
+#     }
+#     
+#   }
+#   
+#   if (agg == 'participant') {
+#     DCdf <- aggregate(correct ~ participant, data=DCdf, FUN=FUN, na.rm=TRUE)
+#   }
+#   
+#   return(DCdf)
+#   
+# }
 
-    } else {
-      df$inner_framesize <- c('[4, 3]'=3, '[7, 6]'=6, '[10, 9]'=9)[df$framesize]
-      df$hor_offset      <- hor_offset_map[df$frameoffset]
-      df$ver_offset      <- ver_offset_map[df$frameoffset]
 
-      df <- df[which(df$amplitude == 4),]
-      df <- aggregate(percept ~ period + amplitude + inner_framesize + hor_offset + ver_offset, data=df, FUN=FUN, na.rm=FALSE)
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(PDdf)) {
-      PDdf <- rbind(PDdf, df)
-    } else {
-      PDdf <- df
-    }
-    
-  }
+getProbeDistanceData <- function(participants, FUN) {
   
-  return(PDdf)
+  df <- read.csv('data/A2_ProbeDistance.csv', stringsAsFactors = F)
+  
+  return(df)
   
 }
+
+
+# getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   PDdf <- NA
+#   
+#   
+#   hor_offset_map <- c('[0.0, 0.0]'=0,
+#                       '[0.0, 0]'=0,
+#                       '[0.0, 12.0]'=0,
+#                       '[0.0, 3.0]'=0,
+#                       '[0.0, 6.0]'=0,
+#                       '[0.0, 9.0]'=0,
+#                       '[12.0, 0]'=12,
+#                       '[3.0, 0]'=3,
+#                       '[6.0, 0]'=6,
+#                       '[9.0, 0]'=9)
+#   ver_offset_map <- c('[0.0, 0.0]'=0,
+#                       '[0.0, 0]'=0,
+#                       '[0.0, 12.0]'=12,
+#                       '[0.0, 3.0]'=3,
+#                       '[0.0, 6.0]'=6,
+#                       '[0.0, 9.0]'=9,
+#                       '[12.0, 0]'=0,
+#                       '[3.0, 0]'=0,
+#                       '[6.0, 0]'=0,
+#                       '[9.0, 0]'=0)
+#   
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('A2_ProbeDistance/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     df$percept <- df$percept_abs * 2 * df$xfactor
+#     
+#     if (timedata) {
+#       
+#       df <- df[which(df$frameoffset == '[0.0, 0]' & df$framesize == '[7, 6]'),]
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+# 
+#     } else {
+#       df$inner_framesize <- c('[4, 3]'=3, '[7, 6]'=6, '[10, 9]'=9)[df$framesize]
+#       df$hor_offset      <- hor_offset_map[df$frameoffset]
+#       df$ver_offset      <- ver_offset_map[df$frameoffset]
+# 
+#       df <- df[which(df$amplitude == 4),]
+#       df <- aggregate(percept ~ period + amplitude + inner_framesize + hor_offset + ver_offset, data=df, FUN=FUN, na.rm=FALSE)
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(PDdf)) {
+#       PDdf <- rbind(PDdf, df)
+#     } else {
+#       PDdf <- df
+#     }
+#     
+#   }
+#   
+#   return(PDdf)
+#   
+# }
 
 # addShortestDistanceToFrame <- function(df) {
 #   
@@ -301,356 +326,407 @@ getProbeDistanceData <- function(participants, timedata=FALSE, FUN=median) {
 
 # time data -----
 
-getApparentLagData <- function(participants, timedata=FALSE, FUN=median) {
-  
-  ALdf <- NA
-  
-  for (ppno in participants) {
-    
-    filename <- sprintf('B1_ApparentLag/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    df$percept <- df$percept_abs * 2 * df$xfactor
-    
-    if (timedata) {
-      
-      df <- df[which(df$framelag == 0 & df$stimtype == 'classicframe'),]
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
-      
-    } else {
-      
-      df <- df[which(df$amplitude == 4),]
-      df <- aggregate(percept ~ period + amplitude + stimtype + framelag, data=df, FUN=FUN, na.rm=FALSE)
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(ALdf)) {
-      ALdf <- rbind(ALdf, df)
-    } else {
-      ALdf <- df
-    }
-    
-  }
-  
-  return(ALdf)
-  
-}
 
-getPreDictionData <- function(participants, timedata=FALSE, FUN=median) {
+getApparentLagData <- function(participants, FUN) {
   
-  PDdf <- NA
-  
-  for (ppno in participants) {
-    
-    filename <- sprintf('B2_PreDiction/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    df$percept <- df$percept_abs * 2 * df$xfactor
-    
-    if (timedata) {
-      
-      df <- df[which(df$flashoffset == 0 & df$framepasses == 1),]
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
-      
-    } else {
-      
-      df <- df[which(df$amplitude == 4),]
-      df <- df[which(abs(df$flashoffset) > -3),]
-      df <- df[which(df$framepasses < 4),]
-      df <- aggregate(percept ~ period + amplitude + flashoffset + framepasses, data=df, FUN=FUN, na.rm=FALSE)
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(PDdf)) {
-      PDdf <- rbind(PDdf, df)
-    } else {
-      PDdf <- df
-    }
-    
-  }
-  
-  return(PDdf)
-  
-}
-
-
-getExperimentTimeData <- function(participants, FUN=median) {
-  
-  timeData <- list(  'A2_ProbeDistance'          = getProbeDistanceData(participants, timedata=TRUE, FUN=FUN),
-                     'B1_ApparentLag'            = getApparentLagData(participants, timedata=TRUE, FUN=FUN),
-                     'B2_PreDiction'             = getPreDictionData(participants, timedata=TRUE, FUN=FUN),
-                     # 'C1_SelfMoved'              = getSelfMotionData(participants, timedata=TRUE, FUN=FUN),
-                     'C2_TextureMotion'          = getTextureMotionData(participants, timedata=TRUE, FUN=FUN)     )
-  
-  
-  intervalData <- NA
-  
-  intervalduration <- 30 * 60
-  intervalnumber <- 4
-  
-  
-  participant <- c()
-  interval    <- c()
-  from_s      <- c()
-  to_s        <- c()
-  amplitude   <- c()
-  percept     <- c()
-  
-  dpdf <- NA
-  
-  for (ppno in participants) {
-    
-    ppdf <- NA
-    
-    for (exp_name in names(timeData)) {
-      
-      exp <- timeData[[exp_name]]
-      
-      # if (ppno == 1) {
-      #   print(unique(exp$amplitude))
-      #   if (1.8 %in% exp$amplitude) {
-      #     print(exp_name)
-      #   }
-      # }
-      
-      ppexpdf <- exp[which(exp$participant == ppno),]
-      if (is.data.frame(ppdf)) {
-        ppdf <- rbind(ppdf, ppexpdf)
-      } else {
-        ppdf <- ppexpdf
-      }
-      
-    }
-    
-    starttime <- getParticipantStartTime(ppno=ppno)
-    ppdf$trial_start <- ppdf$trial_start - starttime
-    
-    #print(range(ppdf$trial_start))
-    
-    for (inno in c(1:intervalnumber)) {
-      
-      intervalstart <- (inno-1) * intervalduration
-      intervalend   <- inno * intervalduration
-      
-      #print(c('start'=intervalstart, 'end'=intervalend))
-      
-      inppdf <- ppdf[which(ppdf$trial_start > intervalstart & ppdf$trial_start <= intervalend),]
-      
-      if (dim(inppdf)[1]>0) {
-        intervaldf <- aggregate(percept ~ amplitude, data=inppdf, FUN=FUN)
-        for (rowno in c(1:dim(intervaldf)[1])) {
-          
-          participant <- c(participant, ppno)
-          interval    <- c(interval,    inno)
-          from_s      <- c(from_s,      intervalstart)
-          to_s        <- c(to_s,        intervalend)
-          amplitude   <- c(amplitude,   intervaldf$amplitude[rowno])
-          percept     <- c(percept,     intervaldf$percept[rowno])
-          
-        }
-        
-      }
-      
-      if (is.data.frame(dpdf)) {
-        dpdf <- rbind(dpdf, inppdf)
-      } else {
-        dpdf <- inppdf
-      }
-
-    }
-    
-  }
-  
-  # print(table(dpdf$amplitude))
-  # print(length(dpdf$amplitude))
-  
-  
-  df <- data.frame(participant, interval, from_s, to_s, amplitude, percept)
+  df <- read.csv('data/B1_ApparentLag.csv', stringsAsFactors = F)
   
   return(df)
   
 }
 
-getParticipantStartTime <- function(ppno) {
+
+# getApparentLagData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   ALdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('B1_ApparentLag/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     df$percept <- df$percept_abs * 2 * df$xfactor
+#     
+#     if (timedata) {
+#       
+#       df <- df[which(df$framelag == 0 & df$stimtype == 'classicframe'),]
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+#       
+#     } else {
+#       
+#       df <- df[which(df$amplitude == 4),]
+#       df <- aggregate(percept ~ period + amplitude + stimtype + framelag, data=df, FUN=FUN, na.rm=FALSE)
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(ALdf)) {
+#       ALdf <- rbind(ALdf, df)
+#     } else {
+#       ALdf <- df
+#     }
+#     
+#   }
+#   
+#   return(ALdf)
+#   
+# }
+
+
+getPreDictionData <- function(participants, FUN) {
   
+  df <- read.csv('data/B2_PreDiction.csv', stringsAsFactors = F)
   
-  tasks <-  c( 'A1_Anaglyph',
-               'A2_ProbeDistance',
-               'B1_ApparentLag',
-               'B2_PreDiction',
-               'C1_SelfMotion',
-               'C2_TextureMotion',
-               'C3_PerceivedMotion'  )
-  
-  
-  starttime <- NA
-  
-  for (task in tasks) {
-    filename <- sprintf('%s/data/exp_1/p%03d/cfg.json', task, ppno)
-    
-    if (task == 'A1_Anaglyph' & ppno == 14) {
-      next
-    }
-    
-    cfg <- RJSONIO::fromJSON(content=filename)
-    expstart <- cfg$expstart
-    
-    if (is.na(starttime)) {
-      starttime <- expstart
-    } else {
-      starttime <- min(starttime, expstart)
-    }
-  }
-  
-  return(starttime)
+  return(df)
   
 }
+
+
+# getPreDictionData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   PDdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('B2_PreDiction/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     df$percept <- df$percept_abs * 2 * df$xfactor
+#     
+#     if (timedata) {
+#       
+#       df <- df[which(df$flashoffset == 0 & df$framepasses == 1),]
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+#       
+#     } else {
+#       
+#       df <- df[which(df$amplitude == 4),]
+#       df <- df[which(abs(df$flashoffset) > -3),]
+#       df <- df[which(df$framepasses < 4),]
+#       df <- aggregate(percept ~ period + amplitude + flashoffset + framepasses, data=df, FUN=FUN, na.rm=FALSE)
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(PDdf)) {
+#       PDdf <- rbind(PDdf, df)
+#     } else {
+#       PDdf <- df
+#     }
+#     
+#   }
+#   
+#   return(PDdf)
+#   
+# }
+
+getExperimentTimeData <- function(participants, FUN) {
+  
+  df <- read.csv('data/T1_ExperimentTime.csv', stringsAsFactors = F)
+  
+  return(df)
+  
+}
+
+# getExperimentTimeData <- function(participants, FUN=median) {
+#   
+#   timeData <- list(  'A2_ProbeDistance'          = getProbeDistanceData(participants, timedata=TRUE, FUN=FUN),
+#                      'B1_ApparentLag'            = getApparentLagData(participants, timedata=TRUE, FUN=FUN),
+#                      'B2_PreDiction'             = getPreDictionData(participants, timedata=TRUE, FUN=FUN),
+#                      # 'C1_SelfMoved'              = getSelfMotionData(participants, timedata=TRUE, FUN=FUN),
+#                      'C2_TextureMotion'          = getTextureMotionData(participants, timedata=TRUE, FUN=FUN)     )
+#   
+#   
+#   intervalData <- NA
+#   
+#   intervalduration <- 30 * 60
+#   intervalnumber <- 4
+#   
+#   
+#   participant <- c()
+#   interval    <- c()
+#   from_s      <- c()
+#   to_s        <- c()
+#   amplitude   <- c()
+#   percept     <- c()
+#   
+#   dpdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     ppdf <- NA
+#     
+#     for (exp_name in names(timeData)) {
+#       
+#       exp <- timeData[[exp_name]]
+#       
+#       # if (ppno == 1) {
+#       #   print(unique(exp$amplitude))
+#       #   if (1.8 %in% exp$amplitude) {
+#       #     print(exp_name)
+#       #   }
+#       # }
+#       
+#       ppexpdf <- exp[which(exp$participant == ppno),]
+#       if (is.data.frame(ppdf)) {
+#         ppdf <- rbind(ppdf, ppexpdf)
+#       } else {
+#         ppdf <- ppexpdf
+#       }
+#       
+#     }
+#     
+#     starttime <- getParticipantStartTime(ppno=ppno)
+#     ppdf$trial_start <- ppdf$trial_start - starttime
+#     
+#     #print(range(ppdf$trial_start))
+#     
+#     for (inno in c(1:intervalnumber)) {
+#       
+#       intervalstart <- (inno-1) * intervalduration
+#       intervalend   <- inno * intervalduration
+#       
+#       #print(c('start'=intervalstart, 'end'=intervalend))
+#       
+#       inppdf <- ppdf[which(ppdf$trial_start > intervalstart & ppdf$trial_start <= intervalend),]
+#       
+#       if (dim(inppdf)[1]>0) {
+#         intervaldf <- aggregate(percept ~ amplitude, data=inppdf, FUN=FUN)
+#         for (rowno in c(1:dim(intervaldf)[1])) {
+#           
+#           participant <- c(participant, ppno)
+#           interval    <- c(interval,    inno)
+#           from_s      <- c(from_s,      intervalstart)
+#           to_s        <- c(to_s,        intervalend)
+#           amplitude   <- c(amplitude,   intervaldf$amplitude[rowno])
+#           percept     <- c(percept,     intervaldf$percept[rowno])
+#           
+#         }
+#         
+#       }
+#       
+#       if (is.data.frame(dpdf)) {
+#         dpdf <- rbind(dpdf, inppdf)
+#       } else {
+#         dpdf <- inppdf
+#       }
+# 
+#     }
+#     
+#   }
+#   
+#   # print(table(dpdf$amplitude))
+#   # print(length(dpdf$amplitude))
+#   
+#   
+#   df <- data.frame(participant, interval, from_s, to_s, amplitude, percept)
+#   
+#   return(df)
+#   
+# }
+
+# getParticipantStartTime <- function(ppno) {
+#   
+#   
+#   tasks <-  c( 'A1_Anaglyph',
+#                'A2_ProbeDistance',
+#                'B1_ApparentLag',
+#                'B2_PreDiction',
+#                'C1_SelfMotion',
+#                'C2_TextureMotion',
+#                'C3_PerceivedMotion'  )
+#   
+#   
+#   starttime <- NA
+#   
+#   for (task in tasks) {
+#     filename <- sprintf('%s/data/exp_1/p%03d/cfg.json', task, ppno)
+#     
+#     if (task == 'A1_Anaglyph' & ppno == 14) {
+#       next
+#     }
+#     
+#     cfg <- RJSONIO::fromJSON(content=filename)
+#     expstart <- cfg$expstart
+#     
+#     if (is.na(starttime)) {
+#       starttime <- expstart
+#     } else {
+#       starttime <- min(starttime, expstart)
+#     }
+#   }
+#   
+#   return(starttime)
+#   
+# }
 
 # motion data -----
 
-getSelfMotionData <- function(participants, timedata=FALSE, FUN=median) {
+getSelfMotionData <- function(participants, FUN) {
   
-  SMdf <- NA
+  df <- read.csv('data/C1_SelfMoved.csv', stringsAsFactors = F)
   
-  # stimData <- read.csv('C1_SelfMotion/data/stimuli.csv', stringsAsFactors = F)
-  
-  for (ppno in participants) {
-    
-    filename <- sprintf('C1_SelfMotion/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    # df <- stimData[which(stimData$participant == ppno),]
-    # df <- df[,c('period','amplitude','stimtype','mapping','xfactor')]
-    
-    df$percept <- abs( getParticipantSelfMotionPercepts(ppno=ppno) * 2 ) # * df$xfactor #* df$mapping
-    
-    if (timedata) {
-      
-      df <- df[which(df$stimtype == 'classicframe'),]
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
-      #print(df)
-    } else {
-      
-      df <- aggregate(percept ~ period + amplitude + stimtype + mapping, data=df, FUN=FUN, na.rm=FALSE)
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(SMdf)) {
-      SMdf <- rbind(SMdf, df)
-    } else {
-      SMdf <- df
-    }
-    
-  }
-  
-  return(SMdf)
+  return(df)
   
 }
 
-getParticipantSelfMotionPercepts <- function(ppno) {
+# getSelfMotionData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   SMdf <- NA
+#   
+#   # stimData <- read.csv('C1_SelfMotion/data/stimuli.csv', stringsAsFactors = F)
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('C1_SelfMotion/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     # df <- stimData[which(stimData$participant == ppno),]
+#     # df <- df[,c('period','amplitude','stimtype','mapping','xfactor')]
+#     
+#     df$percept <- abs( getParticipantSelfMotionPercepts(ppno=ppno) * 2 ) # * df$xfactor #* df$mapping
+#     
+#     if (timedata) {
+#       
+#       df <- df[which(df$stimtype == 'classicframe'),]
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+#       #print(df)
+#     } else {
+#       
+#       df <- aggregate(percept ~ period + amplitude + stimtype + mapping, data=df, FUN=FUN, na.rm=FALSE)
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(SMdf)) {
+#       SMdf <- rbind(SMdf, df)
+#     } else {
+#       SMdf <- df
+#     }
+#     
+#   }
+#   
+#   return(SMdf)
+#   
+# }
+
+# getParticipantSelfMotionPercepts <- function(ppno) {
+#   
+#   percepts <- c()
+#   
+#   for (block in c(0:2)) {
+#     
+#     for (trial in c(0:14)) {
+#   
+#       filename <- sprintf('C1_SelfMotion/data/exp_1/p%03d/timing/b%d_t%d.csv',ppno,block,trial)
+#       df <- read.csv(filename, stringsAsFactors = F)
+#       
+#       percepts <- c(percepts, df$percept[dim(df)[1]])
+#       
+#     }
+#       
+#   }
+#   
+#   return(percepts)
+#   
+# }
+
+getTextureMotionData <- function(participants, FUN) {
   
-  percepts <- c()
+  df <- read.csv('data/C2_TextureMotion.csv', stringsAsFactors = F)
   
-  for (block in c(0:2)) {
-    
-    for (trial in c(0:14)) {
-  
-      filename <- sprintf('C1_SelfMotion/data/exp_1/p%03d/timing/b%d_t%d.csv',ppno,block,trial)
-      df <- read.csv(filename, stringsAsFactors = F)
-      
-      percepts <- c(percepts, df$percept[dim(df)[1]])
-      
-    }
-      
-  }
-  
-  return(percepts)
+  return(df)
   
 }
 
-getTextureMotionData <- function(participants, timedata=FALSE, FUN=median) {
+# getTextureMotionData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   TMdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('C2_TextureMotion/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     df$percept <- df$percept_abs * 2 * df$xfactor
+#     
+#     if (timedata) {
+#       
+#       df <- df[which(df$stimtype == 'classicframe' & round(df$period,digits=6) == 0.333333),]
+#       df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
+#       
+#     } else {
+#       
+#       df <- df[which(df$amplitude == 4),]
+#       df <- aggregate(percept ~ period + amplitude + stimtype + fixdot, data=df, FUN=FUN, na.rm=FALSE)
+#       df$fixdot <- c('False'=FALSE, 'True'=TRUE)[df$fixdot]
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(TMdf)) {
+#       TMdf <- rbind(TMdf, df)
+#     } else {
+#       TMdf <- df
+#     }
+#     
+#   }
+#   
+#   return(TMdf)
+#   
+# }
+
+getPerceivedMotionData <- function(participants, FUN) {
   
-  TMdf <- NA
+  df <- read.csv('data/C2_PerceivedTextureMotion.csv', stringsAsFactors = F)
   
-  for (ppno in participants) {
-    
-    filename <- sprintf('C2_TextureMotion/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    df$percept <- df$percept_abs * 2 * df$xfactor
-    
-    if (timedata) {
-      
-      df <- df[which(df$stimtype == 'classicframe' & round(df$period,digits=6) == 0.333333),]
-      df <- df[,c('percept', 'period', 'amplitude', 'trial_start')]
-      
-    } else {
-      
-      df <- df[which(df$amplitude == 4),]
-      df <- aggregate(percept ~ period + amplitude + stimtype + fixdot, data=df, FUN=FUN, na.rm=FALSE)
-      df$fixdot <- c('False'=FALSE, 'True'=TRUE)[df$fixdot]
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(TMdf)) {
-      TMdf <- rbind(TMdf, df)
-    } else {
-      TMdf <- df
-    }
-    
-  }
-  
-  return(TMdf)
+  return(df)
   
 }
 
-getPerceivedMotionData <- function(participants, timedata=FALSE, FUN=median) {
-  
-  # participant 2 needs to have the first block removed (they responded left extreme to right extreme there)
-  PMdf <- NA
-  
-  for (ppno in participants) {
-    
-    filename <- sprintf('C3_PerceivedMotion/data/exp_1/p%03d/responses.csv',ppno)
-    df <- read.csv(filename, stringsAsFactors = F)
-    
-    if (ppno == 2) {
-      # remove the first block!
-      df <- df[c(53:156),]
-    }
-    
-    df$percept <- abs(df$percept) * 2
-    
-    if (timedata) {
-      
-      cat('WARNING: perceived texture motion data not suitable for time analysis\n')
-      return(NULL)
-
-    } else {
-      
-      df <- aggregate(percept ~ period + amplitude + stimtype, data=df, FUN=FUN, na.rm=FALSE)
-      
-    }
-    
-    df$participant <- ppno
-    
-    if (is.data.frame(PMdf)) {
-      PMdf <- rbind(PMdf, df)
-    } else {
-      PMdf <- df
-    }
-    
-  }
-  
-  return(PMdf)
-  
-}
+# getPerceivedMotionData <- function(participants, timedata=FALSE, FUN=median) {
+#   
+#   # participant 2 needs to have the first block removed (they responded left extreme to right extreme there)
+#   PMdf <- NA
+#   
+#   for (ppno in participants) {
+#     
+#     filename <- sprintf('C3_PerceivedMotion/data/exp_1/p%03d/responses.csv',ppno)
+#     df <- read.csv(filename, stringsAsFactors = F)
+#     
+#     if (ppno == 2) {
+#       # remove the first block!
+#       df <- df[c(53:156),]
+#     }
+#     
+#     df$percept <- abs(df$percept) * 2
+#     
+#     if (timedata) {
+#       
+#       cat('WARNING: perceived texture motion data not suitable for time analysis\n')
+#       return(NULL)
+# 
+#     } else {
+#       
+#       df <- aggregate(percept ~ period + amplitude + stimtype, data=df, FUN=FUN, na.rm=FALSE)
+#       
+#     }
+#     
+#     df$participant <- ppno
+#     
+#     if (is.data.frame(PMdf)) {
+#       PMdf <- rbind(PMdf, df)
+#     } else {
+#       PMdf <- df
+#     }
+#     
+#   }
+#   
+#   return(PMdf)
+#   
+# }
 
