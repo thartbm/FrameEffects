@@ -1404,11 +1404,208 @@ fig5_prepost <- function(target='inline') {
 # }
 
 
+# fig6_second_probelag <- function(target='inline') {
+#   
+#   binEffects <- FALSE
+#   
+#   width  <- 4.5
+#   height <- 4
+#   dpi    <- 300
+#   
+#   if (target=='svg') {
+#     svglite::svglite(file='doc/fig/svg/fig6_probelag.svg', width=width, height=height, fix_text_size = FALSE)
+#   }
+#   if (target=='pdf') {
+#     cairo_pdf(filename='doc/fig/pdf/fig6_probelag.pdf', width=width, height=height)
+#   }
+#   if (target=='png') {
+#     png(filename='doc/fig/png/fig6_probelag.png', width=width*dpi, height=height*dpi, res=dpi)
+#   }
+#   
+#   layout(mat = matrix(data = c(1),
+#                       nrow = 1,
+#                       byrow = TRUE)  )
+#   
+#   cols <- getColors()
+#   cols.op <- cols$op
+#   cols.tr <- cols$tr
+#   
+#   # participants <- getParticipants()
+#   participants <- c(1:8)
+#   
+#   df <- getApparentLagData(participants, FUN=median)
+#   
+#   df$framelag <- abs(df$framelag)
+#   df <- df[which(df$framelag <= 4),]
+#   
+#   plot(-1000,-1000,
+#        xlim=c(-.5,7), ylim=c(-.5,4.5),
+#        main='',xlab='',ylab='perceived separation [dva]',
+#        bty='n', ax=F)
+#   
+#   title(xlab='probe lag [% frame pass]', line=4)
+#   
+#   
+#   lines( x=c(-0.25, 7), y=c(4,4), lty=2, col='#999999')
+#   lines( x=c(-0.25, 7), y=c(0,0), lty=2, col='#999999')
+#   
+#   # lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
+#   
+#   # models <- probeLagLinQuad(verbosity=0,returnmodels=TRUE)
+#   
+#   for (stimtype in c('classicframe','apparentframe')) {
+#     
+#     col.idx <- c('classicframe'=1,'apparentframe'=5)[stimtype]
+#     
+#     cdf <- df[which(df$stimtype == stimtype),]
+#     
+#     avg <- c()
+#     hci <- c()
+#     lci <- c()
+#     
+#     X <- sort ( unique( cdf$framelag) )
+#     
+#     for (fl in X) {
+#       
+#       idx <- which(cdf$framelag == fl)
+#       
+#       avg <- c(avg, mean(cdf$percept[idx]))
+#       ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
+#       lci <- c(lci,ci[1])
+#       hci <- c(hci,ci[2])
+#       
+#     }
+#     
+#     if (stimtype == 'classicframe') {
+#       # X = X - 1
+#     } else {
+#       # X = X * -1
+#     }
+#     
+#     # polygon( x = c(X, rev(X)),
+#     #          y = c(lci, rev(hci)),
+#     #          border = NA,
+#     #          col=cols.tr[col.idx])
+#     # lines(X,avg,col=cols.op[col.idx])
+#     
+#     # pause_percepts <- cdf$percept[which(cdf$framelag == 0)]
+#     # offset <- list('classicframe'=-.15,'apparentframe'=.25)[[stimtype]]
+#     # points( x = seq(-.55,-.65, length.out=length(pause_percepts)) + offset,
+#     #         # x = rep(-.5+offset, length(pause_percepts)),
+#     #         y = pause_percepts,
+#     #         pch = 16,
+#     #         cex=1.5,
+#     #         col = cols.tr[col.idx])
+#     
+#     polygon( x = c(0,0.2,0.2,0)*2,
+#              y = c(rep(lci[1],2), rep(hci[1],2)),
+#              border=NA,
+#              col=cols.tr[col.idx])
+#     lines( x = c(0,0.2)*2,
+#            y = rep(avg[1],2),
+#            col = cols.op[col.idx])
+#     
+#     points( x = X[2:length(X)],
+#             y = avg[2:length(avg)],
+#             pch = 1,
+#             col = cols.op[col.idx])
+#     # 
+#     # ilindecay <- lm( avg[2:length(avg)] ~ I(X[2:length(X)] - (50/9) - 2) + 0 )
+#     # # print(unname(lindecay$coefficients)[1])
+#     # 
+#     # lines( x = c(1,(50/9)+1),
+#     #        y = c(-1-(50/9), 0) * unname(ilindecay$coefficients)[1],
+#     #        col = cols.op[col.idx],
+#     #        lty=2
+#     #        )
+#     # 
+#     # print(str(cdf))
+#     
+#     lm.cdf <- cdf[which(cdf$framelag >= 1 & cdf$framelag <= 4),]
+#     
+#     lf <- lm.cdf$framelag
+#     lp <- lm.cdf$percept
+#     
+#     lindecay <- lm( lp ~ lf )
+#     # print(lindecay)
+#     
+#     
+#     
+#     at <- c(min(lf), (50/9) + 1)
+#     
+#     coef <- lindecay$coefficients
+#     lines(at, coef[1]+(at*coef[2]), col=cols.op[col.idx])
+#     # lines(c(max(lf), (50/9)+1),
+#     #       c( coef[1]+(max(lf)*coef[2]),
+#     #          coef[1]+(((50/9)+1)*coef[2]) ),
+#     #       col=cols.op[col.idx],
+#     #       lty=3)
+#     # 
+#     at <- range(lf)
+#     ci <- predict( lindecay,
+#                    newdata=data.frame(lf=seq(at[1],at[2],length.out=101)),
+#                    interval = "confidence")
+#     # 
+#     X <- c(seq(at[1],at[2],length.out=101),rev(seq(at[1],at[2],length.out=101)))
+#     Y <- c(ci[,'lwr'],rev(ci[,'upr']))
+#     polygon(x=X,y=Y,col=cols.tr[col.idx],border=NA)
+#     
+#     
+#     
+#     
+#     
+#     
+#     
+#     # thismodel <- models[[stimtype]]
+#     # 
+#     # # print(thismodel$coefficients)
+#     # 
+#     # newX     <- seq(0,4,length.out=100)
+#     # lagp  <- newX/11
+#     # lagp2 <- lagp^2 
+#     # 
+#     # intercept <- thismodel$coefficients['(Intercept)']
+#     # 
+#     # if (names(thismodel$coefficients)[2] == 'lagp') {
+#     #   pred <- thismodel$coefficients['lagp']*lagp + thismodel$coefficients['(Intercept)']
+#     # }
+#     # if (names(thismodel$coefficients)[2] == 'lagp2') {
+#     #   pred <- thismodel$coefficients['lagp2']*lagp2 + thismodel$coefficients['(Intercept)']
+#     # }
+#     # 
+#     # # Y <- predict(thismodel, newdata=data.frame(lagp=lagp, lagp2=lagp2) )
+#     # 
+#     # lines( x = newX+1,
+#     #        y = pred,
+#     #        col = cols.op[col.idx]  )
+#     
+#     axis(side=2, at=c(0,2,4))
+#     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
+#     # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
+#     # axis(side=1, at=c(0,1,2,3,4,5),labels=c('mid\npause',sprintf('%d%%',9*c(0:4))),las=2)
+#     axis(side=1, at=c(0),labels=c('mid\npause'),las=2)
+#     
+#     axis(side=1, at=(c(0,1,2,3,4,5)/.9)+1,labels=sprintf('%d%%',c(0,10,20,30,40,50)),las=2)
+#     
+#     legend(1, 
+#            5.6,
+#            legend=c('classic frame','apparent motion'), 
+#            bty='n',lty=1,col=cols.op[c(1,5)],
+#            xpd=TRUE)
+#     
+#   }  
+#   
+#   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
+#     dev.off()
+#   }
+#   
+# }
+
 fig6_probelag <- function(target='inline') {
   
-  binEffects <- FALSE
+  # binEffects <- FALSE
   
-  width  <- 4.5
+  width  <- 4
   height <- 4
   dpi    <- 300
   
@@ -1435,24 +1632,27 @@ fig6_probelag <- function(target='inline') {
   
   df <- getApparentLagData(participants, FUN=median)
   
-  df$framelag <- abs(df$framelag)
-  df <- df[which(df$framelag <= 4),]
+  df$probedist <- NA
+  conTab <- probeInFrameOffsets()
+  for (fl in unique(df$framelag)) {
+    idx <- which(df$framelag == fl)
+    df$probedist[idx] <- conTab$probespacing[which(conTab$framelag == fl)]
+  }
   
-  plot(-1000,-1000,
-       xlim=c(-.5,7), ylim=c(-.5,4.5),
+  # df$framelag <- abs(df$framelag)
+  # df <- df[which(df$framelag <= 4),]
+  
+  plot(NULL,NULL,
+       xlim=c(0,4), ylim=c(0,4),
        main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
   
-  title(xlab='probe lag [% frame pass]', line=4)
+  title(xlab='??? [dva]', line=4)
   
   
-  lines( x=c(-0.25, 7), y=c(4,4), lty=2, col='#999999')
-  lines( x=c(-0.25, 7), y=c(0,0), lty=2, col='#999999')
+  lines( x=c(0,4), y=c(0,4), lty=2, col='#999999')
   
-  # lines( x=c(0,0),y=c(0,4), lty=2, col='#999999')
-  
-  # models <- probeLagLinQuad(verbosity=0,returnmodels=TRUE)
-  
+
   for (stimtype in c('classicframe','apparentframe')) {
     
     col.idx <- c('classicframe'=1,'apparentframe'=5)[stimtype]
@@ -1463,11 +1663,11 @@ fig6_probelag <- function(target='inline') {
     hci <- c()
     lci <- c()
     
-    X <- sort ( unique( cdf$framelag) )
+    X <- sort( unique( cdf$probedist ) )
     
-    for (fl in X) {
+    for (pd in X) {
       
-      idx <- which(cdf$framelag == fl)
+      idx <- which(cdf$probedist == pd)
       
       avg <- c(avg, mean(cdf$percept[idx]))
       ci  <- Reach::getConfidenceInterval(cdf$percept[idx])
@@ -1476,74 +1676,31 @@ fig6_probelag <- function(target='inline') {
       
     }
     
-    if (stimtype == 'classicframe') {
-      # X = X - 1
-    } else {
-      # X = X * -1
-    }
-    
-    # polygon( x = c(X, rev(X)),
-    #          y = c(lci, rev(hci)),
-    #          border = NA,
-    #          col=cols.tr[col.idx])
-    # lines(X,avg,col=cols.op[col.idx])
-    
-    # pause_percepts <- cdf$percept[which(cdf$framelag == 0)]
-    # offset <- list('classicframe'=-.15,'apparentframe'=.25)[[stimtype]]
-    # points( x = seq(-.55,-.65, length.out=length(pause_percepts)) + offset,
-    #         # x = rep(-.5+offset, length(pause_percepts)),
-    #         y = pause_percepts,
-    #         pch = 16,
-    #         cex=1.5,
-    #         col = cols.tr[col.idx])
-    
-    polygon( x = c(0,0.2,0.2,0)*2,
-             y = c(rep(lci[1],2), rep(hci[1],2)),
-             border=NA,
-             col=cols.tr[col.idx])
-    lines( x = c(0,0.2)*2,
-           y = rep(avg[1],2),
-           col = cols.op[col.idx])
-    
+
+
     points( x = X[2:length(X)],
             y = avg[2:length(avg)],
-            pch = 1,
+            pch = 16,
             col = cols.op[col.idx])
-    # 
-    # ilindecay <- lm( avg[2:length(avg)] ~ I(X[2:length(X)] - (50/9) - 2) + 0 )
-    # # print(unname(lindecay$coefficients)[1])
-    # 
-    # lines( x = c(1,(50/9)+1),
-    #        y = c(-1-(50/9), 0) * unname(ilindecay$coefficients)[1],
-    #        col = cols.op[col.idx],
-    #        lty=2
-    #        )
-    # 
-    # print(str(cdf))
+
     
-    lm.cdf <- cdf[which(cdf$framelag >= 1 & cdf$framelag <= 4),]
+    # lm.cdf <- cdf[which(cdf$framelag >= 1 & cdf$framelag <= 4),]
+    lm.cdf <- cdf[which(cdf$probedist != min(X)),]
     
-    lf <- lm.cdf$framelag
+    ld <- lm.cdf$probedist
     lp <- lm.cdf$percept
     
-    lindecay <- lm( lp ~ lf )
-    # print(lindecay)
-    
-    
-    
-    at <- c(min(lf), (50/9) + 1)
+    lindecay <- lm( lp ~ ld )
+
+    at <- c(0, 4)
     
     coef <- lindecay$coefficients
     lines(at, coef[1]+(at*coef[2]), col=cols.op[col.idx])
-    # lines(c(max(lf), (50/9)+1),
-    #       c( coef[1]+(max(lf)*coef[2]),
-    #          coef[1]+(((50/9)+1)*coef[2]) ),
-    #       col=cols.op[col.idx],
-    #       lty=3)
-    # 
-    at <- range(lf)
+
+    
+    at <- range(ld)
     ci <- predict( lindecay,
-                   newdata=data.frame(lf=seq(at[1],at[2],length.out=101)),
+                   newdata=data.frame(ld=seq(at[1],at[2],length.out=101)),
                    interval = "confidence")
     # 
     X <- c(seq(at[1],at[2],length.out=101),rev(seq(at[1],at[2],length.out=101)))
@@ -1553,47 +1710,20 @@ fig6_probelag <- function(target='inline') {
     
     
     
-    
-    
-    
-    # thismodel <- models[[stimtype]]
-    # 
-    # # print(thismodel$coefficients)
-    # 
-    # newX     <- seq(0,4,length.out=100)
-    # lagp  <- newX/11
-    # lagp2 <- lagp^2 
-    # 
-    # intercept <- thismodel$coefficients['(Intercept)']
-    # 
-    # if (names(thismodel$coefficients)[2] == 'lagp') {
-    #   pred <- thismodel$coefficients['lagp']*lagp + thismodel$coefficients['(Intercept)']
-    # }
-    # if (names(thismodel$coefficients)[2] == 'lagp2') {
-    #   pred <- thismodel$coefficients['lagp2']*lagp2 + thismodel$coefficients['(Intercept)']
-    # }
-    # 
-    # # Y <- predict(thismodel, newdata=data.frame(lagp=lagp, lagp2=lagp2) )
-    # 
-    # lines( x = newX+1,
-    #        y = pred,
-    #        col = cols.op[col.idx]  )
-    
-    axis(side=2, at=c(0,2,4))
-    # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',10*c(-4:5)),las=2)
-    # axis(side=1, at=c(-4,-3,-2,-1,0,1,2,3,4,5),labels=sprintf('%d%%',9*c(-4:5)),las=2)
-    # axis(side=1, at=c(0,1,2,3,4,5),labels=c('mid\npause',sprintf('%d%%',9*c(0:4))),las=2)
-    axis(side=1, at=c(0),labels=c('mid\npause'),las=2)
-    
-    axis(side=1, at=(c(0,1,2,3,4,5)/.9)+1,labels=sprintf('%d%%',c(0,10,20,30,40,50)),las=2)
-    
-    legend(1, 
-           5.6,
-           legend=c('classic frame','apparent motion'), 
-           bty='n',lty=1,col=cols.op[c(1,5)],
-           xpd=TRUE)
-    
   }  
+
+  axis(side=2, at=c(0,2,4))
+  
+  axis(side=1, at=c(0,2,4))
+  
+  # axis(side=1, at=(c(0,1,2,3,4,5)/.9)+1,labels=sprintf('%d%%',c(0,10,20,30,40,50)),las=2)
+  
+  legend(0.5, 
+         4.0,
+         legend=c('classic frame','apparent motion'), 
+         bty='n',lty=1,col=cols.op[c(1,5)],
+         xpd=TRUE)
+
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
     dev.off()
