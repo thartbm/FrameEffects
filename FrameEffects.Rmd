@@ -263,6 +263,11 @@ These are the average perceived motion amplitudes at 4 dva for both stimulus typ
 ```{r}
 motionPerceptionDescriptors()
 ```
+We can compare each of these to zero, and compare them with each other.
+
+```{r motion-perception-ttests}
+motionperceptionTtests()
+```
 
 We now look at the illusion in the same stimuli. There are 2 extra conditions we test here. First, it's known that motion duration of the frame doesn't affect illusion strength, but this is not known for random dot backgrounds, so we include 5 motion durations here. Further, it could be that fixating peripherally, vs. free viewing (including looking directly at the stimulus) affects illusion strength. So for the frames, we have included trials with and without fixation instructions.
 
