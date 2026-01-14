@@ -3,6 +3,8 @@ title: "Frame effects in space and time"
 output:
   word_document: default
   html_notebook: default
+  html_document:
+    df_print: paged
   pdf_document: default
 ---
 
