@@ -46,7 +46,7 @@ basicPlot <- function(target='none') {
 
   # plot 1: anaglyph
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0.5,4.5), ylim=c(0,6),
        main='Anaglyph',xlab='',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -96,7 +96,7 @@ basicPlot <- function(target='none') {
 
   # plot 2: horizontal frame offset
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-1,13), ylim=c(0,6),
        main='Horizontal Offset',xlab='horizontal offset [dva]',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -143,7 +143,7 @@ basicPlot <- function(target='none') {
 
   # plot 3: vertical frame offset
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-1,13), ylim=c(0,6),
        main='Vertical Offset',xlab='vertical offset [dva]',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -194,7 +194,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['B1_ApparentLag']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-5,6), ylim=c(0,6),
        main='Apparent Motion Temporal Offset',xlab='probe lag [30 Hz frames]',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -241,7 +241,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['B2_PreDiction']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-3,3), ylim=c(0,6),
        main='Pre/Post-diction',xlab='probed pass',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -305,7 +305,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['T1_ExperimentTime']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,6), ylim=c(0,6),
        main='Experiment Time',xlab='frame movement [dva]',ylab='illusion strength [dva]',
        bty='n', ax=F, asp=1)
@@ -374,7 +374,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['C1_SelfMoved']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,3.5), ylim=c(0,6),
        main='Self-Moved Frames',xlab='',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -427,7 +427,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['C2_PerceivedTextureMotion']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,12), ylim=c(0,8),
        main='LDL Motion Perception',xlab='',ylab='perceived motion [dva]',
        bty='n', ax=F)
@@ -543,7 +543,7 @@ basicPlot <- function(target='none') {
 
   df <- allData[['C2_TextureMotion']]
 
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,7), ylim=c(0,6),
        main='LDL Texture Frames',xlab='',ylab='illusion strength [dva]',
        bty='n', ax=F)
@@ -664,7 +664,7 @@ fig3_offsets <- function(target='inline') {
   
   ############ classic/raw data plots:
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-1,13), ylim=c(0,6),
        main='',xlab='horizontal offset [dva]',ylab='perceived seperation [dva]',
        bty='n', ax=F)
@@ -727,7 +727,7 @@ fig3_offsets <- function(target='inline') {
   
   # plot 3: vertical frame offset
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-1,13), ylim=c(0,6),
        main='',xlab='vertical offset [dva]',ylab='perceived separation [dva]',
        bty='n', ax=F)
@@ -828,7 +828,7 @@ fig4_depth <- function(target='inline') {
   
   df <- getAnaglyphData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0.5,4.5), ylim=c(0,6),
        main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F,
@@ -919,7 +919,7 @@ fig5_prepost <- function(target='inline') {
   
   df <- getPreDictionData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(-3,3), ylim=c(-2.5,4.5),
        main='',xlab='overlap',ylab='perceived separation [dva]',
        bty='n', ax=F)
@@ -1623,6 +1623,8 @@ fig6_probelag <- function(target='inline') {
                       nrow = 1,
                       byrow = TRUE)  )
   
+  par(mar = c(7, 5, 2, 4) + 0.1 )
+  
   cols <- getColors()
   cols.op <- cols$op
   cols.tr <- cols$tr
@@ -1645,9 +1647,10 @@ fig6_probelag <- function(target='inline') {
   plot(NULL,NULL,
        xlim=c(0,4), ylim=c(0,4),
        main='',xlab='',ylab='perceived separation [dva]',
+       asp=1,
        bty='n', ax=F)
   
-  title(xlab='??? [dva]', line=4)
+  title(xlab='probe separation in frame coordinates [dva]', line=6)
   
   
   lines( x=c(0,4), y=c(0,4), lty=2, col='#999999')
@@ -1710,7 +1713,35 @@ fig6_probelag <- function(target='inline') {
     
     
     
-  }  
+  }
+  
+  # icons:
+  scale = 1/7
+  for (dva in c(0,2,4)) {
+    polygon(x=c(-3.5, 3.5, 3.5,-3.5)*scale + dva,
+            y=c( 3.5, 3.5,-3.5,-3.5)*scale - 1.65,
+            col='#666666FF',
+            border=NA,
+            xpd=TRUE)
+    polygon(x=c(-3, 3, 3,-3)*scale + dva,
+            y=c( 3, 3,-3,-3)*scale - 1.65,
+            col='#FFFFFF',
+            border=NA,
+            xpd=TRUE)
+    
+    rads <- seq(0, 2*pi, length.out=100)
+    polygon(x=((dva/2)+(cos(rads)*0.5))*scale + dva,
+            y=(1+sin(rads)*0.5)*scale - 1.65,
+            col='#0000FFFF',
+            border=NA,
+            xpd=TRUE)
+    polygon(x=((dva/-2)+(cos(rads)*0.5))*scale + dva,
+            y=(-1+sin(rads)*0.5)*scale - 1.65,
+            col='#FF0000FF',
+            border=NA,
+            xpd=TRUE)
+    
+  }
 
   axis(side=2, at=c(0,2,4))
   
@@ -1718,11 +1749,16 @@ fig6_probelag <- function(target='inline') {
   
   # axis(side=1, at=(c(0,1,2,3,4,5)/.9)+1,labels=sprintf('%d%%',c(0,10,20,30,40,50)),las=2)
   
-  legend(0.5, 
-         4.0,
-         legend=c('classic frame','apparent motion'), 
-         bty='n',lty=1,col=cols.op[c(1,5)],
-         xpd=TRUE)
+  # legend(0.5, 
+  #        4.0,
+  #        legend=c('classic frame','apparent motion'), 
+  #        bty='n',lty=1,col=cols.op[c(1,5)],
+  #        xpd=TRUE)
+  
+  text(x=c(2.0, 2.5),
+       y=c(2.5, .25),
+       labels=c('classic frame','apparent motion'))
+  
 
   
   if (target %in% c('pdf', 'svg', 'png', 'tiff')) {
@@ -2124,7 +2160,7 @@ fig8_internalmotion <- function(target='inline') {
   
   df <- getPerceivedMotionData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(1,6), ylim=c(0,8),
        main='',xlab='',ylab='perceived path length [dva]',
        bty='n', ax=F)
@@ -2190,7 +2226,7 @@ fig8_internalmotion <- function(target='inline') {
   
   df <- getTextureMotionData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,5), ylim=c(0,8),
        main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
@@ -2231,6 +2267,11 @@ fig8_internalmotion <- function(target='inline') {
     
   }
   
+  lines(x=c(1,4),y=c(6.2,6.2),lty=1,col='#000000')
+  lines(x=c(2,4),y=c(7.1,7.1),lty=1,col='#000000')
+  text(x=2.5,y=6.6,labels='**')
+  text(x=3,y=7.5,labels='**')
+  
   axis(side=2,at=c(0,2,4,6,8))
   axis(side=1,at=c(1,2,3,4),labels=rep('',4))
   
@@ -2252,6 +2293,103 @@ fig8_internalmotion <- function(target='inline') {
   
 }
 
+fig8.5_internalcontribution <- function(target='inline') {
+  
+  width  <- 4
+  height <- 4
+  dpi    <- 300
+  
+  if (target=='svg') {
+    svglite::svglite(file='doc/fig/svg/fig8.5_internalcontribution.svg', width=width, height=height, fix_text_size = FALSE)
+  }
+  if (target=='pdf') {
+    cairo_pdf(filename='doc/fig/pdf/fig8.5_internalcontribution.pdf', width=width, height=height)
+  }
+  if (target=='png') {
+    png(filename='doc/fig/png/fig8.5_internalcontribution.png', width=width*dpi, height=height*dpi, res=dpi)
+  }
+  
+  layout(mat = matrix(data = c(1),
+                      ncol = 1,
+                      byrow = TRUE)  )
+  
+  par(mar=c(5,4,2,0.1))
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  
+  participants <- getParticipants()
+  
+  # df <- getPerceivedMotionData(participants, FUN=median)
+  df <- getTextureMotionData(participants, FUN=median)
+  
+  df <- df[which(round(df$period, digits=6) == 0.333333 & df$amplitude == 4),]
+  
+  bdf <- df[which(df$stimtype == 'classicframe' & df$fixdot == FALSE),]
+  
+  tdf <- df[which(df$stimtype %in% c('dotcounterframe', 'dotwindowframe', 'dotmovingframe', 'dotdoublerframe')),]
+  
+  for (participant in participants) {
+    
+    bpercept <- bdf$percept[which(bdf$participant == participant)]
+    
+    idx <- which(tdf$participant == participant)
+    
+    tdf$percept[idx] <- tdf$percept[idx] - bpercept
+    
+  }
+  
+  plot(NULL,NULL,
+       xlim=c(-3,2), ylim=c(-4,2),
+       main='', xlab='',ylab='internal motion contribution',
+       bty='n', ax=F)
+  
+  lines( x=c(-2, 1), y=c(-2, 1)*1.888972, lty=2, col='#999999')
+  lines( x=c(-2.5, 1.5), y=c(0, 0), lty=1, col='#999999')
+  
+  
+  tdf$motiondifference <- NA
+  tdf$motiondifference[which(tdf$stimtype == 'dotcounterframe')] <- -2
+  tdf$motiondifference[which(tdf$stimtype == 'dotwindowframe')]   <- -1
+  tdf$motiondifference[which(tdf$stimtype == 'dotmovingframe')]  <-  0
+  tdf$motiondifference[which(tdf$stimtype == 'dotdoublerframe')]  <-  1
+  
+  cols <- getColors()
+  cols.op <- cols$op
+  cols.tr <- cols$tr
+  col.idx=2
+  
+  imd <- as.numeric(tdf$motiondifference)
+  imp <- tdf$percept
+  
+  linmod <- lm( imp ~ imd )
+  
+  
+  at <- c(-2, 1)
+  
+  coef <- linmod$coefficients
+  lines(at, coef[1]+(at*coef[2]), col=cols.op[col.idx])
+  
+  
+  # at <- range(ld)
+  ci <- predict( linmod,
+                 newdata=data.frame(imd=seq(at[1],at[2],length.out=101)),
+                 interval = "confidence")
+  # 
+  X <- c(seq(at[1],at[2],length.out=101),rev(seq(at[1],at[2],length.out=101)))
+  Y <- c(ci[,'lwr'],rev(ci[,'upr']))
+  polygon(x=X,y=Y,col=cols.tr[col.idx],border=NA)
+  
+  points( x = imd,
+          y = imp,
+          pch = 16,
+          col = cols.tr[col.idx])
+  
+  axis(side=1,at=c(-2,-1,0,1),labels=c('-2','-1','0','+1'))
+  axis(side=2,at=c(-4,-2,0,2))
+  
+}
 
 fig9_selfmotion <- function(target='inline') {
   
@@ -2284,7 +2422,7 @@ fig9_selfmotion <- function(target='inline') {
   df <- getSelfMotionData(participants, FUN=median)
   
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,3.5), ylim=c(0,6),
        main='', xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F)
@@ -2368,7 +2506,7 @@ fig10_tasktime <- function(target='inline') {
   
   df <- getExperimentTimeData(participants, FUN=median)
   
-  plot(-1000,-1000,
+  plot(NULL,NULL,
        xlim=c(0,8), ylim=c(0,4),
        main='',xlab='',ylab='perceived separation [dva]',
        bty='n', ax=F, asp=1)
