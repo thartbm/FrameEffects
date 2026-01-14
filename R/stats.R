@@ -671,18 +671,25 @@ motionPerceptionDescriptors <- function() {
 }
 
 
-motionperceptionTtest <- function() {
+motionperceptionTtests <- function() {
   
   participants <- getParticipants()
   
   df <- getPerceivedMotionData(participants, FUN=median)
   
-  df <- df[which(round(df$period, digits=6) == 0.333333),]
+  # df <- df[which(round(df$period, digits=6) == 0.333333),]
   df <- df[which(df$stimtype %in% c('classicframe','dotbackground')),]
   df <- df[which(df$amplitude == 4),]
   
+  df <- aggregate(percept ~ stimtype + participant, data=df, FUN=mean)
+  
   classic <-df$percept[which(df$stimtype == 'classicframe')]
   background <-df$percept[which(df$stimtype == 'dotbackground')]
+  
+  classic0 <- t.test(classic)
+  print(classic0)
+  background0 <- t.test(background)
+  print(background0)
 
   my_ttest <- t.test(classic, background, paired=TRUE)
   print(my_ttest)
