@@ -3,9 +3,9 @@ title: "Frame effects in space and time"
 output:
   word_document: default
   html_notebook: default
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 ---
 
 ```{r setup, cache=FALSE, include=FALSE}
@@ -299,10 +299,10 @@ The previous experiment showed that having an actual frame, with edges, works mu
 
 We now test this with frames consisting of dots whose motion is:
 
-1.  (-1) opposite that of the frame
-2.  ( 0) static (static relative to the screen)
-3.  (+1) the same as that of the frame (these move with the frame)
-4.  (+2) double that of the frame
+1.  (-2) opposite that of the frame
+2.  (-1) static (static relative to the screen)
+3.  ( 0) the same as that of the frame (these move with the frame)
+4.  (+1) double that of the frame
 
 If the internal motion has any effect on the strength of the illusion, we could expect the illusion strength to be lowest for the first condition, and highest for the last. With the third condition having about the same illusion strength as a classic frame.
 

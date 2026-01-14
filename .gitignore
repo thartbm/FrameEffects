@@ -16,6 +16,7 @@
 *.mkv
 
 *.docx
+*.html
 *.nb.html
 
 notes.txt
