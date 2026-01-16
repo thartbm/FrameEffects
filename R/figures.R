@@ -703,14 +703,21 @@ fig3_offsets <- function(target='inline') {
     # probe size   = 1 / 2 = 0.5
     # add the half the outer frame size
     
+    # where one dot is touched:
     # lines(x = rep(-2+0.5+(0.5*ofs),2),
     #       y = c(0,4),
     #       col = cols.op[col.idx],
     #       lty=2)
-    # lines(x = rep(2+0.5+(0.5*ofs),2),
+    # where neither dot is touched:
+    x_ind <- 2+0.5+(0.5*ofs)
+    # lines(x = rep(x_ind,2),
     #       y = c(0,4),
     #       col = cols.op[col.idx],
     #       lty=3)
+    points(x=x_ind, y=0,
+           pch=24, col = cols.op[col.idx], bg=cols.op[col.idx], cex=0.5)
+    # points(x=x_ind, y=3.9,
+    #        pch=25, col = cols.op[col.idx], bg=cols.op[col.idx], cex=0.5)
     
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
@@ -773,6 +780,10 @@ fig3_offsets <- function(target='inline') {
     #       col = cols.op[col.idx],
     #       lty=3)
     
+    x_ind <- 1+0.5+(0.5*ofs)
+    points(x=x_ind, y=0,
+           pch=24, col = cols.op[col.idx], bg=cols.op[col.idx], cex=0.5)
+    
     polygon( x = c(X, rev(X)),
              y = c(lci, rev(hci)),
              border = NA,
@@ -797,7 +808,7 @@ fig3_offsets <- function(target='inline') {
 fig4_depth <- function(target='inline') {
   
   width  <- 4
-  height <- 4
+  height <- 3
   dpi    <- 300
   
   if (target=='svg') {
@@ -814,6 +825,8 @@ fig4_depth <- function(target='inline') {
   layout(mat = matrix(data = c(1),
                       ncol = 1,
                       byrow = TRUE)  )
+  
+  par(mar=c(4, 4, 1, 2) + 0.1)
   
   cols <- getColors()
   cols.op <- cols$op
@@ -2267,10 +2280,10 @@ fig8_internalmotion <- function(target='inline') {
     
   }
   
-  lines(x=c(1,4),y=c(6.2,6.2),lty=1,col='#000000')
-  lines(x=c(2,4),y=c(7.1,7.1),lty=1,col='#000000')
-  text(x=2.5,y=6.6,labels='**')
-  text(x=3,y=7.5,labels='**')
+  # lines(x=c(1,4),y=c(6.2,6.2),lty=1,col='#000000')
+  # lines(x=c(2,4),y=c(7.1,7.1),lty=1,col='#000000')
+  # text(x=2.5,y=6.6,labels='**')
+  # text(x=3,y=7.5,labels='**')
   
   axis(side=2,at=c(0,2,4,6,8))
   axis(side=1,at=c(1,2,3,4),labels=rep('',4))
@@ -2293,103 +2306,103 @@ fig8_internalmotion <- function(target='inline') {
   
 }
 
-fig8.5_internalcontribution <- function(target='inline') {
-  
-  width  <- 4
-  height <- 4
-  dpi    <- 300
-  
-  if (target=='svg') {
-    svglite::svglite(file='doc/fig/svg/fig8.5_internalcontribution.svg', width=width, height=height, fix_text_size = FALSE)
-  }
-  if (target=='pdf') {
-    cairo_pdf(filename='doc/fig/pdf/fig8.5_internalcontribution.pdf', width=width, height=height)
-  }
-  if (target=='png') {
-    png(filename='doc/fig/png/fig8.5_internalcontribution.png', width=width*dpi, height=height*dpi, res=dpi)
-  }
-  
-  layout(mat = matrix(data = c(1),
-                      ncol = 1,
-                      byrow = TRUE)  )
-  
-  par(mar=c(5,4,2,0.1))
-  
-  cols <- getColors()
-  cols.op <- cols$op
-  cols.tr <- cols$tr
-  
-  participants <- getParticipants()
-  
-  # df <- getPerceivedMotionData(participants, FUN=median)
-  df <- getTextureMotionData(participants, FUN=median)
-  
-  df <- df[which(round(df$period, digits=6) == 0.333333 & df$amplitude == 4),]
-  
-  bdf <- df[which(df$stimtype == 'classicframe' & df$fixdot == FALSE),]
-  
-  tdf <- df[which(df$stimtype %in% c('dotcounterframe', 'dotwindowframe', 'dotmovingframe', 'dotdoublerframe')),]
-  
-  for (participant in participants) {
-    
-    bpercept <- bdf$percept[which(bdf$participant == participant)]
-    
-    idx <- which(tdf$participant == participant)
-    
-    tdf$percept[idx] <- tdf$percept[idx] - bpercept
-    
-  }
-  
-  plot(NULL,NULL,
-       xlim=c(-3,2), ylim=c(-4,2),
-       main='', xlab='',ylab='internal motion contribution',
-       bty='n', ax=F)
-  
-  lines( x=c(-2, 1), y=c(-2, 1)*1.888972, lty=2, col='#999999')
-  lines( x=c(-2.5, 1.5), y=c(0, 0), lty=1, col='#999999')
-  
-  
-  tdf$motiondifference <- NA
-  tdf$motiondifference[which(tdf$stimtype == 'dotcounterframe')] <- -2
-  tdf$motiondifference[which(tdf$stimtype == 'dotwindowframe')]   <- -1
-  tdf$motiondifference[which(tdf$stimtype == 'dotmovingframe')]  <-  0
-  tdf$motiondifference[which(tdf$stimtype == 'dotdoublerframe')]  <-  1
-  
-  cols <- getColors()
-  cols.op <- cols$op
-  cols.tr <- cols$tr
-  col.idx=2
-  
-  imd <- as.numeric(tdf$motiondifference)
-  imp <- tdf$percept
-  
-  linmod <- lm( imp ~ imd )
-  
-  
-  at <- c(-2, 1)
-  
-  coef <- linmod$coefficients
-  lines(at, coef[1]+(at*coef[2]), col=cols.op[col.idx])
-  
-  
-  # at <- range(ld)
-  ci <- predict( linmod,
-                 newdata=data.frame(imd=seq(at[1],at[2],length.out=101)),
-                 interval = "confidence")
-  # 
-  X <- c(seq(at[1],at[2],length.out=101),rev(seq(at[1],at[2],length.out=101)))
-  Y <- c(ci[,'lwr'],rev(ci[,'upr']))
-  polygon(x=X,y=Y,col=cols.tr[col.idx],border=NA)
-  
-  points( x = imd,
-          y = imp,
-          pch = 16,
-          col = cols.tr[col.idx])
-  
-  axis(side=1,at=c(-2,-1,0,1),labels=c('-2','-1','0','+1'))
-  axis(side=2,at=c(-4,-2,0,2))
-  
-}
+# fig8.5_internalcontribution <- function(target='inline') {
+#   
+#   width  <- 4
+#   height <- 4
+#   dpi    <- 300
+#   
+#   if (target=='svg') {
+#     svglite::svglite(file='doc/fig/svg/fig8.5_internalcontribution.svg', width=width, height=height, fix_text_size = FALSE)
+#   }
+#   if (target=='pdf') {
+#     cairo_pdf(filename='doc/fig/pdf/fig8.5_internalcontribution.pdf', width=width, height=height)
+#   }
+#   if (target=='png') {
+#     png(filename='doc/fig/png/fig8.5_internalcontribution.png', width=width*dpi, height=height*dpi, res=dpi)
+#   }
+#   
+#   layout(mat = matrix(data = c(1),
+#                       ncol = 1,
+#                       byrow = TRUE)  )
+#   
+#   par(mar=c(5,4,2,0.1))
+#   
+#   cols <- getColors()
+#   cols.op <- cols$op
+#   cols.tr <- cols$tr
+#   
+#   participants <- getParticipants()
+#   
+#   # df <- getPerceivedMotionData(participants, FUN=median)
+#   df <- getTextureMotionData(participants, FUN=median)
+#   
+#   df <- df[which(round(df$period, digits=6) == 0.333333 & df$amplitude == 4),]
+#   
+#   bdf <- df[which(df$stimtype == 'classicframe' & df$fixdot == FALSE),]
+#   
+#   tdf <- df[which(df$stimtype %in% c('dotcounterframe', 'dotwindowframe', 'dotmovingframe', 'dotdoublerframe')),]
+#   
+#   for (participant in participants) {
+#     
+#     bpercept <- bdf$percept[which(bdf$participant == participant)]
+#     
+#     idx <- which(tdf$participant == participant)
+#     
+#     tdf$percept[idx] <- tdf$percept[idx] - bpercept
+#     
+#   }
+#   
+#   plot(NULL,NULL,
+#        xlim=c(-3,2), ylim=c(-4,2),
+#        main='', xlab='',ylab='internal motion contribution',
+#        bty='n', ax=F)
+#   
+#   lines( x=c(-2, 1), y=c(-2, 1)*1.888972, lty=2, col='#999999')
+#   lines( x=c(-2.5, 1.5), y=c(0, 0), lty=1, col='#999999')
+#   
+#   
+#   tdf$motiondifference <- NA
+#   tdf$motiondifference[which(tdf$stimtype == 'dotcounterframe')] <- -2
+#   tdf$motiondifference[which(tdf$stimtype == 'dotwindowframe')]   <- -1
+#   tdf$motiondifference[which(tdf$stimtype == 'dotmovingframe')]  <-  0
+#   tdf$motiondifference[which(tdf$stimtype == 'dotdoublerframe')]  <-  1
+#   
+#   cols <- getColors()
+#   cols.op <- cols$op
+#   cols.tr <- cols$tr
+#   col.idx=2
+#   
+#   imd <- as.numeric(tdf$motiondifference)
+#   imp <- tdf$percept
+#   
+#   linmod <- lm( imp ~ imd )
+#   
+#   
+#   at <- c(-2, 1)
+#   
+#   coef <- linmod$coefficients
+#   lines(at, coef[1]+(at*coef[2]), col=cols.op[col.idx])
+#   
+#   
+#   # at <- range(ld)
+#   ci <- predict( linmod,
+#                  newdata=data.frame(imd=seq(at[1],at[2],length.out=101)),
+#                  interval = "confidence")
+#   # 
+#   X <- c(seq(at[1],at[2],length.out=101),rev(seq(at[1],at[2],length.out=101)))
+#   Y <- c(ci[,'lwr'],rev(ci[,'upr']))
+#   polygon(x=X,y=Y,col=cols.tr[col.idx],border=NA)
+#   
+#   points( x = imd,
+#           y = imp,
+#           pch = 16,
+#           col = cols.tr[col.idx])
+#   
+#   axis(side=1,at=c(-2,-1,0,1),labels=c('-2','-1','0','+1'))
+#   axis(side=2,at=c(-4,-2,0,2))
+#   
+# }
 
 fig9_selfmotion <- function(target='inline') {
   
