@@ -401,6 +401,54 @@ postdictionTtests <- function() {
 
 # lagged probes -----
 
+probeLagLinearFits <- function() {
+  
+  participants <- c(1:8)
+  
+  df <- getApparentLagData(participants, FUN=median)
+  
+  df$probedist <- NA
+  conTab <- probeInFrameOffsets()
+  for (fl in unique(df$framelag)) {
+    idx <- which(df$framelag == fl)
+    df$probedist[idx] <- conTab$probespacing[which(conTab$framelag == fl)]
+  }
+  
+
+  for (stimtype in c('classicframe','apparentframe')) {
+    
+
+    cdf <- df[which(df$stimtype == stimtype),]
+    
+    avg <- c()
+    hci <- c()
+    lci <- c()
+    
+    X <- sort( unique( cdf$probedist ) )
+    
+    for (pd in X) {
+      
+      idx <- which(cdf$probedist == pd)
+      
+      avg <- c(avg, mean(cdf$percept[idx]))
+
+    }
+
+    lm.cdf <- cdf[which(cdf$probedist != min(X)),]
+    
+    ld <- lm.cdf$probedist
+    lp <- lm.cdf$percept
+    
+    lindecay <- lm( lp ~ ld )
+    
+    cat(sprintf('stimtype: %s\n', stimtype))
+    print(summary(lindecay))
+    
+  }
+  
+}
+
+
 probeLagANOVA <- function() {
   
   # participants <- getParticipants()
