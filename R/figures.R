@@ -2280,6 +2280,7 @@ fig8_internalmotion <- function(target='inline') {
     
   }
   
+  # significance bars: decided not to include them
   # lines(x=c(1,4),y=c(6.2,6.2),lty=1,col='#000000')
   # lines(x=c(2,4),y=c(7.1,7.1),lty=1,col='#000000')
   # text(x=2.5,y=6.6,labels='**')
