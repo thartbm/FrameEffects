@@ -680,6 +680,7 @@ motionperceptionANOVA <- function() {
                            data=df_amp,
                            within=c('stimtype', 'amplitude')
   )
+  cat('\nPerceived Motion ANOVA (amplitude):\n')
   print(my_aov)
   
   df_dur <- df[which(df$amplitude == 4),]
@@ -692,7 +693,7 @@ motionperceptionANOVA <- function() {
                            data=df_dur,
                            within=c('stimtype', 'period')
   )
-  
+  cat('\nPerceived Motion ANOVA (duration):\n')
   print(my_aov)
   
 }
@@ -870,17 +871,17 @@ internalmotionIllusionANOVA <- function() {
   
   print(concon)
   
-  df <- getTextureMotionData(participants, FUN=median)
-  df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & round(df$period,4)==round(1/3,4)),]
-  
-  print(t.test(x = df$percept[which(df$stimtype=='classicframe')],
-               y = df$percept[which(df$stimtype=='dotmovingframe')],
-               paired = TRUE))
-  
-  print( BayesFactor::ttestBF(
-                x = df$percept[which(df$stimtype=='classicframe')],
-                y = df$percept[which(df$stimtype=='dotmovingframe')],
-                paired = TRUE))
+  # df <- getTextureMotionData(participants, FUN=median)
+  # df <- df[which(df$stimtype %in% c('dotmovingframe','classicframe') & df$fixdot==FALSE & round(df$period,4)==round(1/3,4)),]
+  # 
+  # print(t.test(x = df$percept[which(df$stimtype=='classicframe')],
+  #              y = df$percept[which(df$stimtype=='dotmovingframe')],
+  #              paired = TRUE))
+  # 
+  # print( BayesFactor::ttestBF(
+  #               x = df$percept[which(df$stimtype=='classicframe')],
+  #               y = df$percept[which(df$stimtype=='dotmovingframe')],
+  #               paired = TRUE))
   
   
 }
